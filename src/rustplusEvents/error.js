@@ -21,7 +21,7 @@ module.exports = {
             } break;
 
             default: {
-                errorOther(rustplus, client, err);
+                await errorOther(rustplus, client, err);
             } break;
         }
     },
@@ -42,6 +42,18 @@ function errorNotFound(rustplus, client, err) {
 async function errorConnRefused(rustplus, client, err) {
     rustplus.log('ERROR', `Connection refused to: ${rustplus.serverId}.`, 'error');
 
+    reconnectAfterError(rustplus);
+}
+
+function errorOther(rustplus, client, err) {
+    if (err.toString() === 'Error: WebSocket was closed before the connection was established') {
+        rustplus.log('ERROR', 'WebSocket was closed before the connection was established.', 'error');
+
+        reconnectAfterError(rustplus);
+    }
+}
+
+async function reconnectAfterError(rustplus) {
     if (!rustplus.isConnectionRefused) {
         await DiscordMessages.sendServerChangeStateMessage(rustplus.guildId, rustplus.serverId, 1);
         await DiscordMessages.sendServerMessage(rustplus.guildId, rustplus.serverId, 2);
@@ -49,15 +61,10 @@ async function errorConnRefused(rustplus, client, err) {
 
     rustplus.isReconnecting = true;
     rustplus.isConnectionRefused = true;
+    rustplus.disconnect();
 
     setTimeout(() => {
         rustplus.log('RECONNECTING', 'RECONNECTING TO SERVER...');
         rustplus.connect();
     }, 20000);
-}
-
-function errorOther(rustplus, client, err) {
-    if (err.toString() === 'Error: WebSocket was closed before the connection was established') {
-        rustplus.log('ERROR', 'WebSocket was closed before the connection was established.', 'error');
-    }
 }

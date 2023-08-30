@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-    https://github.com/alexemanuelol/rustPlusPlus
+    https://github.com/alexemanuelol/rustplusplus
 
 */
 
@@ -25,8 +25,10 @@ const Translate = require('translate');
 
 const Client = require('../../index.ts');
 const Constants = require('../util/constants.js');
+const Decay = require('../util/decay.js');
 const DiscordEmbeds = require('../discordTools/discordEmbeds');
 const DiscordMessages = require('../discordTools/discordMessages.js');
+const DiscordVoice = require('../discordTools/discordVoice.js');
 const DiscordTools = require('../discordTools/discordTools.js');
 const InstanceUtils = require('../util/instanceUtils.js');
 const Languages = require('../util/languages.js');
@@ -47,16 +49,13 @@ class RustPlus extends RustPlusLib {
         this.guildId = guildId;
 
         this.leaderRustPlusInstance = null;
+        this.uptimeServer = null;
 
         /* Status flags */
-        this.isConnected = false;           /* Connected to the server, but request not yet verified. */
-        this.isReconnecting = false;        /* Trying to reconnect? */
         this.isOperational = false;         /* Connected to the server, and request is verified. */
         this.isDeleted = false;             /* Is the rustplus instance deleted? */
-        this.isConnectionRefused = false;   /* Refused connection when trying to connect? */
         this.isNewConnection = false;       /* Is it an actively selected connection (pressed CONNECT button)? */
         this.isFirstPoll = true;            /* Is this the first poll since connection started? */
-        this.readyForCameraRays = false;     /* Is the bot ready for new camera rays? */
 
         /* Interval ids */
         this.pollingTaskId = 0;             /* The id of the main polling mechanism of the rustplus instance. */
@@ -76,17 +75,18 @@ class RustPlus extends RustPlusLib {
         this.smartAlarmIntervalCounter = 20;        /* Counter to decide when smart alarms should be updated */
         this.interactionSwitches = [];              /* Stores the ids of smart switches that are interacted in-game. */
 
-        this.foundSubscriptionItems = [];           /* Stores found vending machine items that are subscribed to */
-        this.firstPollItems = [];                   /* When a new item is added to subscription list, dont notify
-                                                       about the already available items. */
+        /* Stores found vending machine items that are subscribed to */
+        this.foundSubscriptionItems = { all: [], buy: [], sell: [] };
+
+        /* When a new item is added to subscription list, dont notify about the already available items. */
+        this.firstPollItems = { all: [], buy: [], sell: [] };
 
         this.allConnections = [];
         this.playerConnections = new Object();
         this.allDeaths = [];
         this.playerDeaths = new Object();
-        this.queuedCameras = [];
-        this.cameraPlayerNames = [];
-        this.scannedCameras = 0;
+        this.patrolHelicopterTracers = new Object();
+        this.cargoShipTracers = new Object();
 
         /* Rustplus structures */
         this.map = null;            /* Stores the Map structure. */
@@ -152,6 +152,10 @@ class RustPlus extends RustPlusLib {
 
     updateLeaderRustPlusLiteInstance() {
         if (this.leaderRustPlusInstance !== null) {
+            if (Client.client.rustplusLiteReconnectTimers[this.guildId]) {
+                clearTimeout(Client.client.rustplusLiteReconnectTimers[this.guildId]);
+                Client.client.rustplusLiteReconnectTimers[this.guildId] = null;
+            }
             this.leaderRustPlusInstance.isActive = false;
             this.leaderRustPlusInstance.disconnect();
             this.leaderRustPlusInstance = null;
@@ -166,6 +170,7 @@ class RustPlus extends RustPlusLib {
         this.leaderRustPlusInstance = new RustPlusLite(
             this.guildId,
             this.logger,
+            this,
             serverLite.serverIp,
             serverLite.appPort,
             serverLite.steamId,
@@ -219,10 +224,10 @@ class RustPlus extends RustPlusLib {
 
     deleteThisRustplusInstance() {
         this.isDeleted = true;
+        this.disconnect();
 
         if (Client.client.rustplusInstances.hasOwnProperty(this.guildId)) {
             if (Client.client.rustplusInstances[this.guildId].serverId === this.serverId) {
-                this.disconnect();
                 delete Client.client.rustplusInstances[this.guildId];
                 return true;
             }
@@ -271,14 +276,17 @@ class RustPlus extends RustPlusLib {
         }
     }
 
-    async sendEvent(setting, text, firstPoll = false, image = null) {
+    async sendEvent(setting, text, embed_color, firstPoll = false, image = null) {
         const img = (image !== null) ? image : setting.image;
 
         if (!firstPoll && setting.discord) {
-            await DiscordMessages.sendDiscordEventMessage(this.guildId, this.serverId, text, img);
+            await DiscordMessages.sendDiscordEventMessage(this.guildId, this.serverId, text, img, embed_color);
         }
         if (!firstPoll && setting.inGame) {
             await this.sendTeamMessageAsync(`${text}`);
+        }
+        if (!firstPoll && setting.voice) {
+            await DiscordVoice.sendDiscordVoiceMessage(this.guildId, text);
         }
         this.log(Client.client.intlGet(null, 'eventCap'), text);
     }
@@ -699,118 +707,6 @@ class RustPlus extends RustPlusLib {
         });
     }
 
-    getCommandBradley(isInfoChannel = false) {
-        const strings = [];
-        for (const timer of Object.values(this.mapMarkers.bradleyAPCRespawnTimers)) {
-            const time = Timer.getTimeLeftOfTimer(timer);
-            if (time) {
-                if (isInfoChannel) {
-                    return Client.client.intlGet(this.guildId, 'timeBeforeRespawn', {
-                        time: Timer.getTimeLeftOfTimer(timer, 's')
-                    });
-                }
-                else {
-                    strings.push(Client.client.intlGet(this.guildId, 'timeBeforeBradleyRespawns', {
-                        time: time
-                    }));
-                }
-            }
-        }
-
-        if (strings.length === 0) {
-            if (this.mapMarkers.timeSinceBradleyAPCWasDestroyed === null) {
-                if (isInfoChannel) {
-                    return Client.client.intlGet(this.guildId, 'atLocation', {
-                        location: Client.client.intlGet(this.guildId, 'launchSite')
-                    });
-                }
-                else {
-                    return Client.client.intlGet(this.guildId, 'bradleyRoamingAround');
-                }
-            }
-            else {
-                const secondsSince = (new Date() - this.mapMarkers.timeSinceBradleyAPCWasDestroyed) / 1000;
-                if (isInfoChannel) {
-                    return Client.client.intlGet(this.guildId, 'timeSinceDestroyed', {
-                        time: Timer.secondsToFullScale(secondsSince, 's')
-                    });
-                }
-                else {
-                    return Client.client.intlGet(this.guildId, 'timeSinceBradleyDestroyed', {
-                        time: Timer.secondsToFullScale(secondsSince)
-                    });
-                }
-            }
-        }
-
-        return strings;
-    }
-
-    async getCommandCam(command) {
-        const prefix = this.generalSettings.prefix;
-        const commandCam = `${prefix}${Client.client.intlGet(this.guildId, 'commandSyntaxCam')}`;
-        const commandCamEn = `${prefix}${Client.client.intlGet('en', 'commandSyntaxCam')}`;
-
-        let camera = null;
-        if (command.toLowerCase().startsWith(`${commandCam}`)) {
-            camera = command.slice(`${commandCam} `.length).trim();
-        }
-        else {
-            camera = command.slice(`${commandCamEn} `.length).trim();
-        }
-
-        this.readyForCameraRays = true;
-        const cctvs = JSON.parse(Fs.readFileSync(Path.join(__dirname, '..', 'util/cctv.json'), 'utf8'));
-
-        /* airfield, bandit, dome, large, outpost, small */
-        if (camera === Client.client.intlGet(this.guildId, 'commandSyntaxList') ||
-            camera === Client.client.intlGet('en', 'commandSyntaxList')) {
-            return 'airfield, bandit, dome, large, outpost, small';
-        }
-        else if (camera === 'airfield') {
-            this.queuedCameras.push(...cctvs['Airfield'].codes)
-        }
-        else if (camera === 'bandit') {
-            this.queuedCameras.push(...cctvs['Bandit Camp'].codes)
-        }
-        else if (camera === 'dome') {
-            this.queuedCameras.push(...cctvs['Dome'].codes)
-        }
-        else if (camera === 'large') {
-            this.queuedCameras.push(...cctvs['Large Oil Rig'].codes)
-        }
-        else if (camera === 'outpost') {
-            this.queuedCameras.push(...cctvs['Outpost'].codes)
-        }
-        else if (camera === 'small') {
-            this.queuedCameras.push(...cctvs['Small Oil Rig'].codes)
-        }
-        else {
-            const response = await this.subscribeToCameraAsync(camera);
-            if (!(await this.isResponseValid(response))) {
-                this.readyForCameraRays = false;
-                return `${Client.client.intlGet(this.guildId, 'couldNotFindCamera', {
-                    camera: camera
-                })}`;
-            }
-            return null;
-        }
-
-        camera = this.queuedCameras[0];
-        this.queuedCameras.shift();
-
-        const response = await this.subscribeToCameraAsync(camera);
-        if (!(await this.isResponseValid(response))) {
-            this.readyForCameraRays = false;
-            this.queuedCameras = [];
-            this.scannedCameras = 0;
-            return `${Client.client.intlGet(this.guildId, 'couldNotFindCamera', {
-                camera: camera
-            })}`;
-        }
-        return null;
-    }
-
     getCommandCargo(isInfoChannel = false) {
         const strings = [];
         let unhandled = this.mapMarkers.cargoShips.map(e => e.id);
@@ -819,17 +715,15 @@ class RustPlus extends RustPlusLib {
             const time = Timer.getTimeLeftOfTimer(timer);
             if (time) {
                 if (isInfoChannel) {
-                    return Client.client.intlGet(this.guildId, 'egressInTimeCrates', {
+                    return Client.client.intlGet(this.guildId, 'egressInTime', {
                         time: Timer.getTimeLeftOfTimer(timer, 's'),
-                        location: cargoShip.location.string,
-                        crates: `(${cargoShip.crates.length}/3)`
+                        location: cargoShip.location.string
                     });
                 }
                 else {
-                    strings.push(Client.client.intlGet(this.guildId, 'timeBeforeCargoEntersEgressCrates', {
+                    strings.push(Client.client.intlGet(this.guildId, 'timeBeforeCargoEntersEgress', {
                         time: time,
-                        location: cargoShip.location.string,
-                        crates: `(${cargoShip.crates.length}/3)`
+                        location: cargoShip.location.string
                     }));
                 }
             }
@@ -842,28 +736,24 @@ class RustPlus extends RustPlusLib {
                 if (cargoShip.onItsWayOut) {
                     if (isInfoChannel) {
                         return Client.client.intlGet(this.guildId, 'leavingMapAt', {
-                            location: cargoShip.location.string,
-                            crates: `(${cargoShip.crates.length}/3)`
+                            location: cargoShip.location.string
                         });
                     }
                     else {
                         strings.push(Client.client.intlGet(this.guildId, 'cargoLeavingMapAt', {
-                            location: cargoShip.location.string,
-                            crates: `(${cargoShip.crates.length}/3)`
+                            location: cargoShip.location.string
                         }));
                     }
                 }
                 else {
                     if (isInfoChannel) {
-                        return Client.client.intlGet(this.guildId, 'cargoAtCrates', {
-                            location: cargoShip.location.string,
-                            crates: `(${cargoShip.crates.length}/3)`
+                        return Client.client.intlGet(this.guildId, 'cargoAt', {
+                            location: cargoShip.location.string
                         });
                     }
                     else {
-                        strings.push(Client.client.intlGet(this.guildId, 'cargoLocatedAtCrates', {
-                            location: cargoShip.location.string,
-                            crates: `(${cargoShip.crates.length}/3)`
+                        strings.push(Client.client.intlGet(this.guildId, 'cargoLocatedAt', {
+                            location: cargoShip.location.string
                         }));
                     }
                 }
@@ -1015,67 +905,6 @@ class RustPlus extends RustPlusLib {
         return null;
     }
 
-    getCommandCrate(isInfoChannel = false) {
-        const strings = [];
-        for (const [id, timer] of Object.entries(this.mapMarkers.crateDespawnTimers)) {
-            const crate = this.mapMarkers.getMarkerByTypeId(this.mapMarkers.types.Crate, parseInt(id));
-            const time = Timer.getTimeLeftOfTimer(timer);
-
-            if (time) {
-                if (isInfoChannel) {
-                    return Client.client.intlGet(this.guildId, 'timeUntilDespawnsAt', {
-                        time: Timer.getTimeLeftOfTimer(timer, 's'),
-                        location: crate.crateType
-                    });
-                }
-                else {
-                    strings.push(Client.client.intlGet(this.guildId, 'timeBeforeCrateDespawnsAt', {
-                        time: time,
-                        location: crate.crateType
-                    }));
-                }
-            }
-        }
-
-        if (strings.length === 0) {
-            if (this.mapMarkers.timeSinceCH47DroppedCrate === null) {
-                for (const crate of this.mapMarkers.crates) {
-                    if (!['cargoShip', 'oil_rig_small', 'large_oil_rig', 'invalid'].includes(crate.crateType)) {
-                        if (isInfoChannel) {
-                            return Client.client.intlGet(this.guildId, 'atLocation', {
-                                location: crate.crateType === 'grid' ? crate.location.string : crate.crateType
-                            });
-                        }
-                        else {
-                            strings.push(Client.client.intlGet(this.guildId, 'lockedCrateLocatedAt', {
-                                location: crate.crateType === 'grid' ? crate.location.string : crate.crateType
-                            }));
-                        }
-                    }
-                }
-
-                if (strings.length === 0) return Client.client.intlGet(this.guildId, 'noActiveLockedCrates');
-            }
-            else {
-                const secondsSince = (new Date() - this.mapMarkers.timeSinceCH47DroppedCrate) / 1000;
-                if (isInfoChannel) {
-                    const timeSince = Timer.secondsToFullScale(secondsSince, 's');
-                    return Client.client.intlGet(this.guildId, 'timeSinceLastDrop', {
-                        time: timeSince
-                    });
-                }
-                else {
-                    const timeSince = Timer.secondsToFullScale(secondsSince);
-                    return Client.client.intlGet(this.guildId, 'timeSinceChinook47LastDropped', {
-                        time: timeSince
-                    });
-                }
-            }
-        }
-
-        return strings;
-    }
-
     async getCommandDeath(command, callerSteamId) {
         const prefix = this.generalSettings.prefix;
         const commandDeath = `${prefix}${Client.client.intlGet(this.guildId, 'commandSyntaxDeath')}`;
@@ -1187,6 +1016,88 @@ class RustPlus extends RustPlusLib {
         });
     }
 
+    getCommandDecay(command) {
+        const prefix = this.generalSettings.prefix;
+        const commandDecay = `${prefix}${Client.client.intlGet(this.guildId, 'commandSyntaxDecay')}`;
+        const commandDecayEn = `${prefix}${Client.client.intlGet('en', 'commandSyntaxDecay')}`;
+        const commandTwig = `${Client.client.intlGet(this.guildId, 'commandSyntaxTwig')}`;
+        const commandTwigEn = `${Client.client.intlGet('en', 'commandSyntaxTwig')}`;
+        const commandWood = `${Client.client.intlGet(this.guildId, 'commandSyntaxWood')}`;
+        const commandWoodEn = `${Client.client.intlGet('en', 'commandSyntaxWood')}`;
+        const commandStone = `${Client.client.intlGet(this.guildId, 'commandSyntaxStone')}`;
+        const commandStoneEn = `${Client.client.intlGet('en', 'commandSyntaxStone')}`;
+        const commandMetal = `${Client.client.intlGet(this.guildId, 'commandSyntaxMetal')}`;
+        const commandMetalEn = `${Client.client.intlGet('en', 'commandSyntaxMetal')}`;
+        const commandArmored = `${Client.client.intlGet(this.guildId, 'commandSyntaxArmored')}`;
+        const commandArmoredEn = `${Client.client.intlGet('en', 'commandSyntaxArmored')}`;
+
+        if (command.toLowerCase() === `${commandDecay}` || command.toLowerCase() === `${commandDecayEn}`) {
+            let str = `${Client.client.intlGet(this.guildId, 'commandSyntaxTwig')} (${Decay.TwigWallMaxHp}), `;
+            str += `${Client.client.intlGet(this.guildId, 'commandSyntaxWood')} (${Decay.WoodWallMaxHp}), `;
+            str += `${Client.client.intlGet(this.guildId, 'commandSyntaxStone')} (${Decay.StoneWallMaxHp}), `;
+            str += `${Client.client.intlGet(this.guildId, 'commandSyntaxMetal')} (${Decay.MetalWallMaxHp}), `;
+            str += `${Client.client.intlGet(this.guildId, 'commandSyntaxArmored')} (${Decay.ArmoredWallMaxHp})`;
+
+            return str;
+        }
+
+        if (command.toLowerCase().startsWith(`${commandDecay} `)) {
+            command = command.slice(`${commandDecay} `.length).trim();
+        }
+        else {
+            command = command.slice(`${commandDecayEn} `.length).trim();
+        }
+        const subcommand = command.replace(/ .*/, '');
+        const hp = command.slice(subcommand.length + 1);
+
+        let type = null;
+        switch (subcommand.toLowerCase()) {
+            case commandTwigEn:
+            case commandTwig: {
+                type = commandTwigEn;
+            } break;
+
+            case commandWoodEn:
+            case commandWood: {
+                type = commandWoodEn;
+            } break;
+
+            case commandStoneEn:
+            case commandStone: {
+                type = commandStoneEn;
+            } break;
+
+            case commandMetalEn:
+            case commandMetal: {
+                type = commandMetalEn;
+            } break;
+
+            case commandArmoredEn:
+            case commandArmored: {
+                type = commandArmoredEn;
+            } break;
+
+            default: {
+                return `${Client.client.intlGet(this.guildId, 'invalidSubcommand')}`;
+            } break;
+        }
+
+        const decaySeconds = Decay.getTimeLeftSeconds(Client.client, type, hp);
+        if (decaySeconds === null) {
+            return `${Client.client.intlGet(this.guildId, 'invalidHpInterval', { hp: hp })}`;
+        }
+        else if (decaySeconds === undefined) {
+            return `${Client.client.intlGet(this.guildId, 'invalidStructureType', { type: subcommand })}`;
+        }
+        else {
+            const time = Timer.secondsToFullScale(decaySeconds);
+            return `${Client.client.intlGet(this.guildId, 'timeTillStructureDecay', {
+                time: time,
+                type: subcommand.toLowerCase()
+            })}`;
+        }
+    }
+
     getCommandHeli(isInfoChannel = false) {
         const strings = [];
         for (const patrolHelicopter of this.mapMarkers.patrolHelicopters) {
@@ -1250,20 +1161,19 @@ class RustPlus extends RustPlusLib {
 
     getCommandLarge(isInfoChannel = false) {
         const strings = [];
-        for (const [id, timer] of Object.entries(this.mapMarkers.crateLargeOilRigTimers)) {
-            const crate = this.mapMarkers.getMarkerByTypeId(this.mapMarkers.types.Crate, parseInt(id));
-            const time = Timer.getTimeLeftOfTimer(timer);
+        if (this.mapMarkers.crateLargeOilRigTimer) {
+            const time = Timer.getTimeLeftOfTimer(this.mapMarkers.crateLargeOilRigTimer);
             if (time) {
                 if (isInfoChannel) {
                     return Client.client.intlGet(this.guildId, 'timeUntilUnlocksAt', {
-                        time: Timer.getTimeLeftOfTimer(timer, 's'),
-                        location: crate.location.location
+                        time: Timer.getTimeLeftOfTimer(this.mapMarkers.crateLargeOilRigTimer, 's'),
+                        location: this.mapMarkers.crateLargeOilRigLocation
                     });
                 }
                 else {
                     strings.push(Client.client.intlGet(this.guildId, 'timeBeforeCrateAtLargeOilRigUnlocks', {
                         time: time,
-                        location: crate.location.location
+                        location: this.mapMarkers.crateLargeOilRigLocation
                     }));
                 }
             }
@@ -1518,22 +1428,25 @@ class RustPlus extends RustPlusLib {
             command = command.slice(`${commandMarketEn} `.length).trim();
         }
         const subcommand = command.replace(/ .*/, '');
-        const name = command.slice(subcommand.length + 1);
+        command = command.slice(subcommand.length + 1);
+
+        const orderType = command.replace(/ .*/, '');
+        const name = command.slice(orderType.length + 1);
 
         switch (subcommand) {
             case commandSearchEn:
             case commandSearch: {
-                let itemId = null;
-                if (name !== null) {
-                    const item = Client.client.items.getClosestItemIdByName(name)
-                    if (item === undefined) {
-                        return Client.client.intlGet(this.guildId, 'noItemWithNameFound', {
-                            name: name
-                        });
-                    }
-                    else {
-                        itemId = item;
-                    }
+                if (!['all', 'buy', 'sell'].includes(orderType)) {
+                    return Client.client.intlGet(this.guildId, 'notAValidOrderType', {
+                        order: orderType
+                    });
+                }
+
+                const itemId = Client.client.items.getClosestItemIdByName(name);
+                if (itemId === undefined) {
+                    return Client.client.intlGet(this.guildId, 'noItemWithNameFound', {
+                        name: name
+                    });
                 }
 
                 const locations = [];
@@ -1543,7 +1456,17 @@ class RustPlus extends RustPlusLib {
                     for (const order of vendingMachine.sellOrders) {
                         if (order.amountInStock === 0) continue;
 
-                        if (order.itemId === parseInt(itemId) || order.currencyId === parseInt(itemId)) {
+                        const orderItemId =
+                            (Object.keys(Client.client.items.items).includes(order.itemId.toString())) ?
+                                order.itemId : null;
+                        const orderCurrencyId =
+                            (Object.keys(Client.client.items.items).includes(order.currencyId.toString())) ?
+                                order.currencyId : null;
+
+                        if ((orderType === 'all' &&
+                            (orderItemId === parseInt(itemId) || orderCurrencyId === parseInt(itemId))) ||
+                            (orderType === 'buy' && orderCurrencyId === parseInt(itemId)) ||
+                            (orderType === 'sell' && orderItemId === parseInt(itemId))) {
                             if (locations.includes(vendingMachine.location.location)) continue;
                             locations.push(vendingMachine.location.location);
                         }
@@ -1559,28 +1482,29 @@ class RustPlus extends RustPlusLib {
 
             case commandSubEn:
             case commandSub: {
-                let itemId = null;
-                if (name !== null) {
-                    const item = Client.client.items.getClosestItemIdByName(name)
-                    if (item === undefined) {
-                        return Client.client.intlGet(this.guildId, 'noItemWithNameFound', {
-                            name: name
-                        });
-                    }
-                    else {
-                        itemId = item;
-                    }
+                if (!['all', 'buy', 'sell'].includes(orderType)) {
+                    return Client.client.intlGet(this.guildId, 'notAValidOrderType', {
+                        order: orderType
+                    });
+                }
+
+                const itemId = Client.client.items.getClosestItemIdByName(name);
+                if (itemId === undefined) {
+                    return Client.client.intlGet(this.guildId, 'noItemWithNameFound', {
+                        name: name
+                    });
                 }
                 const itemName = Client.client.items.getName(itemId);
 
-                if (instance.marketSubscriptionListItemIds.includes(itemId)) {
+
+                if (instance.marketSubscriptionList[orderType].includes(itemId)) {
                     return Client.client.intlGet(this.guildId, 'alreadySubscribedToItem', {
                         name: itemName
                     });
                 }
                 else {
-                    instance.marketSubscriptionListItemIds.push(itemId);
-                    this.firstPollItems.push(itemId);
+                    instance.marketSubscriptionList[orderType].push(itemId);
+                    this.firstPollItems[orderType].push(itemId);
                     Client.client.setInstance(this.guildId, instance);
 
                     return Client.client.intlGet(this.guildId, 'justSubscribedToItem', {
@@ -1591,22 +1515,23 @@ class RustPlus extends RustPlusLib {
 
             case commandUnsubEn:
             case commandUnsub: {
-                let itemId = null;
-                if (name !== null) {
-                    const item = Client.client.items.getClosestItemIdByName(name)
-                    if (item === undefined) {
-                        return Client.client.intlGet(this.guildId, 'noItemWithNameFound', {
-                            name: name
-                        });
-                    }
-                    else {
-                        itemId = item;
-                    }
+                if (!['all', 'buy', 'sell'].includes(orderType)) {
+                    return Client.client.intlGet(this.guildId, 'notAValidOrderType', {
+                        order: orderType
+                    });
+                }
+
+                const itemId = Client.client.items.getClosestItemIdByName(name);
+                if (itemId === undefined) {
+                    return Client.client.intlGet(this.guildId, 'noItemWithNameFound', {
+                        name: name
+                    });
                 }
                 const itemName = Client.client.items.getName(itemId);
 
-                if (instance.marketSubscriptionListItemIds.includes(itemId)) {
-                    instance.marketSubscriptionListItemIds = instance.marketSubscriptionListItemIds.filter(e => e !== itemId);
+                if (instance.marketSubscriptionList[orderType].includes(itemId)) {
+                    instance.marketSubscriptionList[orderType] =
+                        instance.marketSubscriptionList[orderType].filter(e => e !== itemId);
                     Client.client.setInstance(this.guildId, instance);
 
                     return Client.client.intlGet(this.guildId, 'removedSubscribeItem', {
@@ -1622,16 +1547,27 @@ class RustPlus extends RustPlusLib {
 
             case commandListEn:
             case commandList: {
-                const names = [];
-                for (const item of instance.marketSubscriptionListItemIds) {
-                    names.push(Client.client.items.getName(item));
+                const names = { all: '', buy: '', sell: '' };
+                for (const [ot, itemIds] of Object.entries(instance.marketSubscriptionList)) {
+                    let counter = 0;
+                    for (const itemId of itemIds) {
+                        if (counter === 0) names[ot] += `${Client.client.intlGet(this.guildId, ot)}: `;
+                        names[ot] += `${Client.client.items.getName(itemId)} (${itemId}), `;
+                        counter += 1;
+                    }
+                    if (counter !== 0) names[ot] = names[ot].slice(0, -2);
                 }
 
-                if (names.length === 0) {
+                if (names.all === '' && names.buy === '' && names.sell === '') {
                     return Client.client.intlGet(this.guildId, 'subscriptionListEmpty');
                 }
 
-                return names.join(', ');
+                let str = '';
+                for (const [ot, otString] of Object.entries(names)) {
+                    str += otString;
+                }
+
+                return str;
             } break;
 
             default: {
@@ -1974,20 +1910,19 @@ class RustPlus extends RustPlusLib {
 
     getCommandSmall(isInfoChannel = false) {
         const strings = [];
-        for (const [id, timer] of Object.entries(this.mapMarkers.crateSmallOilRigTimers)) {
-            const crate = this.mapMarkers.getMarkerByTypeId(this.mapMarkers.types.Crate, parseInt(id));
-            const time = Timer.getTimeLeftOfTimer(timer);
+        if (this.mapMarkers.crateSmallOilRigTimer) {
+            const time = Timer.getTimeLeftOfTimer(this.mapMarkers.crateSmallOilRigTimer);
             if (time) {
                 if (isInfoChannel) {
                     return Client.client.intlGet(this.guildId, 'timeUntilUnlocksAt', {
-                        time: Timer.getTimeLeftOfTimer(timer, 's'),
-                        location: crate.location.location
+                        time: Timer.getTimeLeftOfTimer(this.mapMarkers.crateSmallOilRigTimer, 's'),
+                        location: this.mapMarkers.crateSmallOilRigLocation
                     });
                 }
                 else {
                     strings.push(Client.client.intlGet(this.guildId, 'timeBeforeCrateAtSmallOilRigUnlocks', {
                         time: time,
-                        location: crate.location.location
+                        location: this.mapMarkers.crateSmallOilRigLocation
                     }));
                 }
             }
@@ -2014,6 +1949,49 @@ class RustPlus extends RustPlusLib {
         }
 
         return strings;
+    }
+
+    getCommandSteamId(command, callerSteamId, callerName) {
+        const prefix = this.generalSettings.prefix;
+        const commandSteamid = `${prefix}${Client.client.intlGet(this.guildId, 'commandSyntaxSteamid')}`;
+        const commandSteamidEn = `${prefix}${Client.client.intlGet('en', 'commandSyntaxSteamid')}`;
+
+        if (command.toLowerCase() === `${commandSteamid}` || command.toLowerCase() === `${commandSteamidEn}`) {
+            if (callerSteamId === null || callerName === null) return null;
+
+            return `${callerName}: ${callerSteamId}`;
+        }
+        else if (command.toLowerCase().startsWith(`${commandSteamid} `) ||
+            command.toLowerCase().startsWith(`${commandSteamidEn} `)) {
+            let name = null;
+            if (command.toLowerCase().startsWith(`${commandSteamid} `)) {
+                name = command.slice(`${commandSteamid} `.length).trim();
+            }
+            else {
+                name = command.slice(`${commandSteamidEn} `.length).trim();
+            }
+
+            for (const player of this.team.players) {
+                if (player.name.includes(name)) {
+                    return `${player.name}: ${player.steamId}`;
+                }
+            }
+
+            return Client.client.intlGet(this.guildId, 'couldNotIdentifyMember', {
+                name: name
+            });
+        }
+
+        return null;
+    }
+
+    getCommandTeam() {
+        let string = '';
+        for (const player of this.team.players) {
+            string += `${player.name}, `;
+        }
+
+        return string !== '' ? `${string.slice(0, -2)}.` : null;
     }
 
     getCommandTime(isInfoChannel = false) {
@@ -2256,6 +2234,32 @@ class RustPlus extends RustPlusLib {
         if (!cupboardFound) return Client.client.intlGet(this.guildId, 'noToolCupboardWereFound');
 
         return strings;
+    }
+
+    getCommandUptime() {
+        let uptimeBot = Client.client.uptimeBot;
+        let uptimeServer = this.uptimeServer;
+
+        if (uptimeBot !== null) {
+            const seconds = (new Date() - uptimeBot) / 1000;
+            uptimeBot = Timer.secondsToFullScale(seconds);
+        }
+        else {
+            uptimeBot = Client.client.intlGet(this.guildId, 'offline');
+        }
+
+        if (uptimeServer !== null) {
+            const seconds = (new Date() - uptimeServer) / 1000;
+            uptimeServer = Timer.secondsToFullScale(seconds);
+        }
+        else {
+            uptimeServer = Client.client.intlGet(this.guildId, 'offline');
+        }
+
+        let string = `${Client.client.intlGet(this.guildId, 'bot')}: ${uptimeBot} `;
+        string += `${Client.client.intlGet(this.guildId, 'server')}: ${uptimeServer}.`;
+
+        return string.charAt(0).toUpperCase() + string.slice(1);
     }
 
     getCommandWipe(isInfoChannel = false) {

@@ -14,7 +14,7 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-	https://github.com/alexemanuelol/rustPlusPlus
+	https://github.com/alexemanuelol/rustplusplus
 
 */
 
@@ -84,11 +84,11 @@ module.exports = {
 		let file = null;
 		if (interaction.options.getSubcommand() === 'clean') {
 			file = new Discord.AttachmentBuilder(
-				Path.join(__dirname, '..', `resources/images/maps/${interaction.guildId}_map_clean.png`));
+				Path.join(__dirname, '..', '..', `maps/${interaction.guildId}_map_clean.png`));
 		}
 		else {
 			file = new Discord.AttachmentBuilder(
-				Path.join(__dirname, '..', `resources/images/maps/${interaction.guildId}_map_full.png`));
+				Path.join(__dirname, '..', '..', `maps/${interaction.guildId}_map_full.png`));
 		}
 
 		const fileName = (interaction.options.getSubcommand() === 'clean') ? 'clean' : 'full';

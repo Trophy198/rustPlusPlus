@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-    https://github.com/alexemanuelol/rustPlusPlus
+    https://github.com/alexemanuelol/rustplusplus
 
 */
 
@@ -52,10 +52,16 @@ module.exports = (client, guild) => {
                 event: null,
                 team: null
             },
+            activeServer: null,
             serverList: {},
             serverListLite: {},
             trackers: {},
-            marketSubscriptionListItemIds: []
+            marketSubscriptionList: {
+                all: [],
+                buy: [],
+                sell: []
+            },
+            teamChatColors: {}
         };
     }
     else {
@@ -91,6 +97,13 @@ module.exports = (client, guild) => {
             for (const [key, value] of Object.entries(notificationSettings)) {
                 if (!instance.notificationSettings.hasOwnProperty(key)) {
                     instance.notificationSettings[key] = value;
+                }
+                else {
+                    for (const [setting, settingValue] of Object.entries(value)) {
+                        if (!instance.notificationSettings[key].hasOwnProperty(setting)) {
+                            instance.notificationSettings[key][setting] = settingValue;
+                        }
+                    }
                 }
             }
         }
@@ -143,10 +156,19 @@ module.exports = (client, guild) => {
             if (!instance.informationMessageId.hasOwnProperty('team')) instance.informationMessageId.team = null;
         }
 
+        if (!instance.hasOwnProperty('activeServer')) instance.activeServer = null;
         if (!instance.hasOwnProperty('serverList')) instance.serverList = {};
         if (!instance.hasOwnProperty('serverListLite')) instance.serverListLite = {};
         if (!instance.hasOwnProperty('trackers')) instance.trackers = {};
-        if (!instance.hasOwnProperty('marketSubscriptionListItemIds')) instance.marketSubscriptionListItemIds = [];
+        if (!instance.hasOwnProperty('marketSubscriptionList')) instance.marketSubscriptionList = {
+            all: [],
+            buy: [],
+            sell: []
+        }
+        if (!instance.marketSubscriptionList.hasOwnProperty('all')) instance.marketSubscriptionList['all'] = [];
+        if (!instance.marketSubscriptionList.hasOwnProperty('buy')) instance.marketSubscriptionList['buy'] = [];
+        if (!instance.marketSubscriptionList.hasOwnProperty('sell')) instance.marketSubscriptionList['sell'] = [];
+        if (!instance.hasOwnProperty('teamChatColors')) instance.teamChatColors = {};
 
         for (const serverId of Object.keys(instance.serverList)) {
             if (!Object.keys(instance.serverListLite).includes(serverId)) {
@@ -160,6 +182,11 @@ module.exports = (client, guild) => {
                 playerToken: instance.serverList[serverId].playerToken
             };
         }
+    }
+
+    /* Check every serverList for missing keys */
+    for (const [serverId, content] of Object.entries(instance.serverList)) {
+        if (!content.hasOwnProperty('customCameraGroups')) content.customCameraGroups = {};
     }
 
     client.setInstance(guild.id, instance);

@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-    https://github.com/alexemanuelol/rustPlusPlus
+    https://github.com/alexemanuelol/rustplusplus
 
 */
 
@@ -71,6 +71,17 @@ async function setupGeneralSettings(client, guildId, channel) {
                 }]
         })],
         components: [DiscordSelectMenus.getLanguageSelectMenu(guildId, instance.generalSettings.language)],
+        files: [new Discord.AttachmentBuilder(
+            Path.join(__dirname, '..', 'resources/images/settings_logo.png'))]
+    });
+
+    await client.messageSend(channel, {
+        embeds: [DiscordEmbeds.getEmbed({
+            color: Constants.COLOR_SETTINGS,
+            title: client.intlGet(guildId, 'commandsVoiceGenderDesc'),
+            thumbnail: `attachment://settings_logo.png`
+        })],
+        components: [DiscordSelectMenus.getVoiceGenderSelectMenu(guildId, instance.generalSettings.voiceGender)],
         files: [new Discord.AttachmentBuilder(
             Path.join(__dirname, '..', 'resources/images/settings_logo.png'))]
     });
@@ -208,7 +219,8 @@ async function setupGeneralSettings(client, guildId, channel) {
         components: [DiscordButtons.getTrackerNotifyButtons(
             guildId,
             instance.generalSettings.trackerNotifyAllOffline,
-            instance.generalSettings.trackerNotifyAnyOnline)],
+            instance.generalSettings.trackerNotifyAnyOnline,
+            instance.generalSettings.trackerNotifyInGameConnections)],
         files: [new Discord.AttachmentBuilder(
             Path.join(__dirname, '..', 'resources/images/settings_logo.png'))]
     });
@@ -257,7 +269,8 @@ async function setupNotificationSettings(client, guildId, channel) {
                 DiscordButtons.getNotificationButtons(
                     guildId, setting,
                     instance.notificationSettings[setting].discord,
-                    instance.notificationSettings[setting].inGame)],
+                    instance.notificationSettings[setting].inGame,
+                    instance.notificationSettings[setting].voice)],
             files: [
                 new Discord.AttachmentBuilder(
                     Path.join(__dirname, '..',

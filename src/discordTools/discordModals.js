@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-    https://github.com/alexemanuelol/rustPlusPlus
+    https://github.com/alexemanuelol/rustplusplus
 
 */
 
@@ -27,8 +27,32 @@ module.exports = {
     getModal: function (options = {}) {
         const modal = new Discord.ModalBuilder();
 
-        if (options.customId) modal.setCustomId(options.customId);
-        if (options.title) modal.setTitle(options.title);
+        if (options.hasOwnProperty('customId')) modal.setCustomId(options.customId);
+        if (options.hasOwnProperty('title')) modal.setTitle(options.title.slice(0, 45));
+
+        return modal;
+    },
+
+    getServerEditModal(guildId, serverId) {
+        const instance = Client.client.getInstance(guildId);
+        const server = instance.serverList[serverId];
+        const identifier = JSON.stringify({ "serverId": serverId });
+
+        const modal = module.exports.getModal({
+            customId: `ServerEdit${identifier}`,
+            title: Client.client.intlGet(guildId, 'editing')
+        });
+
+        modal.addComponents(
+            new Discord.ActionRowBuilder().addComponents(TextInput.getTextInput({
+                customId: 'ServerBattlemetricsId',
+                label: Client.client.intlGet(guildId, 'serverEditBattlemetricsIdLabel'),
+                value: server.battlemetricsId === null ? '' : server.battlemetricsId,
+                style: Discord.TextInputStyle.Short,
+                required: false,
+                minLength: 0
+            }))
+        );
 
         return modal;
     },
@@ -51,24 +75,6 @@ module.exports = {
                 style: Discord.TextInputStyle.Short
             })),
             new Discord.ActionRowBuilder().addComponents(TextInput.getTextInput({
-                customId: 'BradleyApcRespawnTime',
-                label: Client.client.intlGet(guildId, 'customTimerEditBradleyRespawnLabel'),
-                value: `${server.bradleyApcRespawnTimeMs / 1000}`,
-                style: Discord.TextInputStyle.Short
-            })),
-            new Discord.ActionRowBuilder().addComponents(TextInput.getTextInput({
-                customId: 'CrateDespawnTime',
-                label: Client.client.intlGet(guildId, 'customTimerEditCrateDespawnLabel'),
-                value: `${server.lockedCrateDespawnTimeMs / 1000}`,
-                style: Discord.TextInputStyle.Short
-            })),
-            new Discord.ActionRowBuilder().addComponents(TextInput.getTextInput({
-                customId: 'CrateDespawnWarningTime',
-                label: Client.client.intlGet(guildId, 'customTimerEditCrateDespawnWarningLabel'),
-                value: `${server.lockedCrateDespawnWarningTimeMs / 1000}`,
-                style: Discord.TextInputStyle.Short
-            })),
-            new Discord.ActionRowBuilder().addComponents(TextInput.getTextInput({
                 customId: 'OilRigCrateUnlockTime',
                 label: Client.client.intlGet(guildId, 'customTimerEditCrateOilRigUnlockLabel'),
                 value: `${server.oilRigLockedCrateUnlockTimeMs / 1000}`,
@@ -77,7 +83,6 @@ module.exports = {
         );
 
         return modal;
-
     },
 
     getSmartSwitchEditModal(guildId, serverId, entityId) {
@@ -208,6 +213,12 @@ module.exports = {
                 label: Client.client.intlGet(guildId, 'smartAlarmEditMessageLabel'),
                 value: entity.message,
                 style: Discord.TextInputStyle.Short
+            })),
+            new Discord.ActionRowBuilder().addComponents(TextInput.getTextInput({
+                customId: 'SmartAlarmCommand',
+                label: Client.client.intlGet(guildId, 'smartAlarmEditCommandLabel'),
+                value: entity.command,
+                style: Discord.TextInputStyle.Short
             }))
         );
 
@@ -256,6 +267,20 @@ module.exports = {
                 label: Client.client.intlGet(guildId, 'trackerEditNameLabel'),
                 value: tracker.name,
                 style: Discord.TextInputStyle.Short
+            })),
+            new Discord.ActionRowBuilder().addComponents(TextInput.getTextInput({
+                customId: 'TrackerBattlemetricsId',
+                label: Client.client.intlGet(guildId, 'trackerEditBattlemetricsIdLabel'),
+                value: tracker.battlemetricsId,
+                style: Discord.TextInputStyle.Short
+            })),
+            new Discord.ActionRowBuilder().addComponents(TextInput.getTextInput({
+                customId: 'TrackerClanTag',
+                label: Client.client.intlGet(guildId, 'trackerEditClanTagLabel'),
+                value: tracker.clanTag,
+                style: Discord.TextInputStyle.Short,
+                required: false,
+                minLength: 0
             }))
         );
 

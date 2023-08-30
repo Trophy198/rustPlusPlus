@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-    https://github.com/alexemanuelol/rustPlusPlus
+    https://github.com/alexemanuelol/rustplusplus
 
 */
 
@@ -40,7 +40,6 @@ class DiscordBot extends Discord.Client {
         this.logger = new Logger(Path.join(__dirname, '..', '..', 'logs/discordBot.log'), 'default');
 
         this.commands = new Discord.Collection();
-        this.rustplusInstances = new Object();
         this.fcmListeners = new Object();
         this.fcmListenersLite = new Object();
         this.instances = {};
@@ -48,6 +47,15 @@ class DiscordBot extends Discord.Client {
         this.botIntl = null;
         this.enIntl = null;
         this.enMessages = JSON.parse(Fs.readFileSync(Path.join(__dirname, '..', 'languages', 'en.json')), 'utf8');
+
+        this.rustplusInstances = new Object();
+        this.activeRustplusInstances = new Object();
+        this.rustplusReconnectTimers = new Object();
+        this.rustplusLiteReconnectTimers = new Object();
+        this.rustplusReconnecting = new Object();
+        this.rustplusMaps = new Object();
+
+        this.uptimeBot = null;
 
         this.items = new Items();
         this.cctv = new Cctv();
@@ -204,6 +212,8 @@ class DiscordBot extends Discord.Client {
         await require('../discordTools/SetupSettingsMenu')(this, guild);
 
         if (firstTime) await PermissionHandler.resetPermissions(this, guild);
+
+        this.resetRustplusVariables(guild.id);
     }
 
     async syncCredentialsWithUsers(guild) {
@@ -269,6 +279,7 @@ class DiscordBot extends Discord.Client {
 
         /* Add rustplus instance to Object */
         this.rustplusInstances[guildId] = rustplus;
+        this.activeRustplusInstances[guildId] = true;
 
         rustplus.build();
 
@@ -285,18 +296,34 @@ class DiscordBot extends Discord.Client {
             const instance = this.getInstance(guildId);
             if (!instance) return;
 
-            for (const [key, value] of Object.entries(instance.serverList)) {
-                if (value.active) {
-                    this.createRustplusInstance(
-                        guildId,
-                        value.serverIp,
-                        value.appPort,
-                        value.steamId,
-                        value.playerToken);
-                    break;
-                }
+            if (instance.activeServer !== null && instance.serverList.hasOwnProperty(instance.activeServer)) {
+                this.createRustplusInstance(
+                    guildId,
+                    instance.serverList[instance.activeServer].serverIp,
+                    instance.serverList[instance.activeServer].appPort,
+                    instance.serverList[instance.activeServer].steamId,
+                    instance.serverList[instance.activeServer].playerToken);
             }
         });
+    }
+
+    resetRustplusVariables(guildId) {
+        this.activeRustplusInstances[guildId] = false;
+        this.rustplusReconnecting[guildId] = false;
+        delete this.rustplusMaps[guildId];
+
+        if (this.rustplusReconnectTimers[guildId]) {
+            clearTimeout(this.rustplusReconnectTimers[guildId]);
+            this.rustplusReconnectTimers[guildId] = null;
+        }
+        if (this.rustplusLiteReconnectTimers[guildId]) {
+            clearTimeout(this.rustplusLiteReconnectTimers[guildId]);
+            this.rustplusLiteReconnectTimers[guildId] = null;
+        }
+    }
+
+    isJpgImageChanged(guildId, map) {
+        return ((JSON.stringify(this.rustplusMaps[guildId])) !== (JSON.stringify(map.jpgImage)));
     }
 
     findAvailableTrackerId(guildId) {

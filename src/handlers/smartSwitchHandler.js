@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-    https://github.com/alexemanuelol/rustPlusPlus
+    https://github.com/alexemanuelol/rustplusplus
 
 */
 
@@ -67,7 +67,7 @@ module.exports = {
         /* Go through all Smart Switches and see if the auto day/night setting is on and if it just became day/night */
         if (rustplus.time.isTurnedDay(time)) {
             for (const [entityId, content] of Object.entries(instance.serverList[serverId].switches)) {
-                if (content.autoDayNight === 1) {
+                if (content.autoDayNightOnOff === 1) {
                     instance.serverList[serverId].switches[entityId].active = true;
                     client.setInstance(guildId, instance);
 
@@ -90,7 +90,7 @@ module.exports = {
                     DiscordMessages.sendSmartSwitchMessage(guildId, serverId, entityId);
                     changedSwitches.push(entityId);
                 }
-                else if (content.autoDayNight === 2) {
+                else if (content.autoDayNightOnOff === 2) {
                     instance.serverList[serverId].switches[entityId].active = false;
                     client.setInstance(guildId, instance);
 
@@ -117,7 +117,7 @@ module.exports = {
         }
         else if (rustplus.time.isTurnedNight(time)) {
             for (const [entityId, content] of Object.entries(instance.serverList[serverId].switches)) {
-                if (content.autoDayNight === 1) {
+                if (content.autoDayNightOnOff === 1) {
                     instance.serverList[serverId].switches[entityId].active = false;
                     client.setInstance(guildId, instance);
 
@@ -140,7 +140,7 @@ module.exports = {
                     DiscordMessages.sendSmartSwitchMessage(guildId, serverId, entityId);
                     changedSwitches.push(entityId);
                 }
-                else if (content.autoDayNight === 2) {
+                else if (content.autoDayNightOnOff === 2) {
                     instance.serverList[serverId].switches[entityId].active = true;
                     client.setInstance(guildId, instance);
 
@@ -166,6 +166,61 @@ module.exports = {
             }
         }
 
+        for (const [entityId, content] of Object.entries(instance.serverList[serverId].switches)) {
+            if (rustplus.smartSwitchIntervalCounter !== 0) continue;
+
+            if (content.autoDayNightOnOff === 3) { /* AUTO-ON */
+                if (content.active) continue;
+
+                instance.serverList[serverId].switches[entityId].active = true;
+                client.setInstance(guildId, instance);
+
+                rustplus.interactionSwitches.push(entityId);
+
+                const response = await rustplus.turnSmartSwitchOnAsync(entityId);
+                if (!(await rustplus.isResponseValid(response))) {
+                    if (instance.serverList[serverId].switches[entityId].reachable) {
+                        await DiscordMessages.sendSmartSwitchNotFoundMessage(guildId, serverId, entityId);
+                    }
+                    instance.serverList[serverId].switches[entityId].reachable = false;
+
+                    rustplus.interactionSwitches = rustplus.interactionSwitches.filter(e => e !== entityId);
+                }
+                else {
+                    instance.serverList[serverId].switches[entityId].reachable = true;
+                }
+                client.setInstance(guildId, instance);
+
+                DiscordMessages.sendSmartSwitchMessage(guildId, serverId, entityId);
+                changedSwitches.push(entityId);
+            }
+            else if (content.autoDayNightOnOff === 4) { /* AUTO-OFF */
+                if (!content.active) continue;
+
+                instance.serverList[serverId].switches[entityId].active = false;
+                client.setInstance(guildId, instance);
+
+                rustplus.interactionSwitches.push(entityId);
+
+                const response = await rustplus.turnSmartSwitchOffAsync(entityId);
+                if (!(await rustplus.isResponseValid(response))) {
+                    if (instance.serverList[serverId].switches[entityId].reachable) {
+                        await DiscordMessages.sendSmartSwitchNotFoundMessage(guildId, serverId, entityId);
+                    }
+                    instance.serverList[serverId].switches[entityId].reachable = false;
+
+                    rustplus.interactionSwitches = rustplus.interactionSwitches.filter(e => e !== entityId);
+                }
+                else {
+                    instance.serverList[serverId].switches[entityId].reachable = true;
+                }
+                client.setInstance(guildId, instance);
+
+                DiscordMessages.sendSmartSwitchMessage(guildId, serverId, entityId);
+                changedSwitches.push(entityId);
+            }
+        }
+
         let groupsId = SmartSwitchGroupHandler.getGroupsFromSwitchList(
             client, guildId, serverId, changedSwitches);
 
@@ -179,11 +234,17 @@ module.exports = {
         const serverId = rustplus.serverId;
         const instance = client.getInstance(guildId);
         const switches = instance.serverList[serverId].switches;
-        const commandLowerCase = command.toLowerCase();
         const prefix = rustplus.generalSettings.prefix;
 
         const onCap = client.intlGet(guildId, 'onCap');
         const offCap = client.intlGet(guildId, 'offCap');
+
+        const onEn = client.intlGet('en', 'commandSyntaxOn');
+        const onLang = client.intlGet(guildId, 'commandSyntaxOn');
+        const offEn = client.intlGet('en', 'commandSyntaxOff');
+        const offLang = client.intlGet(guildId, 'commandSyntaxOff');
+        const statusEn = client.intlGet('en', 'commandSyntaxStatus');
+        const statusLang = client.intlGet(guildId, 'commandSyntaxStatus');
 
         const entityId = Object.keys(switches).find(e =>
             command === `${prefix}${switches[e].command}` ||
@@ -192,11 +253,14 @@ module.exports = {
         if (!entityId) return false;
 
         const entityCommand = `${prefix}${switches[entityId].command}`;
-        const rest = command.replace(`${entityCommand} on`, '').replace(`${entityCommand} off`, '')
-            .replace(`${entityCommand}`, '').trim();
+        let rest = command.replace(`${entityCommand} ${onEn}`, '');
+        rest = rest.replace(`${entityCommand} ${onLang}`, '');
+        rest = rest.replace(`${entityCommand} ${offEn}`, '');
+        rest = rest.replace(`${entityCommand} ${offLang}`, '');
+        rest = rest.replace(`${entityCommand}`, '').trim();
 
         let active;
-        if (command.startsWith(`${entityCommand} on`)) {
+        if (command.startsWith(`${entityCommand} ${onEn}`) || command.startsWith(`${entityCommand} ${onLang}`)) {
             if (!switches[entityId].active) {
                 active = true;
             }
@@ -204,7 +268,7 @@ module.exports = {
                 return true;
             }
         }
-        else if (command.startsWith(`${entityCommand} off`)) {
+        else if (command.startsWith(`${entityCommand} ${offEn}`) || command.startsWith(`${entityCommand} ${offLang}`)) {
             if (switches[entityId].active) {
                 active = false;
             }
@@ -212,7 +276,7 @@ module.exports = {
                 return true;
             }
         }
-        else if (command === `${entityCommand} status`) {
+        else if (command === `${entityCommand} ${statusEn}` || command === `${entityCommand} ${statusLang}`) {
             const info = await rustplus.getEntityInfoAsync(entityId);
             if (!(await rustplus.isResponseValid(info))) {
                 switches[entityId].reachable = false;

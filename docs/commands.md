@@ -10,17 +10,19 @@
 Slash Command | Description
 ------------- | -----------
 [**/alarm**](commands.md#alarm) | Operations on Smart Alarms.
-[**/credentials**](commands.md#credentials) | Set/Clear the FCM Credentials for the user account.
 [**/cctv**](commands.md#cctv) | Posts CCTV codes for a monument.
+[**/credentials**](commands.md#credentials) | Set/Clear the FCM Credentials for the user account.
 [**/help**](commands.md#help) | Display help message.
 [**/leader**](commands.md#leader) | Give or take the leadership from/to a team member.
 [**/map**](commands.md#map) | Get the currently connected server map image.
 [**/market**](commands.md#market) | Operations for In-Game Vending Machines.
 [**/players**](commands.md#players) | Get player/players information based on battlemetrics.
 [**/reset**](commands.md#reset) | Reset Discord channels.
-[**/role**](commands.md#role) | Set/Clear a specific role that will be able to see the rustPlusPlus category content.
+[**/role**](commands.md#role) | Set/Clear a specific role that will be able to see the rustplusplus category content.
 [**/storagemonitor**](commands.md#storagemonitors) | Operations on Storage Monitors.
 [**/switch**](commands.md#switch) | Operations on Smart Switches.
+[**/uptime**](commands.md#uptime) | Display uptime of the bot and server.
+[**/voice**](commands.md#voice) | Operations on Voice Feature.
 
 
 ## **/alarm**
@@ -34,6 +36,17 @@ Subcommand | Options | Description | Required
 &nbsp; | `image` | Set the image that best represent the Smart Alarm. | `True`
 
 ![Discord Slash Command alarm Image](images/alarms_edit.png)
+
+
+## **/cctv**
+
+> **Posts CCTV codes for a monument.**
+
+Subcommand | Options | Description | Required
+---------- | ------- | ----------- | --------
+&nbsp; | `monument` | Rust monument. | `True`
+
+![Discord Slash Command monument Image](images/cctv.png)
 
 
 ## **/credentials**
@@ -62,15 +75,6 @@ Subcommand | Options | Description | Required
 
 ![Discord Slash Command credentials Image](images/credentials.png)
 
-## **/cctv**
-
-> **Posts CCTV codes for a monument.**
-
-Subcommand | Options | Description | Required
----------- | ------- | ----------- | --------
-&nbsp; | `monument` | Rust monument. | `True`
-
-![Discord Slash Command monument Image](images/cctv.png)
 
 ## **/help**
 
@@ -106,17 +110,20 @@ Subcommand | Options | Description | Required
 
 ## **/market**
 
-> **Operations for In-Game Vending Machines.**. Item subscription is currently not implemented.
+> **Operations for In-Game Vending Machines.**.
 
 Subcommand | Options | Description | Required
 ---------- | ------- | ----------- | --------
 `search` | &nbsp; | Search for an item in Vending Machines. | &nbsp;
+&nbsp; | `order` | The order type to search for (all, buy, sell). | `True`
 &nbsp; | `name` | The name of the item to search for. | `False`
 &nbsp; | `id` | The ID of the item to search for. | `False`
 `subscribe` | &nbsp; | Subscribe to an item in Vending Machines. | &nbsp;
+&nbsp; | `order` | The order type (all, buy, sell). | `True`
 &nbsp; | `name` | The name of the item to subscribe to. | `False`
 &nbsp; | `id` | The ID of the item to subscribe to. | `False`
 `unsubscribe` | &nbsp; | Unsubscribe to an item in Vending Machines. | &nbsp;
+&nbsp; | `order` | The order type (all, buy, sell). | `True`
 &nbsp; | `name` | The name of the item to unsubscribe to. | `False`
 &nbsp; | `id` | The ID of the item to unsubscribe to. | `False`
 `list` | &nbsp; | Display the subscription list. | &nbsp;
@@ -155,13 +162,13 @@ Subcommand | Options | Description | Required
 
 ## **/role**
 
-> **Set/Clear a specific role that will be able to see the rustPlusPlus category content.**
+> **Set/Clear a specific role that will be able to see the rustplusplus category content.**
 
 Subcommand | Options | Description | Required
 ---------- | ------- | ----------- | --------
 `set` | &nbsp; | Set the role. | &nbsp;
-&nbsp; | `role` | The role rustPlusPlus channels will be visible to. | `True`
-`clear` | &nbsp; | Clear the role (to allow everyone to see the rustPlusPlus channels). | &nbsp;
+&nbsp; | `role` | The role rustplusplus channels will be visible to. | `True`
+`clear` | &nbsp; | Clear the role (to allow everyone to see the rustplusplus channels). | &nbsp;
 
 ![Discord Slash Command role Image](images/role.png)
 
@@ -191,6 +198,28 @@ Subcommand | Options | Description | Required
 
 ![Discord Slash Command switch Image](images/switch.png)
 
+## **/uptime**
+
+> **Display uptime of the bot and server.**
+
+Subcommand | Options | Description | Required
+---------- | ------- | ----------- | --------
+`bot` | &nbsp; | Display uptime of bot. | &nbsp;
+`server` | &nbsp; | Display uptime of server. | &nbsp;
+
+![Discord Slash Command uptime Image](images/uptime.png)
+
+## **/voice**
+
+> **Operations on Voice Feature.**
+
+Subcommand | Options | Description | Required
+---------- | ------- | ----------- | --------
+`join` | &nbsp; | Bot Joins a Voicechannel. | &nbsp;
+`leave` | &nbsp; | Bot Leaves a Voicechannel. | &nbsp;
+
+![Discord Slash Command uptime Image](images/voice.png)
+
 
 # In-Game Commands
 
@@ -198,12 +227,11 @@ In-Game Command | Description
 --------------- | -----------
 [**afk**](commands.md#afk) | Get the currently afk players in your team.
 [**alive**](commands.md#alive) | Get the player with the longest time alive.
-[**bradley**](commands.md#bradley) | Get information about Bradley APC (Time till respawn, time since last destroyed).
-[**cargo**](commands.md#cargo) | Get information about CargoShip (Location, time till enters egress stage, current crates, time since last on map).
+[**cargo**](commands.md#cargo) | Get information about CargoShip (Location, time till enters egress stage, time since last on map).
 [**chinook**](commands.md#chinook) | Get information about Chinook 47 (Location, time since last on map).
 [**connection/connections**](commands.md#connectionconnections) | Get recent connection events.
-[**crate**](commands.md#crate) | Get information about Locked Crate dropped by Chinook47 (Location, time till despawn, time since last dropped).
 [**death/deaths**](commands.md#deathdeaths) | Get recent death events.
+[**decay**](commands.md#decay) | Get time before structure decay.
 [**heli**](commands.md#heli) | Get information about Patrol Helicopter (Location, time since last downed, time since last on map).
 [**large**](commands.md#large) | Get information about Large Oil Rig (Time till crate unlocks, time since last trigger).
 [**leader**](commands.md#leader-1) | Give/Take the Team Leadership.
@@ -218,6 +246,8 @@ In-Game Command | Description
 [**prox**](commands.md#prox) | Get the distance to the three closest teammates.
 [**send**](commands.md#send) | Send a message to a discord user.
 [**small**](commands.md#small) | Get information about Small Oil Rig (Time till crate unlocks, time since last trigger).
+[**steamid**](commands.md#steamid) | Get the steamid of a teammate.
+[**team**](commands.md#team) | Get the names of all members in the team.
 [**time**](commands.md#time) | Get the current time In-Game and time till day/night.
 [**timer**](commands.md#timer) | Set custom timers that will notify whenever the timer have expired.
 [**tr**](commands.md#tr) | Translate a text to another language.
@@ -225,6 +255,7 @@ In-Game Command | Description
 [**tts**](commands.md#tts) | Send a Text-To-Speech message to the Discord teamchat channel.
 [**unmute**](commands.md#unmute) | Unmute the bot from the In-Game Team Chat.
 [**upkeep**](commands.md#upkeep) | Get the upkeep time of all connected tool cupboard monitors.
+[**uptime**](commands.md#uptime-ingame) | Display uptime of the bot and server.
 [**wipe**](commands.md#wipe) | Get the time since it was wiped.
 
 
@@ -246,24 +277,9 @@ In-Game Command | Description
 ![In-Game Command alive Image](images/alive_ingame.png)
 
 
-## **bradley**
-
-> **Get information about Bradley APC (Time till respawn, time since last destroyed).**
-<br>Command: `!bradley`
-
-![In-Game Command bradley Image](images/bradley_ingame.png)
-
-
-## **cam**
-> **Scan individual cameras or group of cameras to detect players or scientists.** The available camera groups are: airfield, bandit, dome, large, outpost, small.
-<br>Command: `!cam large`, `!cam OILRIG2HELI`, `!cam TESTCAMERA`
-
-![In-Game Command cam Image](images/cam_ingame.png)
-
-
 ## **cargo**
 
-> **Get information about CargoShip (Location, time till enters egress stage, current crates, time since last on map).**
+> **Get information about CargoShip (Location, time till enters egress stage, time since last on map).**
 <br>Command: `!cargo`
 
 ![In-Game Command cargo Image](images/cargo_ingame.png)
@@ -286,14 +302,6 @@ In-Game Command | Description
 ![In-Game Command connection Image](images/connection_ingame.png)
 
 
-## **crate**
-
-> **Get information about Locked Crate dropped by Chinook47 (Location, time till despawn, time since last dropped).**
-<br>Command: `!crate`
-
-![In-Game Command crate Image](images/crate_ingame.png)
-
-
 ## **death/deaths**
 
 > **Get recent death events of the team or from a specific teammate.**
@@ -301,6 +309,16 @@ In-Game Command | Description
 <br>Command: `!death Alle`
 
 ![In-Game Command death Image](images/death_ingame.png)
+
+
+# **decay**
+
+> **Get time before structure decay.**
+<br>Command: `!decay`
+<br>Command: `!decay stone 100`
+<br>Command: `!decay armored 1000`
+
+![In-Game Command decay Image](images/decay_ingame.png)
 
 
 ## **heli**
@@ -347,12 +365,17 @@ Subcommand | Description | Required
 ## **market ingame**
 
 > **Search for items in vending machines or subscribe/unsubscribe to items.**
+<br>Command: `!market search sell Thompson`
+<br>Command: `!market sub sell m249`
+<br>Command: `!market sub all Scrap`
+<br>Command: `!market unsub sell m249`
+<br>Command: `!market list`
 
 Subcommand | Description | Required
 ---------- | ----------- | --------
-`search` | Search for an item in Vending Machines (`!market search thompson`). | `False`
-`subscribe` | Subscribe to an item in Vending Machines (`!market sub thompson`). | `False`
-`unsubscribe` | Unsubscribe to an item in Vending Machines (`!market unsub thompson`). | `False`
+`search` | Search for an item in Vending Machines (`!market search sell thompson`). | `False`
+`sub` | Subscribe to an item in Vending Machines (`!market sub all thompson`). | `False`
+`unsub` | Unsubscribe to an item in Vending Machines (`!market unsub sell thompson`). | `False`
 `list` | Display the subscription list (`!market list`). | `False`
 
 ![In-Game Command market Image](images/market_ingame.png)
@@ -433,6 +456,25 @@ Subcommand | Description | Required
 ![In-Game Command small Image](images/small_ingame.png)
 
 
+## **steamid**
+
+> **Get the steamid of a teammate.**
+
+Subcommand | Description | Required
+---------- | ----------- | --------
+`<team_member_name>` | The name or part of the name of a team member (`!steamid <name>`). | `False`
+
+![In-Game Command steamid Image](images/steamid_ingame.png)
+
+
+## **team**
+
+> **Get the names of all members in the team.**
+<br>Command: `!team`
+
+![In-Game Command team Image](images/team_ingame.png)
+
+
 ## **time**
 
 > **Get the current time In-Game and time till day/night.**
@@ -497,6 +539,14 @@ Subcommand | Description | Required
 <br>Command: `!upkeep`
 
 ![In-Game Command upkeep Image](images/upkeep_ingame.png)
+
+
+## **uptime ingame**
+
+> **Display the uptime of the bot and server.**
+<br>Command: `!uptime`
+
+![In-Game Command uptime Image](images/uptime_ingame.png)
 
 
 ## **wipe**

@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-    https://github.com/alexemanuelol/rustPlusPlus
+    https://github.com/alexemanuelol/rustplusplus
 
 */
 
@@ -23,15 +23,13 @@ module.exports = {
         return [
             client.intlGet(guildId, 'commandSyntaxAfk'),
             client.intlGet(guildId, 'commandSyntaxAlive'),
-            client.intlGet(guildId, 'commandSyntaxBradley'),
-            client.intlGet(guildId, 'commandSyntaxCam'),
             client.intlGet(guildId, 'commandSyntaxCargo'),
             client.intlGet(guildId, 'commandSyntaxChinook'),
             client.intlGet(guildId, 'commandSyntaxConnection'),
             client.intlGet(guildId, 'commandSyntaxConnections'),
-            client.intlGet(guildId, 'commandSyntaxCrate'),
             client.intlGet(guildId, 'commandSyntaxDeath'),
             client.intlGet(guildId, 'commandSyntaxDeaths'),
+            client.intlGet(guildId, 'commandSyntaxDecay'),
             client.intlGet(guildId, 'commandSyntaxHeli'),
             client.intlGet(guildId, 'commandSyntaxLarge'),
             client.intlGet(guildId, 'commandSyntaxLeader'),
@@ -49,6 +47,8 @@ module.exports = {
             client.intlGet(guildId, 'commandSyntaxProx'),
             client.intlGet(guildId, 'commandSyntaxSend'),
             client.intlGet(guildId, 'commandSyntaxSmall'),
+            client.intlGet(guildId, 'commandSyntaxSteamid'),
+            client.intlGet(guildId, 'commandSyntaxTeam'),
             client.intlGet(guildId, 'commandSyntaxTime'),
             client.intlGet(guildId, 'commandSyntaxTimer'),
             client.intlGet(guildId, 'commandSyntaxTimers'),
@@ -57,18 +57,17 @@ module.exports = {
             client.intlGet(guildId, 'commandSyntaxTTS'),
             client.intlGet(guildId, 'commandSyntaxUnmute'),
             client.intlGet(guildId, 'commandSyntaxUpkeep'),
+            client.intlGet(guildId, 'commandSyntaxUptime'),
             client.intlGet(guildId, 'commandSyntaxWipe'),
             client.intlGet('en', 'commandSyntaxAfk'),
             client.intlGet('en', 'commandSyntaxAlive'),
-            client.intlGet('en', 'commandSyntaxBradley'),
-            client.intlGet('en', 'commandSyntaxCam'),
             client.intlGet('en', 'commandSyntaxCargo'),
             client.intlGet('en', 'commandSyntaxChinook'),
             client.intlGet('en', 'commandSyntaxConnection'),
             client.intlGet('en', 'commandSyntaxConnections'),
-            client.intlGet('en', 'commandSyntaxCrate'),
             client.intlGet('en', 'commandSyntaxDeath'),
             client.intlGet('en', 'commandSyntaxDeaths'),
+            client.intlGet('en', 'commandSyntaxDecay'),
             client.intlGet('en', 'commandSyntaxHeli'),
             client.intlGet('en', 'commandSyntaxLarge'),
             client.intlGet('en', 'commandSyntaxLeader'),
@@ -86,6 +85,8 @@ module.exports = {
             client.intlGet('en', 'commandSyntaxProx'),
             client.intlGet('en', 'commandSyntaxSend'),
             client.intlGet('en', 'commandSyntaxSmall'),
+            client.intlGet('en', 'commandSyntaxSteamid'),
+            client.intlGet('en', 'commandSyntaxTeam'),
             client.intlGet('en', 'commandSyntaxTime'),
             client.intlGet('en', 'commandSyntaxTimer'),
             client.intlGet('en', 'commandSyntaxTimers'),
@@ -94,6 +95,7 @@ module.exports = {
             client.intlGet('en', 'commandSyntaxTTS'),
             client.intlGet('en', 'commandSyntaxUnmute'),
             client.intlGet('en', 'commandSyntaxUpkeep'),
+            client.intlGet('en', 'commandSyntaxUptime'),
             client.intlGet('en', 'commandSyntaxWipe')
         ];
     },
@@ -103,6 +105,10 @@ module.exports = {
 
         let list = [];
         list = [...module.exports.getListOfCommandKeywords(client, guildId)];
+        for (const [id, value] of Object.entries(instance.serverList[serverId].alarms)) {
+            list.push(value.command);
+        }
+
         for (const [id, value] of Object.entries(instance.serverList[serverId].switches)) {
             list.push(value.command);
         }

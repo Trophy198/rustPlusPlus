@@ -14,13 +14,14 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-    https://github.com/alexemanuelol/rustPlusPlus
+    https://github.com/alexemanuelol/rustplusplus
 
 */
 
 const Discord = require('discord.js');
 const Path = require('path');
 
+const Constants = require('../util/constants.js');
 const Client = require('../../index.ts');
 const DiscordButtons = require('./discordButtons.js');
 const DiscordEmbeds = require('./discordEmbeds.js');
@@ -173,7 +174,7 @@ module.exports = {
             embeds: [DiscordEmbeds.getSmartSwitchGroupEmbed(guildId, serverId, groupId)],
             components: DiscordButtons.getSmartSwitchGroupButtons(guildId, serverId, groupId),
             files: [new Discord.AttachmentBuilder(
-                Path.join(__dirname, '..', 'resources/images/electrics/smart_switch.png'))]
+                Path.join(__dirname, '..', `resources/images/electrics/${group.image}`))]
         }
 
         const message = await module.exports.sendMessage(guildId, content, group.messageId,
@@ -321,7 +322,7 @@ module.exports = {
         const content = {
             embeds: [DiscordEmbeds.getServerWipeDetectedEmbed(guildId, serverId)],
             files: [new Discord.AttachmentBuilder(
-                Path.join(__dirname, '..', `resources/images/maps/${guildId}_map_full.png`))],
+                Path.join(__dirname, '..', '..', `maps/${guildId}_map_full.png`))],
             content: instance.generalSettings.mapWipeNotifyEveryone ? '@everyone' : ''
         }
 
@@ -343,7 +344,7 @@ module.exports = {
 
         const content = {
             files: [new Discord.AttachmentBuilder(
-                Path.join(__dirname, '..', `resources/images/maps/${guildId}_map_full.png`))]
+                Path.join(__dirname, '..', '..', `maps/${guildId}_map_full.png`))]
         }
 
         const message = await module.exports.sendMessage(guildId, content, instance.informationMessageId.map,
@@ -355,11 +356,11 @@ module.exports = {
         }
     },
 
-    sendDiscordEventMessage: async function (guildId, serverId, text, image) {
+    sendDiscordEventMessage: async function (guildId, serverId, text, image, color) {
         const instance = Client.client.getInstance(guildId);
 
         const content = {
-            embeds: [DiscordEmbeds.getEventEmbed(guildId, serverId, text, image)],
+            embeds: [DiscordEmbeds.getEventEmbed(guildId, serverId, text, image, color)],
             files: [new Discord.AttachmentBuilder(
                 Path.join(__dirname, '..', `resources/images/events/${image}`))]
         }
@@ -367,12 +368,15 @@ module.exports = {
         await module.exports.sendMessage(guildId, content, null, instance.channelId.events);
     },
 
-    sendActivityNotificationMessage: async function (guildId, serverId, color, text, steamId) {
+    sendActivityNotificationMessage: async function (guildId, serverId, color, text, steamId, title = null) {
         const instance = Client.client.getInstance(guildId);
 
-        const png = await Scrape.scrapeSteamProfilePicture(Client.client, steamId);
+        let png = null;
+        if (steamId !== null) {
+            png = await Scrape.scrapeSteamProfilePicture(Client.client, steamId);
+        }
         const content = {
-            embeds: [DiscordEmbeds.getActivityNotificationEmbed(guildId, serverId, color, text, steamId, png)]
+            embeds: [DiscordEmbeds.getActivityNotificationEmbed(guildId, serverId, color, text, steamId, png, title)]
         }
 
         await module.exports.sendMessage(guildId, content, null, instance.channelId.activity);
@@ -381,11 +385,20 @@ module.exports = {
     sendTeamChatMessage: async function (guildId, message) {
         const instance = Client.client.getInstance(guildId);
 
+        let color = Constants.COLOR_TEAMCHAT_DEFAULT;
+        if (instance.teamChatColors.hasOwnProperty(message.steamId)) {
+            color = instance.teamChatColors[message.steamId];
+        }
+
         const content = {
             embeds: [DiscordEmbeds.getEmbed({
-                color: message.color,
+                color: color,
                 description: `**${message.name}**: ${message.message}`
             })]
+        }
+
+        if (message.message.includes('@everyone')) {
+            content.content = '@everyone';
         }
 
         await module.exports.sendMessage(guildId, content, null, instance.channelId.teamchat);
@@ -407,7 +420,7 @@ module.exports = {
 
         const content = {
             files: [new Discord.AttachmentBuilder(
-                Path.join(__dirname, '..', `resources/images/maps/${rustplus.guildId}_map_full.png`))]
+                Path.join(__dirname, '..', '..', `maps/${rustplus.guildId}_map_full.png`))]
         }
 
         const message = await module.exports.sendMessage(rustplus.guildId, content,
@@ -521,5 +534,23 @@ module.exports = {
         }
 
         await Client.client.interactionReply(interaction, content);
+    },
+
+    sendUptimeMessage: async function (interaction, uptime) {
+        const content = {
+            embeds: [DiscordEmbeds.getUptimeEmbed(interaction.guildId, uptime)],
+            ephemeral: true
+        }
+
+        await Client.client.interactionEditReply(interaction, content);
+    },
+
+    sendVoiceMessage: async function (interaction, state) {
+        const content = {
+            embeds: [DiscordEmbeds.getVoiceEmbed(interaction.guildId, state)],
+            ephemeral: true
+        }
+
+        await Client.client.interactionEditReply(interaction, content);
     },
 }

@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-    https://github.com/alexemanuelol/rustPlusPlus
+    https://github.com/alexemanuelol/rustplusplus
 
 */
 
@@ -26,15 +26,15 @@ const PollingHandler = require('../handlers/pollingHandler.js');
 module.exports = {
     name: 'connected',
     async execute(rustplus, client) {
-        if (!rustplus.isServerAvailable()) return rustplus.deleteThisServer();
+        if (!rustplus.isServerAvailable()) return rustplus.deleteThisRustplusInstance();
 
         rustplus.log(client.intlGet(null, 'connectedCap'), client.intlGet(null, 'connectedToServer'));
-        rustplus.isConnected = true;
-        rustplus.isConnectionRefused = false;
 
         const instance = client.getInstance(rustplus.guildId);
         const guildId = rustplus.guildId;
         const serverId = rustplus.serverId;
+
+        rustplus.uptimeServer = new Date();
 
         /* Start the token replenish task */
         rustplus.tokensReplenishTaskId = setInterval(rustplus.replenishTokens.bind(rustplus), 1000);
@@ -45,32 +45,53 @@ module.exports = {
             rustplus.log(client.intlGet(null, 'errorCap'),
                 client.intlGet(null, 'somethingWrongWithConnection'), 'error');
 
-            instance.serverList[serverId].active = false;
+            instance.activeServer = null;
             client.setInstance(guildId, instance);
 
             await DiscordMessages.sendServerConnectionInvalidMessage(guildId, serverId);
             await DiscordMessages.sendServerMessage(guildId, serverId, null);
 
+            client.resetRustplusVariables(guildId);
+
             rustplus.disconnect();
-            delete client.rustplusInstances[guildId]; // TODO: move to disconnected.js?
+            delete client.rustplusInstances[guildId];
             return;
         }
         rustplus.log(client.intlGet(null, 'connectedCap'), client.intlGet(null, 'rustplusOperational'));
 
         const info = await rustplus.getInfoAsync();
         if (await rustplus.isResponseValid(info)) rustplus.info = new Info(info.info)
-        if (!rustplus.map) rustplus.map = new Map(map.map, rustplus);
 
-        let mapWiped = false;
-        if (rustplus.map.isJpgImageChanged(map.map)) mapWiped = true;
+        if (client.rustplusMaps.hasOwnProperty(guildId)) {
+            if (client.isJpgImageChanged(guildId, map.map)) {
+                rustplus.map = new Map(map.map, rustplus);
 
-        await rustplus.map.updateMap(map.map);
-        await rustplus.map.writeMap(false, true);
-        if (mapWiped) await DiscordMessages.sendServerWipeDetectedMessage(guildId, serverId);
-        await DiscordMessages.sendInformationMapMessage(guildId);
+                await rustplus.map.writeMap(false, true);
+                await DiscordMessages.sendServerWipeDetectedMessage(guildId, serverId);
+                await DiscordMessages.sendInformationMapMessage(guildId);
+            }
+            else {
+                rustplus.map = new Map(map.map, rustplus);
 
-        if (rustplus.isReconnecting) {
-            rustplus.isReconnecting = false;
+                await rustplus.map.writeMap(false, true);
+                await DiscordMessages.sendInformationMapMessage(guildId);
+            }
+        }
+        else {
+            rustplus.map = new Map(map.map, rustplus);
+
+            await rustplus.map.writeMap(false, true);
+            await DiscordMessages.sendInformationMapMessage(guildId);
+        }
+
+        if (client.rustplusReconnecting[guildId]) {
+            client.rustplusReconnecting[guildId] = false;
+
+            if (client.rustplusReconnectTimers[guildId]) {
+                clearTimeout(client.rustplusReconnectTimers[guildId]);
+                client.rustplusReconnectTimers[guildId] = null;
+            }
+
             await DiscordMessages.sendServerChangeStateMessage(guildId, serverId, 0);
         }
 

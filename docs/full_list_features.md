@@ -1,12 +1,10 @@
 # Full list of Features
 
 * Receive notifications for In-Game Events
-    - `Cargo Ship` - When it spawns, despawns, how long before it enters egress stage, how many crates are on it and when they are looted. How long time since it was last out.
-    - `Patrol Helicopter` - When it spawns, despawns or gets taken down. How long time since it was last out and how long since it was taken down.
-    - `Bradley APC` - When it gets destroyed, time left before it respawns, how long since it was last destroyed.
-    - `Locked Crate` - When it get's dropped at a monument or somewhere else and how long before it despawns as well as when it gets looted.
+    - `Cargo Ship` - When it spawns, despawns, how long before it enters egress stage. How long time since it was last out. route-trace.
+    - `Patrol Helicopter` - When it spawns, despawns or gets taken down. How long time since it was last out and how long since it was taken down. route-trace.
     - `Chinook 47` - When it enters map and when it leaves.
-    - `Oil Rigs` - When Oil Rig calls in Heavy Scientists and how long till the Locked Crate unlocks and when it gets looted, respawns or refreshes.
+    - `Oil Rigs` - When Oil Rig calls in Heavy Scientists and how long till the Locked Crate unlocks.
     - `Vending Machine` - Whenever a new Vending Machine appears on the map.
 * Control [Smart Switches](smart_devices.md#smart-switches) or Groups of Smart Switches via Discord or In-Game Team Chat.
     - Turn a Switch ON/OFF with a interaction button in Discord.
@@ -22,6 +20,7 @@
 * Get notified whenever a Smart Device cannot be reached (might be destroyed).
 * Get notified whenever a Server have wiped and get the latest map image sent to Discord.
 * Get information about the population of the server as well as queue size.
+* Get steamid of teammates from a command.
 * Get the current In-Game time and how long before nightfall/daybreak.
 * Get information about how long since wipe.
 * Get map information such as map size, map seed, map salt and map name.
@@ -46,6 +45,7 @@
 * Get the currently alive teammates.
 * Get the currently online teammates.
 * Get the currently offline teammates.
+* Check time before structure decay via command.
 * Set custom markers on the map and navigate to them at a later stage.
 * Create notes to remind yourself or your teammates about things to do.
 * Get the three closest teammates with the `prox` command.
@@ -54,4 +54,3 @@
 * Send a Text-To-Speech message from in-game to Discord teamchat channel.
 * Check the upkeep of all Tool Cupboard via the `upkeep` command.
 * Get Facepunch news in Discord.
-* Scan CCTV cameras for players and scientists.

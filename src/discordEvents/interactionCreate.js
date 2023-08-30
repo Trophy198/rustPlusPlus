@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-    https://github.com/alexemanuelol/rustPlusPlus
+    https://github.com/alexemanuelol/rustplusplus
 
 */
 
@@ -44,7 +44,7 @@ module.exports = {
         if (interaction.isButton()) {
             require('../handlers/buttonHandler')(client, interaction);
         }
-        else if (interaction.isSelectMenu()) {
+        else if (interaction.isStringSelectMenu()) {
             require('../handlers/selectMenuHandler')(client, interaction);
         }
         else if (interaction.type === Discord.InteractionType.ApplicationCommand) {

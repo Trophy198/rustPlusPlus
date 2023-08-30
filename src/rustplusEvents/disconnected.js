@@ -14,28 +14,31 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-    https://github.com/alexemanuelol/rustPlusPlus
+    https://github.com/alexemanuelol/rustplusplus
 
 */
 
 const DiscordMessages = require('../discordTools/discordMessages.js');
 
+const Config = require('../../config');
+
 module.exports = {
     name: 'disconnected',
     async execute(rustplus, client) {
-        if (!rustplus.isServerAvailable()) return rustplus.deleteThisServer();
+        if (!rustplus.isServerAvailable() && !rustplus.isDeleted) {
+            rustplus.deleteThisRustplusInstance();
+        }
 
         rustplus.log(client.intlGet(null, 'disconnectedCap'), client.intlGet(null, 'disconnectedFromServer'));
-        rustplus.isConnected = false;
-        rustplus.isOperational = false;
-        rustplus.isFirstPoll = true;
 
-        const instance = client.getInstance(rustplus.guildId);
         const guildId = rustplus.guildId;
         const serverId = rustplus.serverId;
-        const server = instance.serverList[serverId];
 
         if (rustplus.leaderRustPlusInstance !== null) {
+            if (client.rustplusLiteReconnectTimers[guildId]) {
+                clearTimeout(client.rustplusLiteReconnectTimers[guildId]);
+                client.rustplusLiteReconnectTimers[guildId] = null;
+            }
             rustplus.leaderRustPlusInstance.isActive = false;
             rustplus.leaderRustPlusInstance.disconnect();
             rustplus.leaderRustPlusInstance = null;
@@ -50,28 +53,36 @@ module.exports = {
 
         /* Stop all custom timers */
         for (const [id, timer] of Object.entries(rustplus.timers)) timer.timer.stop();
-        rustplus.timers = new Object();
-
-        /* Reset time variables */
-        rustplus.passedFirstSunriseOrSunset = false;
-        rustplus.startTimeObject = new Object();
-
-        rustplus.markers = new Object();
-        rustplus.informationIntervalCounter = 0;
-        rustplus.interactionSwitches = [];
 
         if (rustplus.isDeleted) return;
 
-        if (server.active && !rustplus.isConnectionRefused) {
-            if (!rustplus.isReconnecting) {
+        /* Was the disconnection unexpected? */
+        if (client.activeRustplusInstances[guildId]) {
+            if (!client.rustplusReconnecting[guildId]) {
                 await DiscordMessages.sendServerChangeStateMessage(guildId, serverId, 1);
                 await DiscordMessages.sendServerMessage(guildId, serverId, 2);
             }
 
-            rustplus.isReconnecting = true;
+            client.rustplusReconnecting[guildId] = true;
 
             rustplus.log(client.intlGet(null, 'reconnectingCap'), client.intlGet(null, 'reconnectingToServer'));
-            rustplus.connect();
+
+            delete client.rustplusInstances[guildId];
+
+            if (client.rustplusReconnectTimers[guildId]) {
+                clearTimeout(client.rustplusReconnectTimers[guildId]);
+                client.rustplusReconnectTimers[guildId] = null;
+            }
+
+            client.rustplusReconnectTimers[guildId] = setTimeout(
+                client.createRustplusInstance.bind(client),
+                Config.general.reconnectIntervalMs,
+                guildId,
+                rustplus.server,
+                rustplus.port,
+                rustplus.playerId,
+                rustplus.playerToken
+            );
         }
     },
 };

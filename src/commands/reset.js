@@ -14,7 +14,7 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-	https://github.com/alexemanuelol/rustPlusPlus
+	https://github.com/alexemanuelol/rustplusplus
 
 */
 
@@ -76,6 +76,8 @@ module.exports = {
 
 		switch (interaction.options.getSubcommand()) {
 			case 'discord': {
+				await require('../discordTools/RemoveGuildChannels')(client, guild);
+
 				const category = await require('../discordTools/SetupGuildCategory')(client, guild);
 				await require('../discordTools/SetupGuildChannels')(client, guild, category);
 

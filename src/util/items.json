@@ -29,6 +29,11 @@
         "name": "Burlap Gloves",
         "description": "Basic burlap gloves, offering protection from the elements"
     },
+    "22947882": {
+        "shortname": "whiteidtag",
+        "name": "White ID Tag",
+        "description": "White ID Tag"
+    },
     "23352662": {
         "shortname": "sign.hanging.banner.large",
         "name": "Large Banner Hanging",
@@ -79,10 +84,25 @@
         "name": "Metal Fragments",
         "description": "Metal Fragments. Smelted from Metal Ore, used in lots of different crafting recipes."
     },
+    "70102328": {
+        "shortname": "redidtag",
+        "name": "Red ID Tag",
+        "description": "Red ID Tag"
+    },
     "73681876": {
         "shortname": "techparts",
         "name": "Tech Trash",
         "description": "A collection of random tech parts."
+    },
+    "81423963": {
+        "shortname": "yellowidtag",
+        "name": "Yellow ID Tag",
+        "description": "Yellow ID Tag"
+    },
+    "86840834": {
+        "shortname": "hazmatsuit_scientist_nvgm",
+        "name": "NVGM Scientist Suit",
+        "description": "A hazmat suit made from radiation resistant rubber."
     },
     "95950017": {
         "shortname": "metalpipe",
@@ -153,6 +173,11 @@
         "shortname": "scarecrow",
         "name": "Scarecrow",
         "description": "Get into the halloween spirit with this decorative deployable item."
+    },
+    "180752235": {
+        "shortname": "pinkidtag",
+        "name": "Pink ID Tag",
+        "description": "Pink ID Tag"
     },
     "185586769": {
         "shortname": "innertube.horse",
@@ -358,6 +383,11 @@
         "shortname": "halloween.lootbag.large",
         "name": "Large Loot Bag",
         "description": "A massive haul. Contains the best halloween loot"
+    },
+    "486661382": {
+        "shortname": "clantable",
+        "name": "Clan Table",
+        "description": "A table for managing clans."
     },
     "491263800": {
         "shortname": "hazmatsuit.nomadsuit",
@@ -839,6 +869,11 @@
         "name": "Blue Dog Tags",
         "description": "Blue Dog Tags"
     },
+    "1046904719": {
+        "shortname": "diverhatchet",
+        "name": "Abyss Metal Hatchet",
+        "description": "Metal hatchet, reclaimed from the abyss, perfect for survival and crafting"
+    },
     "1052926200": {
         "shortname": "mining.quarry",
         "name": "Mining Quarry",
@@ -1154,6 +1189,11 @@
         "name": "Snow Machine",
         "description": "A machine which will blanket the surrounding terrain in snow."
     },
+    "1364514421": {
+        "shortname": "blueidtag",
+        "name": "Blue ID Tag",
+        "description": "Blue ID Tag"
+    },
     "1366282552": {
         "shortname": "burlap.gloves",
         "name": "Leather Gloves",
@@ -1399,6 +1439,16 @@
         "name": "Engine Vehicle Module",
         "description": "Single module large engine."
     },
+    "1559915778": {
+        "shortname": "horse.saddle.single",
+        "name": "Single Horse Saddle",
+        "description": "A horse saddle with one seat. Having this item allows you to claim a horse in a stable by holding E and selecting the \"Claim\" option"
+    },
+    "1561022037": {
+        "shortname": "diverpickaxe",
+        "name": "Abyss Metal Pickaxe",
+        "description": "Plucked from the abyss, this Metal Pickaxe is a prized possession for any survivor"
+    },
     "1568388703": {
         "shortname": "diesel_barrel",
         "name": "Diesel Fuel",
@@ -1604,6 +1654,11 @@
         "name": "Silver Egg",
         "description": "A Silver Egg. Contains medium level loot, Collect 10 to upgrade to a gold Egg"
     },
+    "1762167092": {
+        "shortname": "greenidtag",
+        "name": "Green ID Tag",
+        "description": "Green ID Tag"
+    },
     "1768112091": {
         "shortname": "snowmobiletomaha",
         "name": "Tomaha Snowmobile",
@@ -1683,6 +1738,11 @@
         "shortname": "grenade.beancan",
         "name": "Beancan Grenade",
         "description": "Unreliable explosive device."
+    },
+    "1846605708": {
+        "shortname": "divertorch",
+        "name": "Abyss Torch",
+        "description": "Illuminate the underwater depths with this durable and waterproof diving torch"
     },
     "1849887541": {
         "shortname": "electric.fuelgenerator.small",
@@ -2047,7 +2107,7 @@
     "-747743875": {
         "shortname": "attire.egg.suit",
         "name": "Egg Suit",
-        "description": "An eggsquisite egg costume, can be painted when unequipped. Releasing publicly in 2023"
+        "description": "An eggsquisite egg costume, can be painted when unequipped."
     },
     "-1773144852": {
         "shortname": "attire.hide.skirt",
@@ -2719,6 +2779,11 @@
         "name": "Granola Bar",
         "description": "Granola Bar found as loot. Eating it provides a small boost to health, hunger."
     },
+    "-455286320": {
+        "shortname": "grayidtag",
+        "name": "Gray ID Tag",
+        "description": "Gray ID Tag"
+    },
     "-936921910": {
         "shortname": "grenade.flashbang",
         "name": "Flashbang",
@@ -2794,6 +2859,11 @@
         "name": "Arctic Suit",
         "description": "An arctic variant of the hazmat suit which trades radiation for cold protection."
     },
+    "-797592358": {
+        "shortname": "hazmatsuit.diver",
+        "name": "Abyss Divers Suit",
+        "description": "A divers suit found in the abyss, doubles as a reliable hazmat suit"
+    },
     "-560304835": {
         "shortname": "hazmatsuit.spacesuit",
         "name": "Space Suit",
@@ -2843,6 +2913,11 @@
         "shortname": "hobobarrel",
         "name": "Hobo Barrel",
         "description": "A vagabond staple. Use this repurposed oil barrel to stay warm."
+    },
+    "-1323101799": {
+        "shortname": "horse.saddle.double",
+        "name": "Double Horse Saddle",
+        "description": "A horse saddle with two seats. Having this item allows you to claim a horse in a stable by holding E and selecting the \"Claim\" option"
     },
     "-1997543660": {
         "shortname": "horse.saddle",
@@ -3099,6 +3174,11 @@
         "name": "Night Vision Goggles",
         "description": "Enables vision at nighttime by projecting and amplifying infrared light.The batteries can be recharged at a Lvl 2 workbench. Cannot be worn with a helmet."
     },
+    "-282193997": {
+        "shortname": "orangeidtag",
+        "name": "Orange ID Tag",
+        "description": "Orange ID Tag"
+    },
     "-733625651": {
         "shortname": "paddlingpool",
         "name": "Paddling Pool",
@@ -3174,6 +3254,11 @@
         "name": "Pumpkin",
         "description": "An edible vegetable that can also be worn as a hat. Eating it provides a small boost to health, hunger, and thirst."
     },
+    "-1386082991": {
+        "shortname": "purpleidtag",
+        "name": "Purple ID Tag",
+        "description": "Purple ID Tag"
+    },
     "-496584751": {
         "shortname": "radiationremovetea",
         "name": "Rad. Removal Tea",
@@ -3213,6 +3298,11 @@
         "shortname": "rf_pager",
         "name": "RF Pager",
         "description": "An RF Pager. An audible tone will be produced when a signal is picked up on the listening frequency. Can be set to silent mode."
+    },
+    "-139037392": {
+        "shortname": "rifle.ak.diver",
+        "name": "Abyss Assault Rifle",
+        "description": "A waterlogged assault rifle from the abyss"
     },
     "-1335497659": {
         "shortname": "rifle.ak.ice",
@@ -3278,6 +3368,11 @@
         "shortname": "rustige_egg_e",
         "name": "Rustigé Egg - Green",
         "description": "A beautiful hand crafted gold and green egg, with a miniature traincart contained inside."
+    },
+    "-173268128": {
+        "shortname": "rustige_egg_f",
+        "name": "Rustigé Egg - White",
+        "description": "A beautiful hand crafted gold and white egg, with a miniature underwater lab scene contained inside."
     },
     "-1978999529": {
         "shortname": "salvaged.cleaver",
@@ -3649,6 +3744,11 @@
         "name": "Sunglasses",
         "description": "A pair of sunglasses. Functional and stylish!"
     },
+    "-1003665711": {
+        "shortname": "supertea",
+        "name": "Super Serum",
+        "description": "Super Serum, more health, more ore, more wood, more scrap"
+    },
     "-1108136649": {
         "shortname": "tactical.gloves",
         "name": "Tactical Gloves",
@@ -3688,6 +3788,11 @@
         "shortname": "trap.landmine",
         "name": "Homemade Landmine",
         "description": "Homemade Landmine. If you stand on one, you can ask a friend to disarm it before it explodes."
+    },
+    "-561148628": {
+        "shortname": "tugboat",
+        "name": "Tugboat",
+        "description": ""
     },
     "-1478445584": {
         "shortname": "tunalight",
@@ -3793,6 +3898,11 @@
         "shortname": "wall.graveyard.fence",
         "name": "Graveyard Fence",
         "description": "A Spooky Fence"
+    },
+    "-81700958": {
+        "shortname": "wall.window.bars.brickskin",
+        "name": "Brick Skin Window Bars",
+        "description": "Metal window bars made to fit a brick skin sized window."
     },
     "-819720157": {
         "shortname": "wall.window.bars.metal",

@@ -14,14 +14,14 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-    https://github.com/alexemanuelol/rustPlusPlus
+    https://github.com/alexemanuelol/rustplusplus
 
 */
 
 module.exports = {
     name: 'request',
     async execute(rustplus, client, request) {
-        if (!rustplus.isServerAvailable()) return rustplus.deleteThisServer();
+        if (!rustplus.isServerAvailable()) return rustplus.deleteThisRustplusInstance();
 
         /* Not used */
     },

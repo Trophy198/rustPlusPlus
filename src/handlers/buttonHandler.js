@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-    https://github.com/alexemanuelol/rustPlusPlus
+    https://github.com/alexemanuelol/rustplusplus
 
 */
 
@@ -41,7 +41,8 @@ module.exports = async (client, interaction) => {
         if (rustplus) rustplus.notificationSettings[ids.setting].discord = setting.discord;
 
         await client.interactionUpdate(interaction, {
-            components: [DiscordButtons.getNotificationButtons(guildId, ids.setting, setting.discord, setting.inGame)]
+            components: [DiscordButtons.getNotificationButtons(
+                guildId, ids.setting, setting.discord, setting.inGame, setting.voice)]
         });
     }
     else if (interaction.customId.startsWith('InGameNotification')) {
@@ -54,7 +55,22 @@ module.exports = async (client, interaction) => {
         if (rustplus) rustplus.notificationSettings[ids.setting].inGame = setting.inGame;
 
         await client.interactionUpdate(interaction, {
-            components: [DiscordButtons.getNotificationButtons(guildId, ids.setting, setting.discord, setting.inGame)]
+            components: [DiscordButtons.getNotificationButtons(
+                guildId, ids.setting, setting.discord, setting.inGame, setting.voice)]
+        });
+    }
+    else if (interaction.customId.startsWith('VoiceNotification')) {
+        const ids = JSON.parse(interaction.customId.replace('VoiceNotification', ''));
+        const setting = instance.notificationSettings[ids.setting];
+
+        setting.voice = !setting.voice;
+        client.setInstance(guildId, instance);
+
+        if (rustplus) rustplus.notificationSettings[ids.setting].voice = setting.voice;
+
+        await client.interactionUpdate(interaction, {
+            components: [DiscordButtons.getNotificationButtons(
+                guildId, ids.setting, setting.discord, setting.inGame, setting.voice)]
         });
     }
     else if (interaction.customId === 'AllowInGameCommands') {
@@ -203,6 +219,22 @@ module.exports = async (client, interaction) => {
                 instance.generalSettings.trackerNotifyAnyOnline)]
         });
     }
+    else if (interaction.customId === 'TrackerNotifyInGameConnections') {
+        instance.generalSettings.trackerNotifyInGameConnections =
+            !instance.generalSettings.trackerNotifyInGameConnections;
+        client.setInstance(guildId, instance);
+
+        if (rustplus) rustplus.generalSettings.trackerNotifyInGameConnections =
+            instance.generalSettings.trackerNotifyInGameConnections;
+
+        await client.interactionUpdate(interaction, {
+            components: [DiscordButtons.getTrackerNotifyButtons(
+                guildId,
+                instance.generalSettings.trackerNotifyAllOffline,
+                instance.generalSettings.trackerNotifyAnyOnline,
+                instance.generalSettings.trackerNotifyInGameConnections)]
+        });
+    }
     else if (interaction.customId === 'MapWipeNotifyEveryone') {
         instance.generalSettings.mapWipeNotifyEveryone = !instance.generalSettings.mapWipeNotifyEveryone;
         client.setInstance(guildId, instance);
@@ -236,27 +268,40 @@ module.exports = async (client, interaction) => {
             return;
         }
 
-        for (const [serverId, content] of Object.entries(instance.serverList)) {
-            if (content.active) {
-                instance.serverList[serverId].active = false;
-                client.setInstance(guildId, instance);
-                await DiscordMessages.sendServerMessage(guildId, serverId, null);
-                break;
-            }
+        client.resetRustplusVariables(guildId);
+
+        if (instance.activeServer !== null) {
+            await DiscordMessages.sendServerMessage(guildId, instance.activeServer, null);
         }
 
-        server.active = true;
+        instance.activeServer = ids.serverId;
         client.setInstance(guildId, instance);
-        await DiscordMessages.sendServerMessage(guildId, ids.serverId, null, interaction);
 
         /* Disconnect previous instance is any */
-        if (rustplus) rustplus.disconnect();
+        if (rustplus) {
+            rustplus.isDeleted = true;
+            rustplus.disconnect();
+        }
 
         /* Create the rustplus instance */
         const newRustplus = client.createRustplusInstance(
             guildId, server.serverIp, server.appPort, server.steamId, server.playerToken);
 
+        await DiscordMessages.sendServerMessage(guildId, ids.serverId, null, interaction);
+
         newRustplus.isNewConnection = true;
+    }
+    else if (interaction.customId.startsWith('ServerEdit')) {
+        const ids = JSON.parse(interaction.customId.replace('ServerEdit', ''));
+        const server = instance.serverList[ids.serverId];
+
+        if (!server) {
+            await interaction.message.delete();
+            return;
+        }
+
+        const modal = DiscordModals.getServerEditModal(guildId, ids.serverId);
+        await interaction.showModal(modal);
     }
     else if (interaction.customId.startsWith('CustomTimersEdit')) {
         const ids = JSON.parse(interaction.customId.replace('CustomTimersEdit', ''));
@@ -288,6 +333,7 @@ module.exports = async (client, interaction) => {
             name: 'Tracker',
             serverId: ids.serverId,
             battlemetricsId: server.battlemetricsId,
+            clanTag: '',
             status: false,
             allOffline: true,
             messageId: null,
@@ -320,6 +366,7 @@ module.exports = async (client, interaction) => {
             name: 'Group',
             command: `${groupId}`,
             switches: [],
+            image: 'smart_switch.png',
             messageId: null
         }
         client.setInstance(guildId, instance);
@@ -336,11 +383,13 @@ module.exports = async (client, interaction) => {
             await interaction.message.delete();
             return;
         }
-
-        server.active = false;
+        instance.activeServer = null;
         client.setInstance(guildId, instance);
 
+        client.resetRustplusVariables(guildId);
+
         if (rustplus) {
+            rustplus.isDeleted = true;
             rustplus.disconnect();
             delete client.rustplusInstances[guildId];
         }
@@ -361,13 +410,18 @@ module.exports = async (client, interaction) => {
             return;
         }
 
-        if (rustplus && (rustplus.serverId === ids.serverId || server.active)) {
+        if (rustplus && (rustplus.serverId === ids.serverId || rustplus.serverId === instance.activeServer)) {
             await DiscordTools.clearTextChannel(rustplus.guildId, instance.channelId.switches, 100);
             await DiscordTools.clearTextChannel(rustplus.guildId, instance.channelId.switchGroups, 100);
             await DiscordTools.clearTextChannel(rustplus.guildId, instance.channelId.storageMonitors, 100);
 
-            rustplus.disconnect();
+            instance.activeServer = null;
+            client.setInstance(guildId, instance);
+
+            client.resetRustplusVariables(guildId);
+
             rustplus.isDeleted = true;
+            rustplus.disconnect();
             delete client.rustplusInstances[guildId];
         }
 

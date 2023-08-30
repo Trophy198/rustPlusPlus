@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-    https://github.com/alexemanuelol/rustPlusPlus
+    https://github.com/alexemanuelol/rustplusplus
 
 */
 
@@ -58,7 +58,11 @@ module.exports = {
             status: 'online'
         });
 
-        client.guilds.cache.forEach(async (guild) => {
+        client.uptimeBot = new Date();
+
+        for (let guildArray of client.guilds.cache) {
+            const guild = guildArray[1];
+
             try {
                 await guild.members.me.setNickname(Config.discord.username);
             }
@@ -67,9 +71,9 @@ module.exports = {
             }
             await client.syncCredentialsWithUsers(guild);
             await client.setupGuild(guild);
-        });
+        }
 
-        BattlemetricsHandler.handler(client);
+        BattlemetricsHandler.handler(client, true);
         client.battlemetricsIntervalId = setInterval(BattlemetricsHandler.handler, 60000, client);
 
         client.createRustplusInstancesFromConfig();

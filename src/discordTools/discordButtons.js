@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-    https://github.com/alexemanuelol/rustPlusPlus
+    https://github.com/alexemanuelol/rustplusplus
 
 */
 
@@ -33,12 +33,12 @@ module.exports = {
     getButton: function (options = {}) {
         const button = new Discord.ButtonBuilder();
 
-        if (options.customId) button.setCustomId(options.customId);
-        if (options.label) button.setLabel(options.label);
-        if (options.style) button.setStyle(options.style);
-        if (options.url) button.setURL(options.url);
-        if (options.emoji) button.setEmoji(options.emoji);
-        if (options.disabled) button.setDisabled(options.disabled);
+        if (options.hasOwnProperty('customId')) button.setCustomId(options.customId);
+        if (options.hasOwnProperty('label')) button.setLabel(options.label);
+        if (options.hasOwnProperty('style')) button.setStyle(options.style);
+        if (options.hasOwnProperty('url') && options.url !== '') button.setURL(options.url);
+        if (options.hasOwnProperty('emoji')) button.setEmoji(options.emoji);
+        if (options.hasOwnProperty('disabled')) button.setDisabled(options.disabled);
 
         return button;
     },
@@ -48,7 +48,14 @@ module.exports = {
         const server = instance.serverList[serverId];
         const identifier = JSON.stringify({ "serverId": serverId });
 
-        if (state === null) state = (instance.serverList[serverId].active) ? 1 : 0;
+        if (state === null) {
+            if (instance.activeServer === serverId && Client.client.activeRustplusInstances[guildId]) {
+                state = 1;
+            }
+            else {
+                state = 0;
+            }
+        }
 
         let connectionButton = null;
         if (state === 0) {
@@ -93,6 +100,16 @@ module.exports = {
             style: LINK,
             url: server.url
         });
+        let battlemetricsButton = module.exports.getButton({
+            label: Client.client.intlGet(guildId, 'battlemetricsCap'),
+            style: LINK,
+            url: `${Constants.BATTLEMETRICS_SERVER_URL}${server.battlemetricsId}`
+        });
+        let editButton = module.exports.getButton({
+            customId: `ServerEdit${identifier}`,
+            label: Client.client.intlGet(guildId, 'editCap'),
+            style: PRIMARY
+        });
         let deleteButton = module.exports.getButton({
             customId: `ServerDelete${identifier}`,
             style: SECONDARY,
@@ -102,7 +119,7 @@ module.exports = {
         if (server.battlemetricsId !== null) {
             return [
                 new Discord.ActionRowBuilder().addComponents(
-                    connectionButton, linkButton, deleteButton
+                    connectionButton, linkButton, battlemetricsButton, editButton, deleteButton
                 ),
                 new Discord.ActionRowBuilder().addComponents(
                     customTimersButton, trackerButton, groupButton
@@ -112,7 +129,7 @@ module.exports = {
         else {
             return [
                 new Discord.ActionRowBuilder().addComponents(
-                    connectionButton, linkButton, deleteButton
+                    connectionButton, linkButton, editButton, deleteButton
                 ),
                 new Discord.ActionRowBuilder().addComponents(
                     customTimersButton, groupButton
@@ -266,7 +283,7 @@ module.exports = {
             }));
     },
 
-    getNotificationButtons: function (guildId, setting, discordActive, inGameActive) {
+    getNotificationButtons: function (guildId, setting, discordActive, inGameActive, voiceActive) {
         const identifier = JSON.stringify({ "setting": setting });
 
         return new Discord.ActionRowBuilder().addComponents(
@@ -279,6 +296,11 @@ module.exports = {
                 customId: `InGameNotification${identifier}`,
                 label: Client.client.intlGet(guildId, 'inGameCap'),
                 style: inGameActive ? SUCCESS : DANGER
+            }),
+            module.exports.getButton({
+                customId: `VoiceNotification${identifier}`,
+                label: Client.client.intlGet(guildId, 'voiceCap'),
+                style: voiceActive ? SUCCESS : DANGER
             }));
     },
 
@@ -411,7 +433,7 @@ module.exports = {
         ];
     },
 
-    getTrackerNotifyButtons: function (guildId, allOffline, anyOnline) {
+    getTrackerNotifyButtons: function (guildId, allOffline, anyOnline, inGameConnections) {
         return new Discord.ActionRowBuilder().addComponents(
             module.exports.getButton({
                 customId: 'TrackerNotifyAllOffline',
@@ -422,6 +444,12 @@ module.exports = {
                 customId: 'TrackerNotifyAnyOnline',
                 label: Client.client.intlGet(guildId, 'anyOnlineCap'),
                 style: anyOnline ? SUCCESS : DANGER
+            }),
+            module.exports.getButton({
+                customId: 'TrackerNotifyInGameConnections',
+                label: `${Client.client.intlGet(guildId, 'inGameCap')} ` +
+                    `${Client.client.intlGet(guildId, 'connectionsCap')}`,
+                style: inGameConnections ? SUCCESS : DANGER
             }));
     },
 
@@ -476,19 +504,19 @@ module.exports = {
                 module.exports.getButton({
                     style: Discord.ButtonStyle.Link,
                     label: 'REPOSITORY',
-                    url: 'https://github.com/alexemanuelol/rustPlusPlus'
+                    url: 'https://github.com/alexemanuelol/rustplusplus'
                 })
             ),
             new Discord.ActionRowBuilder().addComponents(
                 module.exports.getButton({
                     style: Discord.ButtonStyle.Link,
                     label: 'DOCUMENTATION',
-                    url: 'https://github.com/alexemanuelol/rustPlusPlus/blob/master/docs/documentation.md'
+                    url: 'https://github.com/alexemanuelol/rustplusplus/blob/master/docs/documentation.md'
                 }),
                 module.exports.getButton({
                     style: Discord.ButtonStyle.Link,
                     label: 'CREDENTIALS',
-                    url: 'https://github.com/alexemanuelol/rustPlusPlus-Credential-Application/releases/v1.1.0'
+                    url: 'https://github.com/alexemanuelol/rustplusplus-Credential-Application/releases/v1.1.0'
                 })
             )];
     },

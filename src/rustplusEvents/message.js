@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-    https://github.com/alexemanuelol/rustPlusPlus
+    https://github.com/alexemanuelol/rustplusplus
 
 */
 
@@ -27,7 +27,7 @@ const TeamHandler = require('../handlers/teamHandler.js');
 module.exports = {
     name: 'message',
     async execute(rustplus, client, message) {
-        if (!rustplus.isServerAvailable()) return rustplus.deleteThisServer();
+        if (!rustplus.isServerAvailable()) return rustplus.deleteThisRustplusInstance();
 
         if (!rustplus.isOperational) return;
 
@@ -98,39 +98,7 @@ async function messageBroadcastEntityChanged(rustplus, client, message) {
 }
 
 async function messageBroadcastCameraRays(rustplus, client, message) {
-    if (!rustplus.readyForCameraRays) return;
-    rustplus.readyForCameraRays = false;
-    await rustplus.unsubscribeFromCameraAsync();
-    rustplus.scannedCameras += 1;
-
-    for (const entity of message.broadcast.cameraRays.entities) {
-        if (entity.type === 2) rustplus.cameraPlayerNames.push(entity.name)
-    }
-
-    if (rustplus.queuedCameras.length === 0) {
-        rustplus.cameraPlayerNames = [...new Set(rustplus.cameraPlayerNames)];
-        rustplus.sendTeamMessageAsync(`${client.intlGet(rustplus.guildId, 'scannedCameras', {
-            num: rustplus.scannedCameras
-        })}, ${client.intlGet(rustplus.guildId, 'players')}: ` +
-            `${rustplus.cameraPlayerNames.join(', ')}`);
-        rustplus.cameraPlayerNames = [];
-        rustplus.scannedCameras = 0;
-    }
-    else {
-        rustplus.readyForCameraRays = true;
-        const camera = rustplus.queuedCameras[0];
-        rustplus.queuedCameras.shift();
-
-        const response = await rustplus.subscribeToCameraAsync(camera);
-        if (!(await rustplus.isResponseValid(response))) {
-            rustplus.readyForCameraRays = false;
-            rustplus.queuedCameras = [];
-            rustplus.scannedCameras = 0;
-            rustplus.sendTeamMessageAsync(`${client.intlGet(rustplus.guildId, 'couldNotFindCamera', {
-                camera: camera
-            })}`);
-        }
-    }
+    /* Not implemented */
 }
 
 async function messageBroadcastEntityChangedSmartSwitch(rustplus, client, message) {
@@ -174,6 +142,8 @@ async function messageBroadcastEntityChangedSmartAlarm(rustplus, client, message
     client.setInstance(rustplus.guildId, instance);
 
     if (active) {
+        server.alarms[entityId].lastTrigger = Math.floor(new Date() / 1000);
+        client.setInstance(rustplus.guildId, instance);
         await DiscordMessages.sendSmartAlarmTriggerMessage(rustplus.guildId, serverId, entityId);
 
         if (instance.generalSettings.smartAlarmNotifyInGame) {

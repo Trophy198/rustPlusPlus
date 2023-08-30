@@ -14,10 +14,12 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-    https://github.com/alexemanuelol/rustPlusPlus
+    https://github.com/alexemanuelol/rustplusplus
 
 */
 
+const BattlemetricsAPI = require('../util/battlemetricsAPI.js');
+const Constants = require('../util/constants.js');
 const DiscordMessages = require('../discordTools/discordMessages.js');
 const Keywords = require('../util/keywords.js');
 
@@ -29,9 +31,6 @@ module.exports = async (client, interaction) => {
         const ids = JSON.parse(interaction.customId.replace('CustomTimersEdit', ''));
         const server = instance.serverList[ids.serverId];
         const cargoShipEgressTime = parseInt(interaction.fields.getTextInputValue('CargoShipEgressTime'));
-        const bradleyApcRespawnTime = parseInt(interaction.fields.getTextInputValue('BradleyApcRespawnTime'));
-        const crateDespawnTime = parseInt(interaction.fields.getTextInputValue('CrateDespawnTime'));
-        const crateDespawnWarningTime = parseInt(interaction.fields.getTextInputValue('CrateDespawnWarningTime'));
         const oilRigCrateUnlockTime = parseInt(interaction.fields.getTextInputValue('OilRigCrateUnlockTime'));
 
         if (!server) {
@@ -42,39 +41,29 @@ module.exports = async (client, interaction) => {
         if (cargoShipEgressTime && ((cargoShipEgressTime * 1000) !== server.cargoShipEgressTimeMs)) {
             server.cargoShipEgressTimeMs = cargoShipEgressTime * 1000;
         }
-        if (bradleyApcRespawnTime && ((bradleyApcRespawnTime * 1000) !== server.bradleyApcRespawnTimeMs)) {
-            server.bradleyApcRespawnTimeMs = bradleyApcRespawnTime * 1000;
-        }
-
-        if (crateDespawnTime && ((crateDespawnTime * 1000) !== server.lockedCrateDespawnTimeMs)) {
-            if (crateDespawnWarningTime && ((crateDespawnWarningTime * 1000) !==
-                server.lockedCrateDespawnWarningTimeMs)) {
-                if (crateDespawnTime > crateDespawnWarningTime) {
-                    server.lockedCrateDespawnTimeMs = crateDespawnTime * 1000;
-                }
-            }
-            else {
-                if ((crateDespawnTime * 1000) > server.lockedCrateDespawnWarningTimeMs) {
-                    server.lockedCrateDespawnTimeMs = crateDespawnTime * 1000;
-                }
-            }
-        }
-        if (crateDespawnWarningTime && ((crateDespawnWarningTime * 1000) !== server.lockedCrateDespawnWarningTimeMs)) {
-            if (crateDespawnTime && ((crateDespawnTime * 1000) !== server.lockedCrateDespawnTimeMs)) {
-                if (crateDespawnWarningTime < crateDespawnTime) {
-                    server.lockedCrateDespawnWarningTimeMs = crateDespawnWarningTime * 1000;
-                }
-            }
-            else {
-                if ((crateDespawnWarningTime * 1000) < server.lockedCrateDespawnTimeMs) {
-                    server.lockedCrateDespawnWarningTimeMs = crateDespawnWarningTime * 1000;
-                }
-            }
-        }
         if (oilRigCrateUnlockTime && ((oilRigCrateUnlockTime * 1000) !== server.oilRigLockedCrateUnlockTimeMs)) {
             server.oilRigLockedCrateUnlockTimeMs = oilRigCrateUnlockTime * 1000;
         }
         client.setInstance(guildId, instance);
+    }
+    else if (interaction.customId.startsWith('ServerEdit')) {
+        const ids = JSON.parse(interaction.customId.replace('ServerEdit', ''));
+        const server = instance.serverList[ids.serverId];
+        const battlemetricsId = interaction.fields.getTextInputValue('ServerBattlemetricsId');
+
+        if (battlemetricsId === '') {
+            server.battlemetricsId = null;
+        }
+        else {
+            server.battlemetricsId = battlemetricsId;
+        }
+
+        client.setInstance(guildId, instance);
+
+        await DiscordMessages.sendServerMessage(interaction.guildId, ids.serverId);
+
+        /* To force search of player name via scrape */
+        client.battlemetricsIntervalCounter = 0;
     }
     else if (interaction.customId.startsWith('SmartSwitchEdit')) {
         const ids = JSON.parse(interaction.customId.replace('SmartSwitchEdit', ''));
@@ -158,8 +147,9 @@ module.exports = async (client, interaction) => {
     else if (interaction.customId.startsWith('SmartAlarmEdit')) {
         const ids = JSON.parse(interaction.customId.replace('SmartAlarmEdit', ''));
         const server = instance.serverList[ids.serverId];
-        let smartAlarmName = interaction.fields.getTextInputValue('SmartAlarmName');
-        let smartAlarmMessage = interaction.fields.getTextInputValue('SmartAlarmMessage');
+        const smartAlarmName = interaction.fields.getTextInputValue('SmartAlarmName');
+        const smartAlarmMessage = interaction.fields.getTextInputValue('SmartAlarmMessage');
+        const smartAlarmCommand = interaction.fields.getTextInputValue('SmartAlarmCommand');
 
         if (!server || (server && !server.alarms.hasOwnProperty(ids.entityId))) {
             interaction.deferUpdate();
@@ -168,6 +158,11 @@ module.exports = async (client, interaction) => {
 
         server.alarms[ids.entityId].name = smartAlarmName;
         server.alarms[ids.entityId].message = smartAlarmMessage;
+
+        if (smartAlarmCommand !== server.alarms[ids.entityId].command &&
+            !Keywords.getListOfUsedKeywords(client, guildId, ids.serverId).includes(smartAlarmCommand)) {
+            server.alarms[ids.entityId].command = smartAlarmCommand;
+        }
         client.setInstance(guildId, instance);
 
         await DiscordMessages.sendSmartAlarmMessage(interaction.guildId, ids.serverId, ids.entityId);
@@ -191,6 +186,8 @@ module.exports = async (client, interaction) => {
         const ids = JSON.parse(interaction.customId.replace('TrackerEdit', ''));
         const tracker = instance.trackers[ids.trackerId];
         const trackerName = interaction.fields.getTextInputValue('TrackerName');
+        const trackerBattlemetricsId = interaction.fields.getTextInputValue('TrackerBattlemetricsId');
+        const trackerClanTag = interaction.fields.getTextInputValue('TrackerClanTag');
 
         if (!tracker) {
             interaction.deferUpdate();
@@ -198,9 +195,33 @@ module.exports = async (client, interaction) => {
         }
 
         tracker.name = trackerName;
+
+        if (trackerClanTag !== tracker.clanTag) {
+            tracker.clanTag = trackerClanTag;
+            for (const player of tracker.players) {
+                player.name = '-';
+            }
+        }
+
+        if (trackerBattlemetricsId !== tracker.battlemetricsId) {
+            const info = await BattlemetricsAPI.getBattlemetricsServerInfo(client, trackerBattlemetricsId);
+            if (info === null) {
+                interaction.deferUpdate();
+                return;
+            }
+
+            tracker.serverId = `${info.ip}-${info.port}`;
+            tracker.battlemetricsId = trackerBattlemetricsId;
+            tracker.img = Constants.DEFAULT_SERVER_IMG;
+            tracker.title = info.name;
+        }
+
         client.setInstance(guildId, instance);
 
         await DiscordMessages.sendTrackerMessage(interaction.guildId, ids.trackerId);
+
+        /* To force search of player name via scrape */
+        client.battlemetricsIntervalCounter = 0;
     }
     else if (interaction.customId.startsWith('TrackerAddPlayer')) {
         const ids = JSON.parse(interaction.customId.replace('TrackerAddPlayer', ''));
@@ -218,7 +239,7 @@ module.exports = async (client, interaction) => {
         }
 
         tracker.players.push({
-            name: '-', steamId: steamId, playerId: null, status: false, time: null
+            name: '-', steamId: steamId, playerId: null, status: false, time: null, offlineTime: null
         });
         client.setInstance(interaction.guildId, instance);
 

@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-    https://github.com/alexemanuelol/rustPlusPlus
+    https://github.com/alexemanuelol/rustplusplus
 
 */
 
@@ -31,7 +31,8 @@ const client = new DiscordBot({
         Discord.GatewayIntentBits.Guilds,
         Discord.GatewayIntentBits.GuildMessages,
         Discord.GatewayIntentBits.MessageContent,
-        Discord.GatewayIntentBits.GuildMembers],
+        Discord.GatewayIntentBits.GuildMembers,
+        Discord.GatewayIntentBits.GuildVoiceStates],
     retryLimit: 2,
     restRequestTimeout: 60000,
     disableEveryone: false
@@ -52,8 +53,8 @@ function createMissingDirectories() {
         Fs.mkdirSync(Path.join(__dirname, 'credentials'));
     }
 
-    if (!Fs.existsSync(Path.join(__dirname, 'src', 'resources', 'images', 'maps'))) {
-        Fs.mkdirSync(Path.join(__dirname, 'src', 'resources', 'images', 'maps'));
+    if (!Fs.existsSync(Path.join(__dirname, 'maps'))) {
+        Fs.mkdirSync(Path.join(__dirname, 'maps'));
     }
 }
 

@@ -14,13 +14,13 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-    https://github.com/alexemanuelol/rustPlusPlus
+    https://github.com/alexemanuelol/rustplusplus
 
 */
 
 module.exports = {
     name: 'error',
-    async execute(client, guild, error) {
+    async execute(client, error) {
         client.log(client.intlGet(null, 'errorCap'), error, 'error');
         process.exit(1);
     },

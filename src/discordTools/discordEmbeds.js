@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-    https://github.com/alexemanuelol/rustPlusPlus
+    https://github.com/alexemanuelol/rustplusplus
 
 */
 
@@ -30,16 +30,16 @@ module.exports = {
     getEmbed: function (options = {}) {
         const embed = new Discord.EmbedBuilder();
 
-        if (options.title) embed.setTitle(options.title);
-        if (options.color) embed.setColor(options.color);
-        if (options.description) embed.setDescription(options.description);
-        if (options.thumbnail) embed.setThumbnail(options.thumbnail);
-        if (options.image) embed.setImage(options.image);
-        if (options.url) embed.setURL(options.url);
-        if (options.author) embed.setAuthor(options.author);
-        if (options.footer) embed.setFooter(options.footer);
-        if (options.timestamp) embed.setTimestamp();
-        if (options.fields) embed.setFields(...options.fields);
+        if (options.hasOwnProperty('title')) embed.setTitle(options.title);
+        if (options.hasOwnProperty('color')) embed.setColor(options.color);
+        if (options.hasOwnProperty('description')) embed.setDescription(options.description);
+        if (options.hasOwnProperty('thumbnail') && options.thumbnail !== '') embed.setThumbnail(options.thumbnail);
+        if (options.hasOwnProperty('image')) embed.setImage(options.image);
+        if (options.hasOwnProperty('url') && options.url !== '') embed.setURL(options.url);
+        if (options.hasOwnProperty('author')) embed.setAuthor(options.author);
+        if (options.hasOwnProperty('footer')) embed.setFooter(options.footer);
+        if (options.hasOwnProperty('timestamp')) embed.setTimestamp();
+        if (options.hasOwnProperty('fields')) embed.setFields(...options.fields);
 
         return embed;
     },
@@ -74,10 +74,18 @@ module.exports = {
             hoster = hoster.user.username;
         }
 
+        let description = '';
+        if (server.battlemetricsId !== null) {
+            const bmId = server.battlemetricsId;
+            const bmIdLink = `[${bmId}](${Constants.BATTLEMETRICS_SERVER_URL}${bmId})`;
+            description += `**Battlemetrics ID:** ${bmIdLink}\n\n`;
+        }
+        description += `${server.description}`;
+
         return module.exports.getEmbed({
             title: `${server.title}`,
             color: Constants.COLOR_DEFAULT,
-            description: `${server.description}`,
+            description: description,
             thumbnail: `${server.img}`,
             fields: [{
                 name: Client.client.intlGet(guildId, 'connect'),
@@ -107,8 +115,21 @@ module.exports = {
             else {
                 playerSteamId += `${player.steamId}\n`;
             }
-            playerStatus += `${(player.status === true) ?
-                `${Constants.ONLINE_EMOJI} [${player.time}]` : `${Constants.OFFLINE_EMOJI}`}\n`;
+
+            if (player.status === true) {
+                playerStatus += `${Constants.ONLINE_EMOJI} [${player.time}]\n`;
+            }
+            else {
+                let offlineTime = player.offlineTime;
+                if (offlineTime === null) {
+                    playerStatus += `${Constants.OFFLINE_EMOJI}\n`;
+                }
+                else {
+                    let seconds = (new Date() - new Date(offlineTime)) / 1000;
+                    offlineTime = Timer.secondsToFullScale(seconds, 's');
+                    playerStatus += `${Constants.OFFLINE_EMOJI} [${offlineTime}]\n`;
+                }
+            }
         }
 
         let nameChangeHistory = Client.client.intlGet(guildId, 'empty');
@@ -120,12 +141,18 @@ module.exports = {
         if (playerSteamId === '') playerSteamId = Client.client.intlGet(guildId, 'empty');
         if (playerStatus === '') playerStatus = Client.client.intlGet(guildId, 'empty');
 
+        const bmId = tracker.battlemetricsId;
+        const bmIdLink = `[${bmId}](${Constants.BATTLEMETRICS_SERVER_URL}${bmId})`;
+
         return module.exports.getEmbed({
             title: `${tracker.name}`,
             color: Constants.COLOR_DEFAULT,
-            description: `**Battlemetrics ID:** \`${tracker.battlemetricsId}\`\n` +
+            description: `**Battlemetrics ID:** ${bmIdLink}\n` +
+                `**${Client.client.intlGet(guildId, 'clanTag')}:** ` +
+                (tracker.clanTag !== '' ? `\`${tracker.clanTag}\`` : '') + '\n' +
                 `${Client.client.intlGet(guildId, 'serverStatus', { status: serverStatus })}`,
             thumbnail: `${tracker.img}`,
+            footer: { text: `${tracker.title}` },
             fields: [
                 { name: Client.client.intlGet(guildId, 'name'), value: playerName, inline: true },
                 { name: 'SteamID', value: playerSteamId, inline: true },
@@ -139,17 +166,30 @@ module.exports = {
         const instance = Client.client.getInstance(guildId);
         const entity = instance.serverList[serverId].alarms[entityId];
         const grid = entity.location !== null ? ` (${entity.location})` : '';
+        let description = `**ID**: \`${entityId}\`\n`;
+        description += `**${Client.client.intlGet(guildId, 'lastTrigger')}:** `;
+
+        if (entity.lastTrigger !== null) {
+            const lastTriggerDate = new Date(entity.lastTrigger * 1000);
+            const timeSinceTriggerSeconds = Math.floor((new Date() - lastTriggerDate) / 1000);
+            const time = Timer.secondsToFullScale(timeSinceTriggerSeconds);
+            description += `${time}`;
+        }
 
         return module.exports.getEmbed({
             title: `${entity.name}${grid}`,
             color: entity.active ? Constants.COLOR_ACTIVE : Constants.COLOR_DEFAULT,
-            description: `**ID**: \`${entityId}\``,
+            description: description,
             thumbnail: `attachment://${entity.image}`,
             footer: { text: `${entity.server}` },
             fields: [{
                 name: Client.client.intlGet(guildId, 'message'),
                 value: `\`${entity.message}\``,
                 inline: true
+            }, {
+                name: Client.client.intlGet(guildId, 'customCommand'),
+                value: `\`${instance.generalSettings.prefix}${entity.command}\``,
+                inline: false
             }],
             timestamp: true
         });
@@ -282,7 +322,8 @@ module.exports = {
         return module.exports.getEmbed({
             title: group.name,
             color: Constants.COLOR_DEFAULT,
-            thumbnail: 'attachment://smart_switch.png',
+            description: `**ID**: \`${groupId}\``,
+            thumbnail: `attachment://${group.image}`,
             footer: { text: `${instance.serverList[serverId].title}` },
             fields: [
                 {
@@ -513,7 +554,7 @@ module.exports = {
             footer: { text: body.name },
             title: data.title,
             description: data.message,
-            thumbnail: body.img
+            thumbnail: body.img !== '' ? body.img : 'attachment://rocket.png'
         });
     },
 
@@ -535,14 +576,14 @@ module.exports = {
 
     },
 
-    getEventEmbed: function (guildId, serverId, text, image) {
+    getEventEmbed: function (guildId, serverId, text, image, color = Constants.COLOR_DEFAULT) {
         const instance = Client.client.getInstance(guildId);
         const server = instance.serverList[serverId];
         return module.exports.getEmbed({
-            color: Constants.COLOR_DEFAULT,
+            color: color,
             thumbnail: `attachment://${image}`,
             title: text,
-            footer: { text: server.title },
+            footer: { text: server.title, iconURL: server.img },
             timestamp: true
         });
     },
@@ -596,13 +637,13 @@ module.exports = {
         });
     },
 
-    getActivityNotificationEmbed: function (guildId, serverId, color, text, steamId, png) {
+    getActivityNotificationEmbed: function (guildId, serverId, color, text, steamId, png, title = null) {
         const instance = Client.client.getInstance(guildId);
-        const server = instance.serverList[serverId];
+        const footerTitle = title !== null ? title : instance.serverList[serverId].title;
         return module.exports.getEmbed({
             color: color,
             timestamp: true,
-            footer: { text: server.title },
+            footer: { text: footerTitle },
             author: {
                 name: text,
                 iconURL: (png !== null) ? png : Constants.DEFAULT_SERVER_IMG,
@@ -631,7 +672,7 @@ module.exports = {
             title: Client.client.intlGet(guildId, 'serverInfo'),
             color: Constants.COLOR_DEFAULT,
             thumbnail: 'attachment://server_info_logo.png',
-            description: rustplus.info.name,
+            footer: { text: instance.serverList[rustplus.serverId].title },
             fields: [
                 { name: playersFieldName, value: `\`${rustplus.getCommandPop(true)}\``, inline: true },
                 { name: timeFieldName, value: `\`${time[0]}\``, inline: true },
@@ -672,19 +713,15 @@ module.exports = {
 
         const cargoshipFieldName = Client.client.intlGet(guildId, 'cargoship');
         const patrolHelicopterFieldName = Client.client.intlGet(guildId, 'patrolHelicopter');
-        const bradleyAPCFieldName = Client.client.intlGet(guildId, 'bradleyApc');
         const smallOilRigFieldName = Client.client.intlGet(guildId, 'smallOilRig');
         const largeOilRigFieldName = Client.client.intlGet(guildId, 'largeOilRig');
         const chinook47FieldName = Client.client.intlGet(guildId, 'chinook47');
-        const crateFieldName = Client.client.intlGet(guildId, 'crate');
 
         const cargoShipMessage = rustplus.getCommandCargo(true);
         const patrolHelicopterMessage = rustplus.getCommandHeli(true);
-        const bradleyAPCMessage = rustplus.getCommandBradley(true);
         const smallOilMessage = rustplus.getCommandSmall(true);
         const largeOilMessage = rustplus.getCommandLarge(true);
         const ch47Message = rustplus.getCommandChinook(true);
-        const crateMessage = rustplus.getCommandCrate(true);
 
         return module.exports.getEmbed({
             title: Client.client.intlGet(guildId, 'eventInfo'),
@@ -695,11 +732,9 @@ module.exports = {
             fields: [
                 { name: cargoshipFieldName, value: `\`${cargoShipMessage}\``, inline: true },
                 { name: patrolHelicopterFieldName, value: `\`${patrolHelicopterMessage}\``, inline: true },
-                { name: bradleyAPCFieldName, value: `\`${bradleyAPCMessage}\``, inline: true },
                 { name: smallOilRigFieldName, value: `\`${smallOilMessage}\``, inline: true },
                 { name: largeOilRigFieldName, value: `\`${largeOilMessage}\``, inline: true },
-                { name: chinook47FieldName, value: `\`${ch47Message}\``, inline: true },
-                { name: crateFieldName, value: `\`${crateMessage}\``, inline: true }],
+                { name: chinook47FieldName, value: `\`${ch47Message}\``, inline: true }],
             timestamp: true
         });
     },
@@ -716,8 +751,9 @@ module.exports = {
         let status = '';
         let locations = '';
         for (const player of rustplus.team.players) {
+            const backupName = player.name === '' ? '-' : player.name;
             names += (rustplus.team.teamSize < 12) ?
-                `[${player.name}](${Constants.STEAM_PROFILES_URL}${player.steamId})` : player.name;
+                `[${backupName}](${Constants.STEAM_PROFILES_URL}${player.steamId})` : backupName;
 
             names += (player.teamLeader) ? `${Constants.LEADER_EMOJI}\n` : '\n';
             locations += (player.isOnline || player.isAlive) ? `${player.pos.string}\n` : '-\n';
@@ -734,10 +770,12 @@ module.exports = {
                 status += (isAfk) ? ` ${afkTime}\n` : '\n';
             }
             else {
+                const offlineTime = player.getOfflineTime('s');
                 status += Constants.OFFLINE_EMOJI;
                 status += (player.isAlive) ? Constants.SLEEPING_EMOJI : Constants.DEAD_EMOJI;
                 status += (Object.keys(instance.serverListLite[rustplus.serverId]).includes(player.steamId)) ?
                     Constants.PAIRED_EMOJI : '';
+                status += (offlineTime !== null) ? offlineTime : '';
                 status += '\n';
             }
         }
@@ -829,7 +867,7 @@ module.exports = {
     },
 
     getHelpEmbed: function (guildId) {
-        const repository = 'https://github.com/alexemanuelol/rustPlusPlus';
+        const repository = 'https://github.com/alexemanuelol/rustplusplus';
         const credentials = `${repository}/blob/master/docs/credentials.md`;
         const pairServer = `${repository}/blob/master/docs/pair_and_connect_to_server.md`;
         const commands = `${repository}/blob/master/docs/commands.md`;
@@ -842,7 +880,7 @@ module.exports = {
         return module.exports.getEmbed({
             color: Constants.COLOR_DEFAULT,
             timestamp: true,
-            title: `rustPlusPlus Help`,
+            title: `rustplusplus Help`,
             description: description
         });
     },
@@ -860,6 +898,22 @@ module.exports = {
             timestamp: true,
             title: `${monument} CCTV ${Client.client.intlGet(guildId, 'codes')}`,
             description: code
+        });
+    },
+
+    getUptimeEmbed: function (guildId, uptime) {
+        return module.exports.getEmbed({
+            color: Constants.COLOR_DEFAULT,
+            timestamp: true,
+            title: uptime
+        });
+    },
+
+    getVoiceEmbed: function (guildId, state) {
+        return module.exports.getEmbed({
+            color: Constants.COLOR_DEFAULT,
+            timestamp: true,
+            title: state
         });
     },
 }

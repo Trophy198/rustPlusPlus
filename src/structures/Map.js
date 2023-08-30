@@ -14,21 +14,23 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-    https://github.com/alexemanuelol/rustPlusPlus
+    https://github.com/alexemanuelol/rustplusplus
 
 */
 
 const Fs = require('fs');
+const Gm = require('gm');
 const Jimp = require('jimp');
 const Path = require('path');
 
+const Constants = require('../util/constants.js');
 const Client = require('../../index.ts');
 
 class Map {
     constructor(map, rustplus) {
         this._width = map.width;
         this._height = map.height;
-        this._jpgImage = map.jpgImage;
+        Client.client.rustplusMaps[rustplus.guildId] = map.jpgImage;
         this._oceanMargin = map.oceanMargin;
         this._monuments = map.monuments;
         this._background = map.background;
@@ -39,16 +41,12 @@ class Map {
 
         this._mapMarkerImageMeta = {
             map: {
-                image: Path.join(__dirname, '..', `resources/images/maps/${this.rustplus.guildId}_map_clean.png`),
+                image: Path.join(__dirname, '..', '..', `maps/${this.rustplus.guildId}_map_clean.png`),
                 size: null, type: null, jimp: null
             },
             player: {
                 image:
                     Path.join(__dirname, '..', 'resources/images/markers/player.png'), size: 20, type: 1, jimp: null
-            },
-            explosion: {
-                image:
-                    Path.join(__dirname, '..', 'resources/images/markers/explosion.png'), size: 30, type: 2, jimp: null
             },
             shop: {
                 image:
@@ -61,10 +59,6 @@ class Map {
             cargo: {
                 image:
                     Path.join(__dirname, '..', 'resources/images/markers/cargo.png'), size: 100, type: 5, jimp: null
-            },
-            crate: {
-                image:
-                    Path.join(__dirname, '..', 'resources/images/markers/crate.png'), size: 25, type: 6, jimp: null
             },
             blade: {
                 image:
@@ -110,6 +104,11 @@ class Map {
                 clean: Client.client.intlGet(rustplus.guildId, 'giantExcavatorPit'),
                 map: Client.client.intlGet(rustplus.guildId, 'giantExcavatorPit').toUpperCase(),
                 radius: 110
+            },
+            ferryterminal: {
+                clean: Client.client.intlGet(rustplus.guildId, 'ferryTerminal'),
+                map: Client.client.intlGet(rustplus.guildId, 'ferryTerminal').toUpperCase(),
+                radius: 88
             },
             fishing_village_display_name: {
                 clean: Client.client.intlGet(rustplus.guildId, 'fishingVillage'),
@@ -165,6 +164,11 @@ class Map {
                 clean: Client.client.intlGet(rustplus.guildId, 'miningOutpost'),
                 map: Client.client.intlGet(rustplus.guildId, 'miningOutpost').toUpperCase(),
                 radius: 17
+            },
+            missile_silo_monument: {
+                clean: Client.client.intlGet(rustplus.guildId, 'missileSilo'),
+                map: Client.client.intlGet(rustplus.guildId, 'missileSilo').toUpperCase(),
+                radius: 81
             },
             mining_quarry_hqm_display_name: {
                 clean: Client.client.intlGet(rustplus.guildId, 'hqmQuarry'),
@@ -256,8 +260,6 @@ class Map {
     set width(width) { this._width = width; }
     get height() { return this._height; }
     set height(height) { this._height = height; }
-    get jpgImage() { return this._jpgImage; }
-    set jpgImage(jpgImage) { this._jpgImage = jpgImage; }
     get oceanMargin() { return this._oceanMargin; }
     set oceanMargin(oceanMargin) { this._oceanMargin = oceanMargin; }
     get monuments() { return this._monuments; }
@@ -276,7 +278,6 @@ class Map {
     /* Change checkers */
     isWidthChanged(map) { return ((this.width) !== (map.width)); }
     isHeightChanged(map) { return ((this.height) !== (map.height)); }
-    isJpgImageChanged(map) { return ((JSON.stringify(this.jpgImage)) !== (JSON.stringify(map.jpgImage))); }
     isOceanMarginChanged(map) { return ((this.oceanMargin) !== (map.oceanMargin)); }
     isMonumentsChanged(map) { return ((JSON.stringify(this.monuments)) !== (JSON.stringify(map.monuments))); }
     isBackgroundChanged(map) { return ((this.background) !== (map.background)); }
@@ -284,7 +285,7 @@ class Map {
     updateMap(map) {
         this.width = map.width;
         this.height = map.height;
-        this.jpgImage = map.jpgImage;
+        Client.client.rustplusMaps[this.rustplus.guildId] = map.jpgImage;
         this.oceanMargin = map.oceanMargin;
         this.monuments = map.monuments;
         this.background = map.background;
@@ -299,7 +300,7 @@ class Map {
     }
 
     async writeMapClean() {
-        await Fs.writeFileSync(this.mapMarkerImageMeta.map.image, this.jpgImage);
+        await Fs.writeFileSync(this.mapMarkerImageMeta.map.image, Client.client.rustplusMaps[this.rustplus.guildId]);
     }
 
     async setupFont() {
@@ -406,16 +407,58 @@ class Map {
             await this.mapAppendMonuments();
         }
 
-        let oceanMarginOffset = this.oceanMargin * (1 / 2);
-
-        await this.mapMarkerImageMeta.map.jimp.crop(
-            oceanMarginOffset,
-            oceanMarginOffset,
-            this.width - (oceanMarginOffset * 2),
-            this.height - (oceanMarginOffset * 2));
-
         await this.mapMarkerImageMeta.map.jimp.writeAsync(
             this.mapMarkerImageMeta.map.image.replace('clean.png', 'full.png'));
+
+        try {
+            const image = Gm(this.mapMarkerImageMeta.map.image.replace('clean.png', 'full.png'));
+
+            if (this.rustplus.info === null) {
+                this.rustplus.log(Client.client.intlGet(null, 'warningCap'),
+                    Client.client.intlGet(null, 'couldNotAppendMapTracers'));
+                return;
+            }
+
+            if (!markers) return;
+
+            /* Tracer for CargoShip */
+            image.stroke(Constants.COLOR_CARGO_TRACER, 2);
+            for (const [id, coords] of Object.entries(this.rustplus.cargoShipTracers)) {
+                let prev = null;
+                for (const point of coords) {
+                    if (prev === null) {
+                        prev = point;
+                        continue;
+                    }
+                    const point1 = this.calculateImageXY(prev);
+                    const point2 = this.calculateImageXY(point);
+                    image.drawLine(point1.x, point1.y, point2.x, point2.y);
+                    prev = point;
+                }
+            }
+
+            /* Tracer for Patrol Helicopter */
+            image.stroke(Constants.COLOR_PATROL_HELICOPTER_TRACER, 2);
+            for (const [id, coords] of Object.entries(this.rustplus.patrolHelicopterTracers)) {
+                let prev = null;
+                for (const point of coords) {
+                    if (prev === null) {
+                        prev = point;
+                        continue;
+                    }
+                    const point1 = this.calculateImageXY(prev);
+                    const point2 = this.calculateImageXY(point);
+                    image.drawLine(point1.x, point1.y, point2.x, point2.y);
+                    prev = point;
+                }
+            }
+
+            await this.gmWriteAsync(image, this.mapMarkerImageMeta.map.image.replace('clean.png', 'full.png'));
+        }
+        catch (error) {
+            this.rustplus.log(Client.client.intlGet(null, 'warningCap'),
+                Client.client.intlGet(null, 'couldNotAddStepTracers'));
+        }
     }
 
     getMarkerImageMetaByType(type) {
@@ -435,6 +478,26 @@ class Map {
             }
         }
         return matches;
+    }
+
+    calculateImageXY(coords) {
+        const x = coords.x * ((this.width - 2 * this.oceanMargin) / this.rustplus.info.mapSize) + this.oceanMargin;
+        const n = this.height - 2 * this.oceanMargin;
+        const y = this.height - (coords.y * (n / this.rustplus.info.mapSize) + this.oceanMargin);
+        return { x: x, y: y };
+    }
+
+    async gmWriteAsync(image, path) {
+        return new Promise(function (resolve, reject) {
+            image.write(path, (err) => {
+                if (err) {
+                    reject(err);
+                }
+                else {
+                    resolve()
+                }
+            })
+        });
     }
 }
 

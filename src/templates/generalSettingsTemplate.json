@@ -1,8 +1,9 @@
 {
     "language": "en",
+    "voiceGender": "male",
     "prefix": "!",
     "muteInGameBotMessages": false,
-    "trademark": "rustPlusPlus",
+    "trademark": "rustplusplus",
     "inGameCommandsEnabled": true,
     "fcmAlarmNotificationEnabled": false,
     "fcmAlarmNotificationEveryone": false,
@@ -11,6 +12,7 @@
     "leaderCommandOnlyForPaired": false,
     "trackerNotifyAllOffline": true,
     "trackerNotifyAnyOnline": false,
+    "trackerNotifyInGameConnections": true,
     "commandDelay": 0,
     "connectionNotify": false,
     "afkNotify": false,

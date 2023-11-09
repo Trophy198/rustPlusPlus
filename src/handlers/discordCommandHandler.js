@@ -19,14 +19,21 @@
 */
 
 const DiscordMessages = require('../discordTools/discordMessages.js');
+const DiscordTools = require('../discordTools/discordTools');
 
 module.exports = {
     discordCommandHandler: async function (rustplus, client, message) {
-        const command = message.cleanContent;
+        const guildId = rustplus.guildId;
+        const instance = client.getInstance(guildId);
+
+        let command = message.cleanContent;
+        for (const alias of instance.aliases) {
+            command = command.replace(alias.alias, alias.value);
+        }
+
         const callerName = message.author.username;
         const commandLowerCase = command.toLowerCase();
         const prefix = rustplus.generalSettings.prefix;
-        const guildId = rustplus.guildId;
 
         let response = null;
         if (commandLowerCase === `${prefix}${client.intlGet('en', 'commandSyntaxAfk')}` ||
@@ -51,6 +58,10 @@ module.exports = {
                 commandLowerCase.startsWith(`${prefix}${client.intlGet(guildId, 'commandSyntaxConnections')}`))) {
             response = rustplus.getCommandConnection(command);
         }
+        else if (commandLowerCase.startsWith(`${prefix}${client.intlGet('en', 'commandSyntaxCraft')}`) ||
+            commandLowerCase.startsWith(`${prefix}${client.intlGet(guildId, 'commandSyntaxCraft')}`)) {
+            response = rustplus.getCommandCraft(command);
+        }
         else if ((commandLowerCase.startsWith(`${prefix}${client.intlGet('en', 'commandSyntaxDeath')} `) ||
             commandLowerCase.startsWith(`${prefix}${client.intlGet('en', 'commandSyntaxDeaths')}`)) ||
             (commandLowerCase.startsWith(`${prefix}${client.intlGet(guildId, 'commandSyntaxDeath')} `) ||
@@ -60,6 +71,10 @@ module.exports = {
         else if (commandLowerCase.startsWith(`${prefix}${client.intlGet('en', 'commandSyntaxDecay')}`) ||
             commandLowerCase.startsWith(`${prefix}${client.intlGet(guildId, 'commandSyntaxDecay')}`)) {
             response = rustplus.getCommandDecay(command);
+        }
+        else if (commandLowerCase.startsWith(`${prefix}${client.intlGet('en', 'commandSyntaxEvents')}`) ||
+            commandLowerCase.startsWith(`${prefix}${client.intlGet(guildId, 'commandSyntaxEvents')}`)) {
+            response = rustplus.getCommandEvents(command);
         }
         else if (commandLowerCase === `${prefix}${client.intlGet('en', 'commandSyntaxHeli')}` ||
             commandLowerCase === `${prefix}${client.intlGet(guildId, 'commandSyntaxHeli')}`) {
@@ -114,6 +129,14 @@ module.exports = {
         else if (commandLowerCase.startsWith(`${prefix}${client.intlGet('en', 'commandSyntaxProx')}`) ||
             commandLowerCase.startsWith(`${prefix}${client.intlGet(guildId, 'commandSyntaxProx')}`)) {
             response = client.intlGet(rustplus.guildId, 'commandNotPossibleDiscord');
+        }
+        else if (commandLowerCase.startsWith(`${prefix}${client.intlGet('en', 'commandSyntaxRecycle')}`) ||
+            commandLowerCase.startsWith(`${prefix}${client.intlGet(guildId, 'commandSyntaxRecycle')}`)) {
+            response = rustplus.getCommandRecycle(command);
+        }
+        else if (commandLowerCase.startsWith(`${prefix}${client.intlGet('en', 'commandSyntaxResearch')}`) ||
+            commandLowerCase.startsWith(`${prefix}${client.intlGet(guildId, 'commandSyntaxResearch')}`)) {
+            response = rustplus.getCommandResearch(command);
         }
         else if (commandLowerCase.startsWith(`${prefix}${client.intlGet('en', 'commandSyntaxSend')} `) ||
             commandLowerCase.startsWith(`${prefix}${client.intlGet(guildId, 'commandSyntaxSend')} `)) {
@@ -177,6 +200,15 @@ module.exports = {
         if (response !== null) {
             await DiscordMessages.sendDiscordCommandResponseMessage(rustplus, client, message, response);
         }
+
+        const guild = DiscordTools.getGuild(message.guild.id);
+        const channel = DiscordTools.getTextChannelById(guild.id, message.channelId);
+        client.log(client.intlGet(null, 'infoCap'), client.intlGet(null, `logDiscordCommand`, {
+            guild: `${guild.name} (${guild.id})`,
+            channel: `${channel.name} (${channel.id})`,
+            user: `${message.author.username} (${message.author.id})`,
+            message: message.cleanContent
+        }));
 
         return true;
     },

@@ -62,6 +62,9 @@ module.exports = {
 	async execute(client, interaction) {
 		const instance = client.getInstance(interaction.guildId);
 
+		const verifyId = Math.floor(100000 + Math.random() * 900000);
+		client.logInteraction(interaction, verifyId, 'slashCommand');
+
 		if (!await client.validatePermissions(interaction)) return;
 
 		if (Config.discord.needAdminPrivileges && !client.isAdministrator(interaction)) {
@@ -81,7 +84,13 @@ module.exports = {
 				const category = await require('../discordTools/SetupGuildCategory')(client, guild);
 				await require('../discordTools/SetupGuildChannels')(client, guild, category);
 
-				await PermissionHandler.removeViewPermission(client, guild);
+				const perms = PermissionHandler.getPermissionsRemoved(client, guild);
+				try {
+					await category.permissionOverwrites.set(perms);
+				}
+				catch (e) {
+					/* Ignore */
+				}
 
 				await DiscordTools.clearTextChannel(guild.id, instance.channelId.information, 100);
 				await DiscordTools.clearTextChannel(guild.id, instance.channelId.switches, 100);
@@ -106,7 +115,12 @@ module.exports = {
 
 				await require('../discordTools/SetupTrackers')(client, guild);
 
-				await PermissionHandler.resetPermissions(client, guild);
+				await PermissionHandler.resetPermissionsAllChannels(client, guild);
+
+				client.log(client.intlGet(null, 'infoCap'), client.intlGet(null, 'slashCommandValueChange', {
+					id: `${verifyId}`,
+					value: `discord`
+				}));
 			} break;
 
 			case 'information': {
@@ -117,31 +131,78 @@ module.exports = {
 					await rustplus.map.writeMap(false, true);
 					await DiscordMessages.sendUpdateMapInformationMessage(rustplus);
 				}
+
+				client.log(client.intlGet(null, 'infoCap'), client.intlGet(null, 'slashCommandValueChange', {
+					id: `${verifyId}`,
+					value: `information`
+				}));
 			} break;
 
 			case 'servers': {
-				await PermissionHandler.removeViewPermission(client, guild);
+				const perms = PermissionHandler.getPermissionsRemoved(client, guild);
+				try {
+					const category = await DiscordTools.getCategoryById(guild.id, instance.channelId.category);
+					await category.permissionOverwrites.set(perms);
+				}
+				catch (e) {
+					/* Ignore */
+				}
+
 				await require('../discordTools/SetupServerList')(client, guild);
-				await PermissionHandler.resetPermissions(client, guild);
+
+				await PermissionHandler.resetPermissionsAllChannels(client, guild);
+
+				client.log(client.intlGet(null, 'infoCap'), client.intlGet(null, 'slashCommandValueChange', {
+					id: `${verifyId}`,
+					value: `servers`
+				}));
 			} break;
 
 			case 'settings': {
-				await PermissionHandler.removeViewPermission(client, guild);
+				const perms = PermissionHandler.getPermissionsRemoved(client, guild);
+				try {
+					const category = await DiscordTools.getCategoryById(guild.id, instance.channelId.category);
+					await category.permissionOverwrites.set(perms);
+				}
+				catch (e) {
+					/* Ignore */
+				}
+
 				await require('../discordTools/SetupSettingsMenu')(client, guild, true);
-				await PermissionHandler.resetPermissions(client, guild);
+
+				await PermissionHandler.resetPermissionsAllChannels(client, guild);
+
+				client.log(client.intlGet(null, 'infoCap'), client.intlGet(null, 'slashCommandValueChange', {
+					id: `${verifyId}`,
+					value: `settings`
+				}));
 			} break;
 
 			case 'switches': {
 				await DiscordTools.clearTextChannel(guild.id, instance.channelId.switches, 100);
 				await DiscordTools.clearTextChannel(guild.id, instance.channelId.switchGroups, 100);
 
-				await PermissionHandler.removeViewPermission(client, guild);
+				const perms = PermissionHandler.getPermissionsRemoved(client, guild);
+				try {
+					const category = await DiscordTools.getCategoryById(guild.id, instance.channelId.category);
+					await category.permissionOverwrites.set(perms);
+				}
+				catch (e) {
+					/* Ignore */
+				}
+
 				const rustplus = client.rustplusInstances[guild.id];
 				if (rustplus && rustplus.isOperational) {
 					await require('../discordTools/SetupSwitches')(client, rustplus);
 					await require('../discordTools/SetupSwitchGroups')(client, rustplus);
 				}
-				await PermissionHandler.resetPermissions(client, guild);
+
+				await PermissionHandler.resetPermissionsAllChannels(client, guild);
+
+				client.log(client.intlGet(null, 'infoCap'), client.intlGet(null, 'slashCommandValueChange', {
+					id: `${verifyId}`,
+					value: `switches`
+				}));
 			} break;
 
 			case 'alarms': {
@@ -149,23 +210,56 @@ module.exports = {
 				if (rustplus && rustplus.isOperational) {
 					await require('../discordTools/SetupAlarms')(client, rustplus);
 				}
+
+				client.log(client.intlGet(null, 'infoCap'), client.intlGet(null, 'slashCommandValueChange', {
+					id: `${verifyId}`,
+					value: `alarms`
+				}));
 			} break;
 
 			case 'storagemonitors': {
 				await DiscordTools.clearTextChannel(guild.id, instance.channelId.storageMonitors, 100);
 
-				await PermissionHandler.removeViewPermission(client, guild);
+				const perms = PermissionHandler.getPermissionsRemoved(client, guild);
+				try {
+					const category = await DiscordTools.getCategoryById(guild.id, instance.channelId.category);
+					await category.permissionOverwrites.set(perms);
+				}
+				catch (e) {
+					/* Ignore */
+				}
+
 				const rustplus = client.rustplusInstances[guild.id];
 				if (rustplus && rustplus.isOperational) {
 					await require('../discordTools/SetupStorageMonitors')(client, rustplus);
 				}
-				await PermissionHandler.resetPermissions(client, guild);
+
+				await PermissionHandler.resetPermissionsAllChannels(client, guild);
+
+				client.log(client.intlGet(null, 'infoCap'), client.intlGet(null, 'slashCommandValueChange', {
+					id: `${verifyId}`,
+					value: `storagemonitors`
+				}));
 			} break;
 
 			case 'trackers': {
-				await PermissionHandler.removeViewPermission(client, guild);
+				const perms = PermissionHandler.getPermissionsRemoved(client, guild);
+				try {
+					const category = await DiscordTools.getCategoryById(guild.id, instance.channelId.category);
+					await category.permissionOverwrites.set(perms);
+				}
+				catch (e) {
+					/* Ignore */
+				}
+
 				await require('../discordTools/SetupTrackers')(client, guild);
-				await PermissionHandler.resetPermissions(client, guild);
+
+				await PermissionHandler.resetPermissionsAllChannels(client, guild);
+
+				client.log(client.intlGet(null, 'infoCap'), client.intlGet(null, 'slashCommandValueChange', {
+					id: `${verifyId}`,
+					value: `trackers`
+				}));
 			} break;
 
 			default: {

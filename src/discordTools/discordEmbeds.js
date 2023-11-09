@@ -78,9 +78,16 @@ module.exports = {
         if (server.battlemetricsId !== null) {
             const bmId = server.battlemetricsId;
             const bmIdLink = `[${bmId}](${Constants.BATTLEMETRICS_SERVER_URL}${bmId})`;
-            description += `**Battlemetrics ID:** ${bmIdLink}\n\n`;
+            description += `__**${Client.client.intlGet(guildId, 'battlemetricsId')}:**__ ${bmIdLink}\n`;
+
+            const bmInstance = Client.client.battlemetricsInstances[bmId];
+            if (bmInstance) {
+                description += `__**${Client.client.intlGet(guildId, 'streamerMode')}:**__ `;
+                description += (bmInstance.streamerMode ? Client.client.intlGet(guildId, 'onCap') :
+                    Client.client.intlGet(guildId, 'offCap')) + '\n';
+            }
         }
-        description += `${server.description}`;
+        description += `\n${server.description}`;
 
         return module.exports.getEmbed({
             title: `${server.title}`,
@@ -104,60 +111,126 @@ module.exports = {
     getTrackerEmbed: function (guildId, trackerId) {
         const instance = Client.client.getInstance(guildId);
         const tracker = instance.trackers[trackerId];
-        const serverStatus = tracker.status ? Constants.ONLINE_EMOJI : Constants.OFFLINE_EMOJI;
+        const battlemetricsId = tracker.battlemetricsId;
+        const bmInstance = Client.client.battlemetricsInstances[battlemetricsId];
 
-        let playerName = '', playerSteamId = '', playerStatus = '';
+        const successful = bmInstance && bmInstance.lastUpdateSuccessful ? true : false;
+
+        const battlemetricsLink = `[${battlemetricsId}](${Constants.BATTLEMETRICS_SERVER_URL}${battlemetricsId})`;
+        const serverStatus = !successful ? Constants.NOT_FOUND_EMOJI :
+            (bmInstance.server_status ? Constants.ONLINE_EMOJI : Constants.OFFLINE_EMOJI);
+
+        let description = `__**Battlemetrics ID:**__ ${battlemetricsLink}\n`;
+        description += `__**${Client.client.intlGet(guildId, 'serverId')}:**__ ${tracker.serverId}\n`;
+        description += `__**${Client.client.intlGet(guildId, 'serverStatus')}:**__ ${serverStatus}\n`;
+        description += `__**${Client.client.intlGet(guildId, 'streamerMode')}:**__ `;
+        description += (!bmInstance ? Constants.NOT_FOUND_EMOJI : (bmInstance.streamerMode ?
+            Client.client.intlGet(guildId, 'onCap') : Client.client.intlGet(guildId, 'offCap'))) + '\n';
+        description += `__**${Client.client.intlGet(guildId, 'clanTag')}:**__ `;
+        description += tracker.clanTag !== '' ? `\`${tracker.clanTag}\`` : '';
+
+        let totalCharacters = description.length;
+        let fieldIndex = 0
+        let playerName = [''], playerId = [''], playerStatus = [''];
+        let playerNameCharacters = 0, playerIdCharacters = 0, playerStatusCharacters = 0;
         for (const player of tracker.players) {
-            playerName += `${player.name}\n`;
-            if (tracker.players.length < 12) {
-                playerSteamId += `[${player.steamId}](${Constants.STEAM_PROFILES_URL}${player.steamId})\n`;
-            }
-            else {
-                playerSteamId += `${player.steamId}\n`;
-            }
+            let name = `${player.name}`;
 
-            if (player.status === true) {
-                playerStatus += `${Constants.ONLINE_EMOJI} [${player.time}]\n`;
+            const nameMaxLength = Constants.EMBED_FIELD_MAX_WIDTH_LENGTH_3;
+            name = name.length <= nameMaxLength ? name : name.substring(0, nameMaxLength - 2) + '..';
+            name += '\n';
+
+            let id = '';
+            let status = '';
+
+            const steamIdLink = Constants.GET_STEAM_PROFILE_LINK(player.steamId);
+            const bmIdLink = Constants.GET_BATTLEMETRICS_PROFILE_LINK(player.playerId);
+
+            const isNewLine = (player.steamId !== null && player.playerId !== null) ? true : false;
+            id += `${player.steamId !== null ? steamIdLink : ''}`;
+            id += `${player.steamId !== null && player.playerId !== null ? ' /\n' : ''}`;
+            id += `${player.playerId !== null ? bmIdLink : ''}`;
+            id += `${player.steamId === null && player.playerId === null ?
+                Client.client.intlGet(guildId, 'empty') : ''}`;
+            id += '\n';
+
+            if (!bmInstance.players.hasOwnProperty(player.playerId) || !successful) {
+                status += `${Constants.NOT_FOUND_EMOJI}\n`;
             }
             else {
-                let offlineTime = player.offlineTime;
-                if (offlineTime === null) {
-                    playerStatus += `${Constants.OFFLINE_EMOJI}\n`;
+                let time = null;
+                if (bmInstance.players[player.playerId]['status']) {
+                    time = bmInstance.getOnlineTime(player.playerId);
+                    status += `${Constants.ONLINE_EMOJI}`;
                 }
                 else {
-                    let seconds = (new Date() - new Date(offlineTime)) / 1000;
-                    offlineTime = Timer.secondsToFullScale(seconds, 's');
-                    playerStatus += `${Constants.OFFLINE_EMOJI} [${offlineTime}]\n`;
+                    time = bmInstance.getOfflineTime(player.playerId);
+                    status += `${Constants.OFFLINE_EMOJI}`;
                 }
+                status += time !== null ? ` [${time[1]}]\n` : '\n';
             }
+
+            if (isNewLine) {
+                name += '\n';
+                status += '\n';
+            }
+
+            if (totalCharacters + (name.length + id.length + status.length) >= Constants.EMBED_MAX_TOTAL_CHARACTERS) {
+                break;
+            }
+
+            if ((playerNameCharacters + name.length) > Constants.EMBED_MAX_FIELD_VALUE_CHARACTERS ||
+                (playerIdCharacters + id.length) > Constants.EMBED_MAX_FIELD_VALUE_CHARACTERS ||
+                (playerStatusCharacters + status.length) > Constants.EMBED_MAX_FIELD_VALUE_CHARACTERS) {
+                fieldIndex += 1;
+
+                playerName.push('');
+                playerId.push('');
+                playerStatus.push('');
+
+                playerNameCharacters = 0;
+                playerIdCharacters = 0;
+                playerStatusCharacters = 0;
+            }
+
+            playerNameCharacters += name.length;
+            playerIdCharacters += id.length;
+            playerStatusCharacters += status.length;
+
+            totalCharacters += name.length + id.length + status.length;
+
+            playerName[fieldIndex] += name;
+            playerId[fieldIndex] += id;
+            playerStatus[fieldIndex] += status;
         }
 
-        let nameChangeHistory = Client.client.intlGet(guildId, 'empty');
-        if (tracker.nameChangeHistory.length !== 0) {
-            nameChangeHistory = tracker.nameChangeHistory.join('\n');
+        const fields = [];
+        for (let i = 0; i < (fieldIndex + 1); i++) {
+            fields.push({
+                name: i === 0 ? `__${Client.client.intlGet(guildId, 'name')}__\n\u200B` : '\u200B',
+                value: playerName[i] !== '' ? playerName[i] : Client.client.intlGet(guildId, 'empty'),
+                inline: true
+            });
+            fields.push({
+                name: i === 0 ? `__${Client.client.intlGet(guildId, 'steamId')}__ /\n` +
+                    `__${Client.client.intlGet(guildId, 'battlemetricsId')}__` : '\u200B',
+                value: playerId[i] !== '' ? playerId[i] : Client.client.intlGet(guildId, 'empty'),
+                inline: true
+            });
+            fields.push({
+                name: i === 0 ? `__${Client.client.intlGet(guildId, 'status')}__\n\u200B` : '\u200B',
+                value: playerStatus[i] !== '' ? playerStatus[i] : Client.client.intlGet(guildId, 'empty'),
+                inline: true
+            });
         }
-
-        if (playerName === '') playerName = Client.client.intlGet(guildId, 'empty');
-        if (playerSteamId === '') playerSteamId = Client.client.intlGet(guildId, 'empty');
-        if (playerStatus === '') playerStatus = Client.client.intlGet(guildId, 'empty');
-
-        const bmId = tracker.battlemetricsId;
-        const bmIdLink = `[${bmId}](${Constants.BATTLEMETRICS_SERVER_URL}${bmId})`;
 
         return module.exports.getEmbed({
             title: `${tracker.name}`,
             color: Constants.COLOR_DEFAULT,
-            description: `**Battlemetrics ID:** ${bmIdLink}\n` +
-                `**${Client.client.intlGet(guildId, 'clanTag')}:** ` +
-                (tracker.clanTag !== '' ? `\`${tracker.clanTag}\`` : '') + '\n' +
-                `${Client.client.intlGet(guildId, 'serverStatus', { status: serverStatus })}`,
+            description: description,
             thumbnail: `${tracker.img}`,
             footer: { text: `${tracker.title}` },
-            fields: [
-                { name: Client.client.intlGet(guildId, 'name'), value: playerName, inline: true },
-                { name: 'SteamID', value: playerSteamId, inline: true },
-                { name: Client.client.intlGet(guildId, 'status'), value: playerStatus, inline: true },
-                { name: Client.client.intlGet(guildId, 'nameChangeHistory'), value: nameChangeHistory }],
+            fields: fields,
             timestamp: true
         });
     },
@@ -333,7 +406,7 @@ module.exports = {
                 },
                 { name: Client.client.intlGet(guildId, 'switches'), value: switchName, inline: true },
                 { name: 'ID', value: switchId, inline: true },
-                { name: Client.client.intlGet(guildId, 'active'), value: switchActive, inline: true }
+                { name: Client.client.intlGet(guildId, 'status'), value: switchActive, inline: true }
             ],
 
             timestamp: true
@@ -479,36 +552,6 @@ module.exports = {
             description: `**ID** \`${entityId}\``,
             thumbnail: `attachment://${entity.image}`,
             footer: { text: `${entity.server}` },
-            timestamp: true
-        });
-    },
-
-    getTrackerAllOfflineEmbed: function (guildId, trackerId) {
-        const instance = Client.client.getInstance(guildId);
-        const tracker = instance.trackers[trackerId];
-
-        return module.exports.getEmbed({
-            title: Client.client.intlGet(guildId, 'allJustOfflineTracker', {
-                tracker: tracker.name
-            }),
-            color: Constants.COLOR_INACTIVE,
-            thumbnail: `${instance.trackers[trackerId].img}`,
-            footer: { text: `${instance.trackers[trackerId].title}` },
-            timestamp: true
-        });
-    },
-
-    getTrackerAnyOnlineEmbed: function (guildId, trackerId) {
-        const instance = Client.client.getInstance(guildId);
-        const tracker = instance.trackers[trackerId];
-
-        return module.exports.getEmbed({
-            title: Client.client.intlGet(guildId, 'anyJustOnlineTracker', {
-                tracker: tracker.name
-            }),
-            color: Constants.COLOR_ACTIVE,
-            thumbnail: `${instance.trackers[trackerId].img}`,
-            footer: { text: `${instance.trackers[trackerId].title}` },
             timestamp: true
         });
     },
@@ -743,20 +786,21 @@ module.exports = {
         const guildId = rustplus.guildId;
         const instance = Client.client.getInstance(guildId);
 
+        const title = Client.client.intlGet(guildId, 'teamMemberInfo');
         const teamMemberFieldName = Client.client.intlGet(guildId, 'teamMember');
         const statusFieldName = Client.client.intlGet(guildId, 'status');
         const locationFieldName = Client.client.intlGet(guildId, 'location');
+        const footer = instance.serverList[rustplus.serverId].title;
 
-        let names = '';
-        let status = '';
-        let locations = '';
+        let totalCharacters = title.length + teamMemberFieldName.length + statusFieldName.length + locationFieldName.length + footer.length;
+        let fieldIndex = 0;
+        let teammateName = [''], teammateStatus = [''], teammateLocation = [''];
+        let teammateNameCharacters = 0, teammateStatusCharacters = 0, teammateLocationCharacters = 0;
         for (const player of rustplus.team.players) {
-            const backupName = player.name === '' ? '-' : player.name;
-            names += (rustplus.team.teamSize < 12) ?
-                `[${backupName}](${Constants.STEAM_PROFILES_URL}${player.steamId})` : backupName;
-
-            names += (player.teamLeader) ? `${Constants.LEADER_EMOJI}\n` : '\n';
-            locations += (player.isOnline || player.isAlive) ? `${player.pos.string}\n` : '-\n';
+            let name = player.name === '' ? '-' : `[${player.name}](${Constants.STEAM_PROFILES_URL}${player.steamId})`;
+            name += (player.teamLeader) ? `${Constants.LEADER_EMOJI}\n` : '\n';
+            let status = '';
+            let location = (player.isOnline || player.isAlive) ? `${player.pos.string}\n` : '-\n';
 
             if (player.isOnline) {
                 const isAfk = player.getAfkSeconds() >= Constants.AFK_TIME_SECONDS;
@@ -778,19 +822,143 @@ module.exports = {
                 status += (offlineTime !== null) ? offlineTime : '';
                 status += '\n';
             }
+
+            if (totalCharacters + (name.length + status.length + location.length) >=
+                Constants.EMBED_MAX_TOTAL_CHARACTERS) {
+                break;
+            }
+
+            if ((teammateNameCharacters + name.length) > Constants.EMBED_MAX_FIELD_VALUE_CHARACTERS ||
+                (teammateStatusCharacters + status.length) > Constants.EMBED_MAX_FIELD_VALUE_CHARACTERS ||
+                (teammateLocationCharacters + location.length) > Constants.EMBED_MAX_FIELD_VALUE_CHARACTERS) {
+                fieldIndex += 1;
+
+                teammateName.push('');
+                teammateStatus.push('');
+                teammateLocation.push('');
+
+                teammateNameCharacters = 0;
+                teammateStatusCharacters = 0;
+                teammateLocationCharacters = 0;
+            }
+
+            teammateNameCharacters += name.length;
+            teammateStatusCharacters += status.length;
+            teammateLocationCharacters += location.length;
+
+            totalCharacters += name.length + status.length + location.length;
+
+            teammateName[fieldIndex] += name;
+            teammateStatus[fieldIndex] += status;
+            teammateLocation[fieldIndex] += location;
+        }
+
+        const fields = [];
+        for (let i = 0; i < (fieldIndex + 1); i++) {
+            fields.push({
+                name: i === 0 ? teamMemberFieldName : '\u200B',
+                value: teammateName[i] !== '' ? teammateName[i] : Client.client.intlGet(guildId, 'empty'),
+                inline: true
+            });
+            fields.push({
+                name: i === 0 ? statusFieldName : '\u200B',
+                value: teammateStatus[i] !== '' ? teammateStatus[i] : Client.client.intlGet(guildId, 'empty'),
+                inline: true
+            });
+            fields.push({
+                name: i === 0 ? locationFieldName : '\u200B',
+                value: teammateLocation[i] !== '' ? teammateLocation[i] : Client.client.intlGet(guildId, 'empty'),
+                inline: true
+            });
         }
 
         return module.exports.getEmbed({
-            title: Client.client.intlGet(guildId, 'teamMemberInfo'),
+            title: title,
             color: Constants.COLOR_DEFAULT,
             thumbnail: 'attachment://team_info_logo.png',
-            footer: { text: instance.serverList[rustplus.serverId].title },
-            fields: [
-                { name: teamMemberFieldName, value: names, inline: true },
-                { name: statusFieldName, value: status, inline: true },
-                { name: locationFieldName, value: locations, inline: true }],
+            footer: { text: footer },
+            fields: fields,
             timestamp: true
         });
+    },
+
+    getUpdateBattlemetricsOnlinePlayersInformationEmbed: function (rustplus, battlemetricsId) {
+        const bmInstance = Client.client.battlemetricsInstances[battlemetricsId];
+        const guildId = rustplus.guildId;
+
+        const playerIds = bmInstance.getOnlinePlayerIdsOrderedByTime();
+
+        let totalCharacters = 0;
+        let fieldCharacters = 0;
+
+        const title = Client.client.intlGet(guildId, 'battlemetricsOnlinePlayers');
+        const footer = { text: bmInstance.server_name };
+
+        totalCharacters += title.length;
+        totalCharacters += bmInstance.server_name.length;
+        totalCharacters += Client.client.intlGet(guildId, 'andMorePlayers', { number: 100 }).length;
+        totalCharacters += `${Client.client.intlGet(guildId, 'players')}`.length;
+
+        const fields = [''];
+        let fieldIndex = 0;
+        let isEmbedFull = false;
+        let playerCounter = 0;
+        for (const playerId of playerIds) {
+            playerCounter += 1;
+
+            const status = bmInstance.players[playerId]['status'];
+            const time = status ? bmInstance.getOnlineTime(playerId)[1] : bmInstance.getOfflineTime(playerId)[1];
+
+            let playerStr = status ? Constants.ONLINE_EMOJI : Constants.OFFLINE_EMOJI;
+            playerStr += ` [${time}] `;
+
+            const nameMaxLength = Constants.EMBED_FIELD_MAX_WIDTH_LENGTH_3 - (3 + time.length);
+
+            let name = bmInstance.players[playerId]['name'].replace('[', '(').replace(']', ')');
+            name = name.length <= nameMaxLength ? name : name.substring(0, nameMaxLength - 2) + '..';
+
+            playerStr += `[${name}](${Constants.BATTLEMETRICS_PROFILE_URL + `${playerId}`})\n`;
+
+            if (totalCharacters + playerStr.length >= Constants.EMBED_MAX_TOTAL_CHARACTERS) {
+                isEmbedFull = true;
+                break;
+            }
+
+            if (fieldCharacters + playerStr.length >= Constants.EMBED_MAX_FIELD_VALUE_CHARACTERS) {
+                fieldCharacters = 0;
+                fieldIndex += 1;
+                fields.push('');
+            }
+
+            fields[fieldIndex] += playerStr;
+            totalCharacters += playerStr.length;
+            fieldCharacters += playerStr.length;
+        }
+
+        const embed = module.exports.getEmbed({
+            title: title,
+            color: Constants.COLOR_DEFAULT,
+            footer: footer,
+            timestamp: true
+        });
+
+        if (isEmbedFull) {
+            embed.setDescription(Client.client.intlGet(guildId, 'andMorePlayers', {
+                number: playerIds.length - playerCounter
+            }));
+        }
+
+        let fieldCounter = 0;
+        for (const field of fields) {
+            embed.addFields({
+                name: fieldCounter === 0 ? Client.client.intlGet(guildId, 'players') : '\u200B',
+                value: field,
+                inline: true
+            });
+            fieldCounter += 1;
+        }
+
+        return embed;
     },
 
     getDiscordCommandResponseEmbed: function (rustplus, response) {
@@ -915,5 +1083,121 @@ module.exports = {
             timestamp: true,
             title: state
         });
+    },
+
+    getCraftEmbed: function (guildId, craftDetails, quantity) {
+        let title = '';
+        let description = '';
+
+        if (quantity === 1) {
+            title = `${craftDetails[1].name}`;
+            description += `__**${Client.client.intlGet(guildId, 'time')}:**__ ${craftDetails[2].timeString}`;
+        }
+        else {
+            title = `${craftDetails[1].name} x${quantity}`;
+            const time = Timer.secondsToFullScale(craftDetails[2].time * quantity, '', true);
+            description += `__**${Client.client.intlGet(guildId, 'time')}:**__ ${time}`;
+        }
+
+        let items = '', quantities = '';
+        for (const item of craftDetails[2].ingredients) {
+            const itemName = Client.client.items.getName(item.id);
+            items += `${itemName}\n`;
+            quantities += `${item.quantity * quantity}\n`;
+        }
+
+        return module.exports.getEmbed({
+            title: title,
+            description: description,
+            color: Constants.COLOR_DEFAULT,
+            timestamp: true,
+            fields: [
+                { name: Client.client.intlGet(guildId, 'quantity'), value: items, inline: true },
+                { name: Client.client.intlGet(guildId, 'hoster'), value: quantities, inline: true }]
+        });
+    },
+
+    getResearchEmbed: function (guildId, researchDetails) {
+        let typeString = '', scrapString = '';
+        if (researchDetails[2].researchTable !== null) {
+            typeString += `${Client.client.intlGet(guildId, 'researchTable')}\n`;
+            scrapString += `${researchDetails[2].researchTable}\n`;
+        }
+        if (researchDetails[2].workbench !== null) {
+            typeString += `${Client.client.items.getName(researchDetails[2].workbench.type)}\n`;
+            const scrap = researchDetails[2].workbench.scrap;
+            const totalScrap = researchDetails[2].workbench.totalScrap;
+            scrapString += `${scrap} (${Client.client.intlGet(guildId, 'total')} ${totalScrap})`;
+        }
+
+        return module.exports.getEmbed({
+            title: `${researchDetails[1].name}`,
+            color: Constants.COLOR_DEFAULT,
+            timestamp: true,
+            fields: [
+                { name: Client.client.intlGet(guildId, 'type'), value: typeString, inline: true },
+                { name: Client.client.intlGet(guildId, 'scrap'), value: scrapString, inline: true }]
+        });
+    },
+
+    getRecycleEmbed: function (guildId, recycleDetails, quantity) {
+        const title = quantity === 1 ? `${recycleDetails[1].name}` : `${recycleDetails[1].name} x${quantity}`;
+
+        const recycleData = Client.client.rustlabs.getRecycleDataFromArray([
+            { itemId: recycleDetails[0], quantity: quantity, itemIsBlueprint: false }
+        ]);
+
+        let items0 = '', quantities0 = '';
+        for (const item of recycleDetails[2]) {
+            items0 += `${Client.client.items.getName(item.id)}\n`;
+            quantities0 += (item.probability !== 1) ? `${parseInt(item.probability * 100)}%\n` : `${item.quantity}\n`;
+        }
+
+        let items1 = '', quantities1 = '';
+        for (const item of recycleData) {
+            items1 += `${Client.client.items.getName(item.itemId)}\n`;
+            quantities1 += `${item.quantity}\n`;
+        }
+
+        return module.exports.getEmbed({
+            title: title,
+            color: Constants.COLOR_DEFAULT,
+            timestamp: true,
+            fields: [
+                { name: Client.client.intlGet(guildId, 'yield'), value: items0, inline: true },
+                { name: '\u200B', value: quantities0, inline: true },
+                { name: '\u200B', value: '\u200B', inline: false },
+                { name: Client.client.intlGet(guildId, 'calculated'), value: items1, inline: true },
+                { name: '\u200B', value: quantities1, inline: true }]
+        });
+    },
+
+    getBattlemetricsEventEmbed: function (guildId, battlemetricsId, title, description, fields = null) {
+        const instance = Client.client.getInstance(guildId);
+        const bmInstance = Client.client.battlemetricsInstances[battlemetricsId];
+
+        const serverId = `${bmInstance.server_ip}-${bmInstance.server_port}`;
+
+        let thumbnail = '';
+        if (instance.serverList.hasOwnProperty(serverId)) {
+            thumbnail = instance.serverList[serverId].img
+        }
+        const embed = module.exports.getEmbed({
+            title: title,
+            color: Constants.COLOR_DEFAULT,
+            timestamp: true,
+            thumbnail: thumbnail,
+            footer: { text: bmInstance.server_name }
+        });
+
+        if (fields !== null) {
+            embed.addFields(fields);
+        }
+
+        if (description !== '') {
+            embed.setDescription(description);
+        }
+
+        return embed;
     },
 }

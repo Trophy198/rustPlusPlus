@@ -18,14 +18,29 @@
 
 */
 
-const BattlemetricsAPI = require('../util/battlemetricsAPI.js');
+const Discord = require('discord.js');
+
+const Battlemetrics = require('../structures/Battlemetrics');
 const Constants = require('../util/constants.js');
 const DiscordMessages = require('../discordTools/discordMessages.js');
 const Keywords = require('../util/keywords.js');
+const Scrape = require('../util/scrape.js');
 
 module.exports = async (client, interaction) => {
     const instance = client.getInstance(interaction.guildId);
     const guildId = interaction.guildId;
+
+    const verifyId = Math.floor(100000 + Math.random() * 900000);
+    client.logInteraction(interaction, verifyId, 'userModal');
+
+    if (instance.blacklist['discordIds'].includes(interaction.user.id) &&
+        !interaction.member.permissions.has(Discord.PermissionsBitField.Flags.Administrator)) {
+        client.log(client.intlGet(null, 'infoCap'), client.intlGet(null, 'userPartOfBlacklist', {
+            id: `${verifyId}`,
+            user: `${interaction.user.username} (${interaction.user.id})`
+        }));
+        return;
+    }
 
     if (interaction.customId.startsWith('CustomTimersEdit')) {
         const ids = JSON.parse(interaction.customId.replace('CustomTimersEdit', ''));
@@ -45,20 +60,42 @@ module.exports = async (client, interaction) => {
             server.oilRigLockedCrateUnlockTimeMs = oilRigCrateUnlockTime * 1000;
         }
         client.setInstance(guildId, instance);
+
+        client.log(client.intlGet(null, 'infoCap'), client.intlGet(null, 'modalValueChange', {
+            id: `${verifyId}`,
+            value: `${server.cargoShipEgressTimeMs}, ${server.oilRigLockedCrateUnlockTimeMs}`
+        }));
     }
     else if (interaction.customId.startsWith('ServerEdit')) {
         const ids = JSON.parse(interaction.customId.replace('ServerEdit', ''));
         const server = instance.serverList[ids.serverId];
         const battlemetricsId = interaction.fields.getTextInputValue('ServerBattlemetricsId');
 
-        if (battlemetricsId === '') {
-            server.battlemetricsId = null;
+        if (battlemetricsId !== server.battlemetricsId) {
+            if (battlemetricsId === '') {
+                server.battlemetricsId = null;
+            }
+            else if (client.battlemetricsInstances.hasOwnProperty(battlemetricsId)) {
+                const bmInstance = client.battlemetricsInstances[battlemetricsId];
+                server.battlemetricsId = battlemetricsId;
+                server.connect = `connect ${bmInstance.server_ip}:${bmInstance.server_port}`;
+            }
+            else {
+                const bmInstance = new Battlemetrics(battlemetricsId);
+                await bmInstance.setup();
+                if (bmInstance.lastUpdateSuccessful) {
+                    client.battlemetricsInstances[battlemetricsId] = bmInstance;
+                    server.battlemetricsId = battlemetricsId;
+                    server.connect = `connect ${bmInstance.server_ip}:${bmInstance.server_port}`;
+                }
+            }
         }
-        else {
-            server.battlemetricsId = battlemetricsId;
-        }
-
         client.setInstance(guildId, instance);
+
+        client.log(client.intlGet(null, 'infoCap'), client.intlGet(null, 'modalValueChange', {
+            id: `${verifyId}`,
+            value: `${server.battlemetricsId}`
+        }));
 
         await DiscordMessages.sendServerMessage(interaction.guildId, ids.serverId);
 
@@ -70,6 +107,13 @@ module.exports = async (client, interaction) => {
         const server = instance.serverList[ids.serverId];
         const smartSwitchName = interaction.fields.getTextInputValue('SmartSwitchName');
         const smartSwitchCommand = interaction.fields.getTextInputValue('SmartSwitchCommand');
+        let smartSwitchProximity = null;
+        try {
+            smartSwitchProximity = parseInt(interaction.fields.getTextInputValue('SmartSwitchProximity'));
+        }
+        catch (e) {
+            smartSwitchProximity = null;
+        }
 
         if (!server || (server && !server.switches.hasOwnProperty(ids.entityId))) {
             interaction.deferUpdate();
@@ -82,7 +126,16 @@ module.exports = async (client, interaction) => {
             !Keywords.getListOfUsedKeywords(client, guildId, ids.serverId).includes(smartSwitchCommand)) {
             server.switches[ids.entityId].command = smartSwitchCommand;
         }
+
+        if (smartSwitchProximity !== null && smartSwitchProximity >= 0) {
+            server.switches[ids.entityId].proximity = smartSwitchProximity;
+        }
         client.setInstance(guildId, instance);
+
+        client.log(client.intlGet(null, 'infoCap'), client.intlGet(null, 'modalValueChange', {
+            id: `${verifyId}`,
+            value: `${smartSwitchName}, ${server.switches[ids.entityId].command}`
+        }));
 
         await DiscordMessages.sendSmartSwitchMessage(guildId, ids.serverId, ids.entityId);
     }
@@ -105,6 +158,11 @@ module.exports = async (client, interaction) => {
         }
         client.setInstance(guildId, instance);
 
+        client.log(client.intlGet(null, 'infoCap'), client.intlGet(null, 'modalValueChange', {
+            id: `${verifyId}`,
+            value: `${groupName}, ${server.switchGroups[ids.groupId].command}`
+        }));
+
         await DiscordMessages.sendSmartSwitchGroupMessage(interaction.guildId, ids.serverId, ids.groupId);
     }
     else if (interaction.customId.startsWith('GroupAddSwitch')) {
@@ -126,6 +184,11 @@ module.exports = async (client, interaction) => {
         server.switchGroups[ids.groupId].switches.push(switchId);
         client.setInstance(interaction.guildId, instance);
 
+        client.log(client.intlGet(null, 'infoCap'), client.intlGet(null, 'modalValueChange', {
+            id: `${verifyId}`,
+            value: `${switchId}`
+        }));
+
         await DiscordMessages.sendSmartSwitchGroupMessage(interaction.guildId, ids.serverId, ids.groupId);
     }
     else if (interaction.customId.startsWith('GroupRemoveSwitch')) {
@@ -141,6 +204,11 @@ module.exports = async (client, interaction) => {
         server.switchGroups[ids.groupId].switches =
             server.switchGroups[ids.groupId].switches.filter(e => e !== switchId);
         client.setInstance(interaction.guildId, instance);
+
+        client.log(client.intlGet(null, 'infoCap'), client.intlGet(null, 'modalValueChange', {
+            id: `${verifyId}`,
+            value: `${switchId}`
+        }));
 
         await DiscordMessages.sendSmartSwitchGroupMessage(interaction.guildId, ids.serverId, ids.groupId);
     }
@@ -165,6 +233,11 @@ module.exports = async (client, interaction) => {
         }
         client.setInstance(guildId, instance);
 
+        client.log(client.intlGet(null, 'infoCap'), client.intlGet(null, 'modalValueChange', {
+            id: `${verifyId}`,
+            value: `${smartAlarmName}, ${smartAlarmMessage}, ${server.alarms[ids.entityId].command}`
+        }));
+
         await DiscordMessages.sendSmartAlarmMessage(interaction.guildId, ids.serverId, ids.entityId);
     }
     else if (interaction.customId.startsWith('StorageMonitorEdit')) {
@@ -179,6 +252,11 @@ module.exports = async (client, interaction) => {
 
         server.storageMonitors[ids.entityId].name = storageMonitorName;
         client.setInstance(interaction.guildId, instance);
+
+        client.log(client.intlGet(null, 'infoCap'), client.intlGet(null, 'modalValueChange', {
+            id: `${verifyId}`,
+            value: `${storageMonitorName}`
+        }));
 
         await DiscordMessages.sendStorageMonitorMessage(interaction.guildId, ids.serverId, ids.entityId);
     }
@@ -195,74 +273,127 @@ module.exports = async (client, interaction) => {
         }
 
         tracker.name = trackerName;
-
         if (trackerClanTag !== tracker.clanTag) {
             tracker.clanTag = trackerClanTag;
-            for (const player of tracker.players) {
-                player.name = '-';
-            }
+            client.battlemetricsIntervalCounter = 0;
         }
 
         if (trackerBattlemetricsId !== tracker.battlemetricsId) {
-            const info = await BattlemetricsAPI.getBattlemetricsServerInfo(client, trackerBattlemetricsId);
-            if (info === null) {
-                interaction.deferUpdate();
-                return;
+            if (client.battlemetricsInstances.hasOwnProperty(trackerBattlemetricsId)) {
+                const bmInstance = client.battlemetricsInstances[trackerBattlemetricsId];
+                tracker.battlemetricsId = trackerBattlemetricsId;
+                tracker.serverId = `${bmInstance.server_ip}-${bmInstance.server_port}`;
+                tracker.img = Constants.DEFAULT_SERVER_IMG;
+                tracker.title = bmInstance.server_name;
             }
-
-            tracker.serverId = `${info.ip}-${info.port}`;
-            tracker.battlemetricsId = trackerBattlemetricsId;
-            tracker.img = Constants.DEFAULT_SERVER_IMG;
-            tracker.title = info.name;
+            else {
+                const bmInstance = new Battlemetrics(trackerBattlemetricsId);
+                await bmInstance.setup();
+                if (bmInstance.lastUpdateSuccessful) {
+                    client.battlemetricsInstances[trackerBattlemetricsId] = bmInstance;
+                    tracker.battlemetricsId = trackerBattlemetricsId;
+                    tracker.serverId = `${bmInstance.server_ip}-${bmInstance.server_port}`;
+                    tracker.img = Constants.DEFAULT_SERVER_IMG;
+                    tracker.title = bmInstance.server_name;
+                }
+            }
         }
-
         client.setInstance(guildId, instance);
 
-        await DiscordMessages.sendTrackerMessage(interaction.guildId, ids.trackerId);
+        client.log(client.intlGet(null, 'infoCap'), client.intlGet(null, 'modalValueChange', {
+            id: `${verifyId}`,
+            value: `${trackerName}, ${tracker.battlemetricsId}, ${tracker.clanTag}`
+        }));
 
-        /* To force search of player name via scrape */
-        client.battlemetricsIntervalCounter = 0;
+        await DiscordMessages.sendTrackerMessage(interaction.guildId, ids.trackerId);
     }
     else if (interaction.customId.startsWith('TrackerAddPlayer')) {
         const ids = JSON.parse(interaction.customId.replace('TrackerAddPlayer', ''));
         const tracker = instance.trackers[ids.trackerId];
-        const steamId = interaction.fields.getTextInputValue('TrackerAddPlayerSteamId');
+        const id = interaction.fields.getTextInputValue('TrackerAddPlayerId');
 
         if (!tracker) {
             interaction.deferUpdate();
             return;
         }
 
-        if (tracker.players.some(e => e.steamId === steamId)) {
+        const isSteamId64 = id.length === Constants.STEAMID64_LENGTH ? true : false;
+        const bmInstance = client.battlemetricsInstances[tracker.battlemetricsId];
+
+        if ((isSteamId64 && tracker.players.some(e => e.steamId === id)) ||
+            (!isSteamId64 && tracker.players.some(e => e.playerId === id && e.steamId === null))) {
             interaction.deferUpdate();
             return;
         }
 
+        let name = null;
+        let steamId = null;
+        let playerId = null;
+
+        if (isSteamId64) {
+            steamId = id;
+            name = await Scrape.scrapeSteamProfileName(client, id);
+
+            if (name && bmInstance) {
+                playerId = Object.keys(bmInstance.players).find(e => bmInstance.players[e]['name'] === name);
+                if (!playerId) playerId = null;
+            }
+        }
+        else {
+            playerId = id;
+            if (bmInstance.players.hasOwnProperty(id)) {
+                name = bmInstance.players[id]['name'];
+            }
+            else {
+                name = '-';
+            }
+        }
+
         tracker.players.push({
-            name: '-', steamId: steamId, playerId: null, status: false, time: null, offlineTime: null
+            name: name,
+            steamId: steamId,
+            playerId: playerId
         });
         client.setInstance(interaction.guildId, instance);
 
-        await DiscordMessages.sendTrackerMessage(interaction.guildId, ids.trackerId);
+        client.log(client.intlGet(null, 'infoCap'), client.intlGet(null, 'modalValueChange', {
+            id: `${verifyId}`,
+            value: `${id}`
+        }));
 
-        /* To force search of player name via scrape */
-        client.battlemetricsIntervalCounter = 0;
+        await DiscordMessages.sendTrackerMessage(interaction.guildId, ids.trackerId);
     }
     else if (interaction.customId.startsWith('TrackerRemovePlayer')) {
         const ids = JSON.parse(interaction.customId.replace('TrackerRemovePlayer', ''));
         const tracker = instance.trackers[ids.trackerId];
-        const steamId = interaction.fields.getTextInputValue('TrackerRemovePlayerSteamId');
+        const id = interaction.fields.getTextInputValue('TrackerRemovePlayerId');
+
+        const isSteamId64 = id.length === Constants.STEAMID64_LENGTH ? true : false;
 
         if (!tracker) {
             interaction.deferUpdate();
             return;
         }
 
-        tracker.players = tracker.players.filter(e => e.steamId !== steamId);
+        if (isSteamId64) {
+            tracker.players = tracker.players.filter(e => e.steamId !== id);
+        }
+        else {
+            tracker.players = tracker.players.filter(e => e.playerId !== id || e.steamId !== null);
+        }
         client.setInstance(interaction.guildId, instance);
+
+        client.log(client.intlGet(null, 'infoCap'), client.intlGet(null, 'modalValueChange', {
+            id: `${verifyId}`,
+            value: `${id}`
+        }));
 
         await DiscordMessages.sendTrackerMessage(interaction.guildId, ids.trackerId);
     }
+
+    client.log(client.intlGet(null, 'infoCap'), client.intlGet(null, 'userModalInteractionSuccess', {
+        id: `${verifyId}`
+    }));
 
     interaction.deferUpdate();
 }

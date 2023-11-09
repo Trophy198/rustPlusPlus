@@ -80,6 +80,11 @@ module.exports = {
             });
         }
 
+        const deleteUnreachableDevicesButton = module.exports.getButton({
+            customId: `DeleteUnreachableDevices${identifier}`,
+            label: Client.client.intlGet(guildId, 'deleteUnreachableDevicesCap'),
+            style: PRIMARY
+        });
         const customTimersButton = module.exports.getButton({
             customId: `CustomTimersEdit${identifier}`,
             label: Client.client.intlGet(guildId, 'customTimersCap'),
@@ -123,6 +128,9 @@ module.exports = {
                 ),
                 new Discord.ActionRowBuilder().addComponents(
                     customTimersButton, trackerButton, groupButton
+                ),
+                new Discord.ActionRowBuilder().addComponents(
+                    deleteUnreachableDevicesButton
                 )
             ];
         }
@@ -133,6 +141,9 @@ module.exports = {
                 ),
                 new Discord.ActionRowBuilder().addComponents(
                     customTimersButton, groupButton
+                ),
+                new Discord.ActionRowBuilder().addComponents(
+                    deleteUnreachableDevicesButton
                 )
             ];
         }
@@ -363,6 +374,17 @@ module.exports = {
             }));
     },
 
+    getSmartSwitchNotifyInGameWhenChangedFromDiscordButton: function (guildId, enabled) {
+        return new Discord.ActionRowBuilder().addComponents(
+            module.exports.getButton({
+                customId: 'SmartSwitchNotifyInGameWhenChangedFromDiscord',
+                label: enabled ?
+                    Client.client.intlGet(guildId, 'enabledCap') :
+                    Client.client.intlGet(guildId, 'disabledCap'),
+                style: enabled ? SUCCESS : DANGER
+            }));
+    },
+
     getLeaderCommandEnabledButton: function (guildId, enabled) {
         return new Discord.ActionRowBuilder().addComponents(
             module.exports.getButton({
@@ -393,16 +415,14 @@ module.exports = {
         return [
             new Discord.ActionRowBuilder().addComponents(
                 module.exports.getButton({
-                    customId: `TrackerActive${identifier}`,
-                    label: tracker.active ?
-                        Client.client.intlGet(guildId, 'activeCap') :
-                        Client.client.intlGet(guildId, 'inactiveCap'),
-                    style: tracker.active ? SUCCESS : DANGER
+                    customId: `TrackerAddPlayer${identifier}`,
+                    label: Client.client.intlGet(guildId, 'addPlayerCap'),
+                    style: SUCCESS
                 }),
                 module.exports.getButton({
-                    customId: `TrackerEveryone${identifier}`,
-                    label: '@everyone',
-                    style: tracker.everyone ? SUCCESS : DANGER
+                    customId: `TrackerRemovePlayer${identifier}`,
+                    label: Client.client.intlGet(guildId, 'removePlayerCap'),
+                    style: DANGER
                 }),
                 module.exports.getButton({
                     customId: `TrackerEdit${identifier}`,
@@ -416,41 +436,21 @@ module.exports = {
                 })),
             new Discord.ActionRowBuilder().addComponents(
                 module.exports.getButton({
-                    customId: `TrackerAddPlayer${identifier}`,
-                    label: Client.client.intlGet(guildId, 'addPlayerCap'),
-                    style: SUCCESS
-                }),
-                module.exports.getButton({
-                    customId: `TrackerRemovePlayer${identifier}`,
-                    label: Client.client.intlGet(guildId, 'removePlayerCap'),
-                    style: DANGER
-                }),
-                module.exports.getButton({
                     customId: `TrackerInGame${identifier}`,
                     label: Client.client.intlGet(guildId, 'inGameCap'),
                     style: tracker.inGame ? SUCCESS : DANGER
+                }),
+                module.exports.getButton({
+                    customId: `TrackerEveryone${identifier}`,
+                    label: '@everyone',
+                    style: tracker.everyone ? SUCCESS : DANGER
+                }),
+                module.exports.getButton({
+                    customId: `TrackerUpdate${identifier}`,
+                    label: Client.client.intlGet(guildId, 'updateCap'),
+                    style: PRIMARY
                 }))
         ];
-    },
-
-    getTrackerNotifyButtons: function (guildId, allOffline, anyOnline, inGameConnections) {
-        return new Discord.ActionRowBuilder().addComponents(
-            module.exports.getButton({
-                customId: 'TrackerNotifyAllOffline',
-                label: Client.client.intlGet(guildId, 'allOfflineCap'),
-                style: allOffline ? SUCCESS : DANGER
-            }),
-            module.exports.getButton({
-                customId: 'TrackerNotifyAnyOnline',
-                label: Client.client.intlGet(guildId, 'anyOnlineCap'),
-                style: anyOnline ? SUCCESS : DANGER
-            }),
-            module.exports.getButton({
-                customId: 'TrackerNotifyInGameConnections',
-                label: `${Client.client.intlGet(guildId, 'inGameCap')} ` +
-                    `${Client.client.intlGet(guildId, 'connectionsCap')}`,
-                style: inGameConnections ? SUCCESS : DANGER
-            }));
     },
 
     getNewsButton: function (guildId, body, validURL) {
@@ -519,5 +519,49 @@ module.exports = {
                     url: 'https://github.com/alexemanuelol/rustplusplus-Credential-Application/releases/v1.1.0'
                 })
             )];
+    },
+
+    getDisplayInformationBattlemetricsAllOnlinePlayersButton: function (guildId, enabled) {
+        return new Discord.ActionRowBuilder().addComponents(
+            module.exports.getButton({
+                customId: 'DisplayInformationBattlemetricsAllOnlinePlayers',
+                label: enabled ?
+                    Client.client.intlGet(guildId, 'enabledCap') :
+                    Client.client.intlGet(guildId, 'disabledCap'),
+                style: enabled ? SUCCESS : DANGER
+            }));
+    },
+
+    getSubscribeToChangesBattlemetricsButtons: function (guildId) {
+        const instance = Client.client.getInstance(guildId);
+
+        return [
+            new Discord.ActionRowBuilder().addComponents(
+                module.exports.getButton({
+                    customId: 'BattlemetricsServerNameChanges',
+                    label: Client.client.intlGet(guildId, 'battlemetricsServerNameChangesCap'),
+                    style: instance.generalSettings.battlemetricsServerNameChanges ? SUCCESS : DANGER
+                }),
+                module.exports.getButton({
+                    customId: 'BattlemetricsTrackerNameChanges',
+                    label: Client.client.intlGet(guildId, 'battlemetricsTrackerNameChangesCap'),
+                    style: instance.generalSettings.battlemetricsTrackerNameChanges ? SUCCESS : DANGER
+                }),
+                module.exports.getButton({
+                    customId: 'BattlemetricsGlobalNameChanges',
+                    label: Client.client.intlGet(guildId, 'battlemetricsGlobalNameChangesCap'),
+                    style: instance.generalSettings.battlemetricsGlobalNameChanges ? SUCCESS : DANGER
+                })),
+            new Discord.ActionRowBuilder().addComponents(
+                module.exports.getButton({
+                    customId: 'BattlemetricsGlobalLogin',
+                    label: Client.client.intlGet(guildId, 'battlemetricsGlobalLoginCap'),
+                    style: instance.generalSettings.battlemetricsGlobalLogin ? SUCCESS : DANGER
+                }),
+                module.exports.getButton({
+                    customId: 'BattlemetricsGlobalLogout',
+                    label: Client.client.intlGet(guildId, 'battlemetricsGlobalLogoutCap'),
+                    style: instance.generalSettings.battlemetricsGlobalLogout ? SUCCESS : DANGER
+                }))];
     },
 }

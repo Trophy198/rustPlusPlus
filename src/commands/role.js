@@ -46,6 +46,9 @@ module.exports = {
 	async execute(client, interaction) {
 		const instance = client.getInstance(interaction.guildId);
 
+		const verifyId = Math.floor(100000 + Math.random() * 900000);
+		client.logInteraction(interaction, verifyId, 'slashCommand');
+
 		if (!await client.validatePermissions(interaction)) return;
 
 		if (!client.isAdministrator(interaction)) {
@@ -76,11 +79,16 @@ module.exports = {
 			} break;
 		}
 
+		client.log(client.intlGet(null, 'infoCap'), client.intlGet(null, 'slashCommandValueChange', {
+			id: `${verifyId}`,
+			value: `${interaction.options.getSubcommand()}`
+		}));
+
 		const guild = DiscordTools.getGuild(interaction.guildId);
 		if (guild) {
 			const category = await require('../discordTools/SetupGuildCategory')(client, guild);
 			await require('../discordTools/SetupGuildChannels')(client, guild, category);
-			await PermissionHandler.resetPermissions(client, guild);
+			await PermissionHandler.resetPermissionsAllChannels(client, guild);
 		}
 
 		if (interaction.options.getSubcommand() === 'set') {

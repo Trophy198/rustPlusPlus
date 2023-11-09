@@ -189,6 +189,18 @@ async function setupGeneralSettings(client, guildId, channel) {
     await client.messageSend(channel, {
         embeds: [DiscordEmbeds.getEmbed({
             color: Constants.COLOR_SETTINGS,
+            title: client.intlGet(guildId, 'shouldSmartSwitchNotifyInGameWhenChangedFromDiscord'),
+            thumbnail: `attachment://settings_logo.png`,
+        })],
+        components: [DiscordButtons.getSmartSwitchNotifyInGameWhenChangedFromDiscordButton(guildId,
+            instance.generalSettings.smartSwitchNotifyInGameWhenChangedFromDiscord)],
+        files: [new Discord.AttachmentBuilder(
+            Path.join(__dirname, '..', 'resources/images/settings_logo.png'))]
+    });
+
+    await client.messageSend(channel, {
+        embeds: [DiscordEmbeds.getEmbed({
+            color: Constants.COLOR_SETTINGS,
             title: client.intlGet(guildId, 'shouldLeaderCommandEnabledSetting'),
             thumbnail: `attachment://settings_logo.png`,
         })],
@@ -213,21 +225,6 @@ async function setupGeneralSettings(client, guildId, channel) {
     await client.messageSend(channel, {
         embeds: [DiscordEmbeds.getEmbed({
             color: Constants.COLOR_SETTINGS,
-            title: client.intlGet(guildId, 'whenTrackersNotifySetting'),
-            thumbnail: `attachment://settings_logo.png`
-        })],
-        components: [DiscordButtons.getTrackerNotifyButtons(
-            guildId,
-            instance.generalSettings.trackerNotifyAllOffline,
-            instance.generalSettings.trackerNotifyAnyOnline,
-            instance.generalSettings.trackerNotifyInGameConnections)],
-        files: [new Discord.AttachmentBuilder(
-            Path.join(__dirname, '..', 'resources/images/settings_logo.png'))]
-    });
-
-    await client.messageSend(channel, {
-        embeds: [DiscordEmbeds.getEmbed({
-            color: Constants.COLOR_SETTINGS,
             title: client.intlGet(guildId, 'mapWipeDetectedNotifySetting', { group: '@everyone' }),
             thumbnail: `attachment://settings_logo.png`
         })],
@@ -244,6 +241,29 @@ async function setupGeneralSettings(client, guildId, channel) {
         })],
         components: [DiscordButtons.getItemAvailableNotifyInGameButton(guildId,
             instance.generalSettings.itemAvailableInVendingMachineNotifyInGame)],
+        files: [new Discord.AttachmentBuilder(
+            Path.join(__dirname, '..', 'resources/images/settings_logo.png'))]
+    });
+
+    await client.messageSend(channel, {
+        embeds: [DiscordEmbeds.getEmbed({
+            color: Constants.COLOR_SETTINGS,
+            title: client.intlGet(guildId, 'displayInformationBattlemetricsAllOnlinePlayers'),
+            thumbnail: `attachment://settings_logo.png`
+        })],
+        components: [DiscordButtons.getDisplayInformationBattlemetricsAllOnlinePlayersButton(guildId,
+            instance.generalSettings.displayInformationBattlemetricsAllOnlinePlayers)],
+        files: [new Discord.AttachmentBuilder(
+            Path.join(__dirname, '..', 'resources/images/settings_logo.png'))]
+    });
+
+    await client.messageSend(channel, {
+        embeds: [DiscordEmbeds.getEmbed({
+            color: Constants.COLOR_SETTINGS,
+            title: client.intlGet(guildId, 'subscribeToChangesBattlemetrics'),
+            thumbnail: `attachment://settings_logo.png`
+        })],
+        components: DiscordButtons.getSubscribeToChangesBattlemetricsButtons(guildId),
         files: [new Discord.AttachmentBuilder(
             Path.join(__dirname, '..', 'resources/images/settings_logo.png'))]
     });

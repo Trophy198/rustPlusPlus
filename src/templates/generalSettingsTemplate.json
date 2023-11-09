@@ -8,15 +8,19 @@
     "fcmAlarmNotificationEnabled": false,
     "fcmAlarmNotificationEveryone": false,
     "smartAlarmNotifyInGame": true,
+    "smartSwitchNotifyInGameWhenChangedFromDiscord": true,
     "leaderCommandEnabled": true,
     "leaderCommandOnlyForPaired": false,
-    "trackerNotifyAllOffline": true,
-    "trackerNotifyAnyOnline": false,
-    "trackerNotifyInGameConnections": true,
     "commandDelay": 0,
     "connectionNotify": false,
     "afkNotify": false,
     "deathNotify": false,
     "mapWipeNotifyEveryone": false,
-    "itemAvailableInVendingMachineNotifyInGame": true
+    "itemAvailableInVendingMachineNotifyInGame": true,
+    "displayInformationBattlemetricsAllOnlinePlayers": false,
+    "battlemetricsServerNameChanges": true,
+    "battlemetricsTrackerNameChanges": true,
+    "battlemetricsGlobalNameChanges": false,
+    "battlemetricsGlobalLogin": false,
+    "battlemetricsGlobalLogout": false
 }

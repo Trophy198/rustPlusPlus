@@ -18,18 +18,31 @@
 
 */
 
+const Discord = require('discord.js');
+
 const Config = require('../../config');
 const DiscordMessages = require('../discordTools/discordMessages.js');
 const DiscordTools = require('../discordTools/discordTools.js');
 const SmartSwitchGroupHandler = require('./smartSwitchGroupHandler.js');
 const DiscordButtons = require('../discordTools/discordButtons.js');
 const DiscordModals = require('../discordTools/discordModals.js');
-const Recycler = require('../util/recycler.js');
 
 module.exports = async (client, interaction) => {
     const instance = client.getInstance(interaction.guildId);
     const guildId = interaction.guildId;
     const rustplus = client.rustplusInstances[guildId];
+
+    const verifyId = Math.floor(100000 + Math.random() * 900000);
+    client.logInteraction(interaction, verifyId, 'userButton');
+
+    if (instance.blacklist['discordIds'].includes(interaction.user.id) &&
+        !interaction.member.permissions.has(Discord.PermissionsBitField.Flags.Administrator)) {
+        client.log(client.intlGet(null, 'infoCap'), client.intlGet(null, 'userPartOfBlacklist', {
+            id: `${verifyId}`,
+            user: `${interaction.user.username} (${interaction.user.id})`
+        }));
+        return;
+    }
 
     if (interaction.customId.startsWith('DiscordNotification')) {
         const ids = JSON.parse(interaction.customId.replace('DiscordNotification', ''));
@@ -39,6 +52,11 @@ module.exports = async (client, interaction) => {
         client.setInstance(guildId, instance);
 
         if (rustplus) rustplus.notificationSettings[ids.setting].discord = setting.discord;
+
+        client.log(client.intlGet(null, 'infoCap'), client.intlGet(null, 'buttonValueChange', {
+            id: `${verifyId}`,
+            value: `${setting.discord}`
+        }));
 
         await client.interactionUpdate(interaction, {
             components: [DiscordButtons.getNotificationButtons(
@@ -54,6 +72,11 @@ module.exports = async (client, interaction) => {
 
         if (rustplus) rustplus.notificationSettings[ids.setting].inGame = setting.inGame;
 
+        client.log(client.intlGet(null, 'infoCap'), client.intlGet(null, 'buttonValueChange', {
+            id: `${verifyId}`,
+            value: `${setting.inGame}`
+        }));
+
         await client.interactionUpdate(interaction, {
             components: [DiscordButtons.getNotificationButtons(
                 guildId, ids.setting, setting.discord, setting.inGame, setting.voice)]
@@ -68,6 +91,11 @@ module.exports = async (client, interaction) => {
 
         if (rustplus) rustplus.notificationSettings[ids.setting].voice = setting.voice;
 
+        client.log(client.intlGet(null, 'infoCap'), client.intlGet(null, 'buttonValueChange', {
+            id: `${verifyId}`,
+            value: `${setting.voice}`
+        }));
+
         await client.interactionUpdate(interaction, {
             components: [DiscordButtons.getNotificationButtons(
                 guildId, ids.setting, setting.discord, setting.inGame, setting.voice)]
@@ -78,6 +106,11 @@ module.exports = async (client, interaction) => {
         client.setInstance(guildId, instance);
 
         if (rustplus) rustplus.generalSettings.inGameCommandsEnabled = instance.generalSettings.inGameCommandsEnabled;
+
+        client.log(client.intlGet(null, 'infoCap'), client.intlGet(null, 'buttonValueChange', {
+            id: `${verifyId}`,
+            value: `${instance.generalSettings.inGameCommandsEnabled}`
+        }));
 
         await client.interactionUpdate(interaction, {
             components: [DiscordButtons.getInGameCommandsEnabledButton(guildId,
@@ -90,6 +123,11 @@ module.exports = async (client, interaction) => {
 
         if (rustplus) rustplus.generalSettings.muteInGameBotMessages = instance.generalSettings.muteInGameBotMessages;
 
+        client.log(client.intlGet(null, 'infoCap'), client.intlGet(null, 'buttonValueChange', {
+            id: `${verifyId}`,
+            value: `${instance.generalSettings.muteInGameBotMessages}`
+        }));
+
         await client.interactionUpdate(interaction, {
             components: [DiscordButtons.getBotMutedInGameButton(guildId,
                 instance.generalSettings.muteInGameBotMessages)]
@@ -101,6 +139,11 @@ module.exports = async (client, interaction) => {
 
         if (rustplus) rustplus.generalSettings.connectionNotify = instance.generalSettings.connectionNotify;
 
+        client.log(client.intlGet(null, 'infoCap'), client.intlGet(null, 'buttonValueChange', {
+            id: `${verifyId}`,
+            value: `${instance.generalSettings.connectionNotify}`
+        }));
+
         await client.interactionUpdate(interaction, {
             components: [DiscordButtons.getInGameTeammateNotificationsButtons(guildId)]
         });
@@ -110,6 +153,11 @@ module.exports = async (client, interaction) => {
         client.setInstance(guildId, instance);
 
         if (rustplus) rustplus.generalSettings.afkNotify = instance.generalSettings.afkNotify;
+
+        client.log(client.intlGet(null, 'infoCap'), client.intlGet(null, 'buttonValueChange', {
+            id: `${verifyId}`,
+            value: `${instance.generalSettings.afkNotify}`
+        }));
 
         await client.interactionUpdate(interaction, {
             components: [DiscordButtons.getInGameTeammateNotificationsButtons(guildId)]
@@ -121,6 +169,11 @@ module.exports = async (client, interaction) => {
 
         if (rustplus) rustplus.generalSettings.deathNotify = instance.generalSettings.deathNotify;
 
+        client.log(client.intlGet(null, 'infoCap'), client.intlGet(null, 'buttonValueChange', {
+            id: `${verifyId}`,
+            value: `${instance.generalSettings.deathNotify}`
+        }));
+
         await client.interactionUpdate(interaction, {
             components: [DiscordButtons.getInGameTeammateNotificationsButtons(guildId)]
         });
@@ -131,6 +184,11 @@ module.exports = async (client, interaction) => {
 
         if (rustplus) rustplus.generalSettings.fcmAlarmNotificationEnabled =
             instance.generalSettings.fcmAlarmNotificationEnabled;
+
+        client.log(client.intlGet(null, 'infoCap'), client.intlGet(null, 'buttonValueChange', {
+            id: `${verifyId}`,
+            value: `${instance.generalSettings.fcmAlarmNotificationEnabled}`
+        }));
 
         await client.interactionUpdate(interaction, {
             components: [DiscordButtons.getFcmAlarmNotificationButtons(
@@ -146,6 +204,11 @@ module.exports = async (client, interaction) => {
         if (rustplus) rustplus.generalSettings.fcmAlarmNotificationEveryone =
             instance.generalSettings.fcmAlarmNotificationEveryone;
 
+        client.log(client.intlGet(null, 'infoCap'), client.intlGet(null, 'buttonValueChange', {
+            id: `${verifyId}`,
+            value: `${instance.generalSettings.fcmAlarmNotificationEveryone}`
+        }));
+
         await client.interactionUpdate(interaction, {
             components: [DiscordButtons.getFcmAlarmNotificationButtons(
                 guildId,
@@ -160,10 +223,34 @@ module.exports = async (client, interaction) => {
         if (rustplus) rustplus.generalSettings.smartAlarmNotifyInGame =
             instance.generalSettings.smartAlarmNotifyInGame;
 
+        client.log(client.intlGet(null, 'infoCap'), client.intlGet(null, 'buttonValueChange', {
+            id: `${verifyId}`,
+            value: `${instance.generalSettings.smartAlarmNotifyInGame}`
+        }));
+
         await client.interactionUpdate(interaction, {
             components: [DiscordButtons.getSmartAlarmNotifyInGameButton(
                 guildId,
                 instance.generalSettings.smartAlarmNotifyInGame)]
+        });
+    }
+    else if (interaction.customId === 'SmartSwitchNotifyInGameWhenChangedFromDiscord') {
+        instance.generalSettings.smartSwitchNotifyInGameWhenChangedFromDiscord =
+            !instance.generalSettings.smartSwitchNotifyInGameWhenChangedFromDiscord;
+        client.setInstance(guildId, instance);
+
+        if (rustplus) rustplus.generalSettings.smartSwitchNotifyInGameWhenChangedFromDiscord =
+            instance.generalSettings.smartSwitchNotifyInGameWhenChangedFromDiscord;
+
+        client.log(client.intlGet(null, 'infoCap'), client.intlGet(null, 'buttonValueChange', {
+            id: `${verifyId}`,
+            value: `${instance.generalSettings.smartSwitchNotifyInGameWhenChangedFromDiscord}`
+        }));
+
+        await client.interactionUpdate(interaction, {
+            components: [DiscordButtons.getSmartSwitchNotifyInGameWhenChangedFromDiscordButton(
+                guildId,
+                instance.generalSettings.smartSwitchNotifyInGameWhenChangedFromDiscord)]
         });
     }
     else if (interaction.customId === 'LeaderCommandEnabled') {
@@ -171,6 +258,11 @@ module.exports = async (client, interaction) => {
         client.setInstance(guildId, instance);
 
         if (rustplus) rustplus.generalSettings.leaderCommandEnabled = instance.generalSettings.leaderCommandEnabled;
+
+        client.log(client.intlGet(null, 'infoCap'), client.intlGet(null, 'buttonValueChange', {
+            id: `${verifyId}`,
+            value: `${instance.generalSettings.leaderCommandEnabled}`
+        }));
 
         await client.interactionUpdate(interaction, {
             components: [DiscordButtons.getLeaderCommandEnabledButton(
@@ -185,54 +277,15 @@ module.exports = async (client, interaction) => {
         if (rustplus) rustplus.generalSettings.leaderCommandOnlyForPaired =
             instance.generalSettings.leaderCommandOnlyForPaired;
 
+        client.log(client.intlGet(null, 'infoCap'), client.intlGet(null, 'buttonValueChange', {
+            id: `${verifyId}`,
+            value: `${instance.generalSettings.leaderCommandOnlyForPaired}`
+        }));
+
         await client.interactionUpdate(interaction, {
             components: [DiscordButtons.getLeaderCommandOnlyForPairedButton(
                 guildId,
                 instance.generalSettings.leaderCommandOnlyForPaired)]
-        });
-    }
-    else if (interaction.customId === 'TrackerNotifyAllOffline') {
-        instance.generalSettings.trackerNotifyAllOffline = !instance.generalSettings.trackerNotifyAllOffline;
-        client.setInstance(guildId, instance);
-
-        if (rustplus) rustplus.generalSettings.trackerNotifyAllOffline =
-            instance.generalSettings.trackerNotifyAllOffline;
-
-        await client.interactionUpdate(interaction, {
-            components: [DiscordButtons.getTrackerNotifyButtons(
-                guildId,
-                instance.generalSettings.trackerNotifyAllOffline,
-                instance.generalSettings.trackerNotifyAnyOnline)]
-        });
-    }
-    else if (interaction.customId === 'TrackerNotifyAnyOnline') {
-        instance.generalSettings.trackerNotifyAnyOnline = !instance.generalSettings.trackerNotifyAnyOnline;
-        client.setInstance(guildId, instance);
-
-        if (rustplus) rustplus.generalSettings.trackerNotifyAnyOnline =
-            instance.generalSettings.trackerNotifyAnyOnline;
-
-        await client.interactionUpdate(interaction, {
-            components: [DiscordButtons.getTrackerNotifyButtons(
-                guildId,
-                instance.generalSettings.trackerNotifyAllOffline,
-                instance.generalSettings.trackerNotifyAnyOnline)]
-        });
-    }
-    else if (interaction.customId === 'TrackerNotifyInGameConnections') {
-        instance.generalSettings.trackerNotifyInGameConnections =
-            !instance.generalSettings.trackerNotifyInGameConnections;
-        client.setInstance(guildId, instance);
-
-        if (rustplus) rustplus.generalSettings.trackerNotifyInGameConnections =
-            instance.generalSettings.trackerNotifyInGameConnections;
-
-        await client.interactionUpdate(interaction, {
-            components: [DiscordButtons.getTrackerNotifyButtons(
-                guildId,
-                instance.generalSettings.trackerNotifyAllOffline,
-                instance.generalSettings.trackerNotifyAnyOnline,
-                instance.generalSettings.trackerNotifyInGameConnections)]
         });
     }
     else if (interaction.customId === 'MapWipeNotifyEveryone') {
@@ -241,6 +294,11 @@ module.exports = async (client, interaction) => {
 
         if (rustplus) rustplus.generalSettings.mapWipeNotifyEveryone =
             instance.generalSettings.mapWipeNotifyEveryone;
+
+        client.log(client.intlGet(null, 'infoCap'), client.intlGet(null, 'buttonValueChange', {
+            id: `${verifyId}`,
+            value: `${instance.generalSettings.mapWipeNotifyEveryone}`
+        }));
 
         await client.interactionUpdate(interaction, {
             components: [DiscordButtons.getMapWipeNotifyEveryoneButton(instance.generalSettings.mapWipeNotifyEveryone)]
@@ -254,9 +312,117 @@ module.exports = async (client, interaction) => {
         if (rustplus) rustplus.generalSettings.itemAvailableInVendingMachineNotifyInGame =
             instance.generalSettings.itemAvailableInVendingMachineNotifyInGame;
 
+        client.log(client.intlGet(null, 'infoCap'), client.intlGet(null, 'buttonValueChange', {
+            id: `${verifyId}`,
+            value: `${instance.generalSettings.itemAvailableInVendingMachineNotifyInGame}`
+        }));
+
         await client.interactionUpdate(interaction, {
             components: [DiscordButtons.getItemAvailableNotifyInGameButton(guildId,
                 instance.generalSettings.itemAvailableInVendingMachineNotifyInGame)]
+        });
+    }
+    else if (interaction.customId === 'DisplayInformationBattlemetricsAllOnlinePlayers') {
+        instance.generalSettings.displayInformationBattlemetricsAllOnlinePlayers =
+            !instance.generalSettings.displayInformationBattlemetricsAllOnlinePlayers;
+        client.setInstance(guildId, instance);
+
+        if (rustplus) rustplus.generalSettings.displayInformationBattlemetricsAllOnlinePlayers =
+            instance.generalSettings.displayInformationBattlemetricsAllOnlinePlayers;
+
+        client.log(client.intlGet(null, 'infoCap'), client.intlGet(null, 'buttonValueChange', {
+            id: `${verifyId}`,
+            value: `${instance.generalSettings.displayInformationBattlemetricsAllOnlinePlayers}`
+        }));
+
+        await client.interactionUpdate(interaction, {
+            components: [DiscordButtons.getDisplayInformationBattlemetricsAllOnlinePlayersButton(guildId,
+                instance.generalSettings.displayInformationBattlemetricsAllOnlinePlayers)]
+        });
+    }
+    else if (interaction.customId === 'BattlemetricsServerNameChanges') {
+        instance.generalSettings.battlemetricsServerNameChanges =
+            !instance.generalSettings.battlemetricsServerNameChanges;
+        client.setInstance(guildId, instance);
+
+        if (rustplus) rustplus.generalSettings.battlemetricsServerNameChanges =
+            instance.generalSettings.battlemetricsServerNameChanges;
+
+        client.log(client.intlGet(null, 'infoCap'), client.intlGet(null, 'buttonValueChange', {
+            id: `${verifyId}`,
+            value: `${instance.generalSettings.battlemetricsServerNameChanges}`
+        }));
+
+        await client.interactionUpdate(interaction, {
+            components: DiscordButtons.getSubscribeToChangesBattlemetricsButtons(guildId)
+        });
+    }
+    else if (interaction.customId === 'BattlemetricsTrackerNameChanges') {
+        instance.generalSettings.battlemetricsTrackerNameChanges =
+            !instance.generalSettings.battlemetricsTrackerNameChanges;
+        client.setInstance(guildId, instance);
+
+        if (rustplus) rustplus.generalSettings.battlemetricsTrackerNameChanges =
+            instance.generalSettings.battlemetricsTrackerNameChanges;
+
+        client.log(client.intlGet(null, 'infoCap'), client.intlGet(null, 'buttonValueChange', {
+            id: `${verifyId}`,
+            value: `${instance.generalSettings.battlemetricsTrackerNameChanges}`
+        }));
+
+        await client.interactionUpdate(interaction, {
+            components: DiscordButtons.getSubscribeToChangesBattlemetricsButtons(guildId)
+        });
+    }
+    else if (interaction.customId === 'BattlemetricsGlobalNameChanges') {
+        instance.generalSettings.battlemetricsGlobalNameChanges =
+            !instance.generalSettings.battlemetricsGlobalNameChanges;
+        client.setInstance(guildId, instance);
+
+        if (rustplus) rustplus.generalSettings.battlemetricsGlobalNameChanges =
+            instance.generalSettings.battlemetricsGlobalNameChanges;
+
+        client.log(client.intlGet(null, 'infoCap'), client.intlGet(null, 'buttonValueChange', {
+            id: `${verifyId}`,
+            value: `${instance.generalSettings.battlemetricsGlobalNameChanges}`
+        }));
+
+        await client.interactionUpdate(interaction, {
+            components: DiscordButtons.getSubscribeToChangesBattlemetricsButtons(guildId)
+        });
+    }
+    else if (interaction.customId === 'BattlemetricsGlobalLogin') {
+        instance.generalSettings.battlemetricsGlobalLogin =
+            !instance.generalSettings.battlemetricsGlobalLogin;
+        client.setInstance(guildId, instance);
+
+        if (rustplus) rustplus.generalSettings.battlemetricsGlobalLogin =
+            instance.generalSettings.battlemetricsGlobalLogin;
+
+        client.log(client.intlGet(null, 'infoCap'), client.intlGet(null, 'buttonValueChange', {
+            id: `${verifyId}`,
+            value: `${instance.generalSettings.battlemetricsGlobalLogin}`
+        }));
+
+        await client.interactionUpdate(interaction, {
+            components: DiscordButtons.getSubscribeToChangesBattlemetricsButtons(guildId)
+        });
+    }
+    else if (interaction.customId === 'BattlemetricsGlobalLogout') {
+        instance.generalSettings.battlemetricsGlobalLogout =
+            !instance.generalSettings.battlemetricsGlobalLogout;
+        client.setInstance(guildId, instance);
+
+        if (rustplus) rustplus.generalSettings.battlemetricsGlobalLogout =
+            instance.generalSettings.battlemetricsGlobalLogout;
+
+        client.log(client.intlGet(null, 'infoCap'), client.intlGet(null, 'buttonValueChange', {
+            id: `${verifyId}`,
+            value: `${instance.generalSettings.battlemetricsGlobalLogout}`
+        }));
+
+        await client.interactionUpdate(interaction, {
+            components: DiscordButtons.getSubscribeToChangesBattlemetricsButtons(guildId)
         });
     }
     else if (interaction.customId.startsWith('ServerConnect')) {
@@ -303,6 +469,51 @@ module.exports = async (client, interaction) => {
         const modal = DiscordModals.getServerEditModal(guildId, ids.serverId);
         await interaction.showModal(modal);
     }
+    else if (interaction.customId.startsWith('DeleteUnreachableDevices')) {
+        const ids = JSON.parse(interaction.customId.replace('DeleteUnreachableDevices', ''));
+        const server = instance.serverList[ids.serverId];
+
+        if (!server) {
+            await interaction.message.delete();
+            return;
+        }
+
+        interaction.deferUpdate();
+
+        const groupsToUpdate = [];
+        for (const [entityId, content] of Object.entries(server.switches)) {
+            if (!content.reachable) {
+                await DiscordTools.deleteMessageById(guildId, instance.channelId.switches, content.messageId);
+                delete server.switches[entityId];
+
+                for (const [groupId, groupContent] of Object.entries(server.switchGroups)) {
+                    if (groupContent.switches.includes(`${entityId}`) && !groupsToUpdate.includes(groupId)) {
+                        groupsToUpdate.push(groupId);
+                    }
+                }
+            }
+        }
+
+        for (const groupId of groupsToUpdate) {
+            await DiscordMessages.sendSmartSwitchGroupMessage(guildId, ids.serverId, groupId);
+        }
+
+        for (const [entityId, content] of Object.entries(server.alarms)) {
+            if (!content.reachable) {
+                await DiscordTools.deleteMessageById(guildId, instance.channelId.alarms, content.messageId)
+                delete server.alarms[entityId];
+            }
+        }
+
+        for (const [entityId, content] of Object.entries(server.storageMonitors)) {
+            if (!content.reachable) {
+                await DiscordTools.deleteMessageById(guildId, instance.channelId.storageMonitors, content.messageId)
+                delete server.storageMonitors[entityId];
+            }
+        }
+
+        client.setInstance(guildId, instance);
+    }
     else if (interaction.customId.startsWith('CustomTimersEdit')) {
         const ids = JSON.parse(interaction.customId.replace('CustomTimersEdit', ''));
         const server = instance.serverList[ids.serverId];
@@ -333,17 +544,13 @@ module.exports = async (client, interaction) => {
             name: 'Tracker',
             serverId: ids.serverId,
             battlemetricsId: server.battlemetricsId,
+            title: server.title,
+            img: server.img,
             clanTag: '',
-            status: false,
-            allOffline: true,
-            messageId: null,
-            active: true,
             everyone: false,
             inGame: true,
             players: [],
-            nameChangeHistory: [],
-            img: server.img,
-            title: server.title
+            messageId: null
         }
         client.setInstance(guildId, instance);
 
@@ -370,6 +577,11 @@ module.exports = async (client, interaction) => {
             messageId: null
         }
         client.setInstance(guildId, instance);
+
+        client.log(client.intlGet(null, 'infoCap'), client.intlGet(null, 'buttonValueChange', {
+            id: `${verifyId}`,
+            value: `${groupId}`
+        }));
 
         await DiscordMessages.sendSmartSwitchGroupMessage(guildId, ids.serverId, groupId);
     }
@@ -475,6 +687,24 @@ module.exports = async (client, interaction) => {
             client.setInstance(guildId, instance);
         }
 
+        if (instance.generalSettings.smartSwitchNotifyInGameWhenChangedFromDiscord) {
+            const user = interaction.user.username;
+            const name = server.switches[ids.entityId].name;
+            const status = active ? client.intlGet(guildId, 'onCap') : client.intlGet(guildId, 'offCap');
+            const str = client.intlGet(guildId, 'userTurnedOnOffSmartSwitchFromDiscord', {
+                user: user,
+                name: name,
+                status: status
+            });
+
+            await rustplus.sendInGameMessage(str);
+        }
+
+        client.log(client.intlGet(null, 'infoCap'), client.intlGet(null, 'buttonValueChange', {
+            id: `${verifyId}`,
+            value: `${active}`
+        }));
+
         DiscordMessages.sendSmartSwitchMessage(guildId, ids.serverId, ids.entityId, interaction);
         SmartSwitchGroupHandler.updateSwitchGroupIfContainSwitch(client, guildId, ids.serverId, ids.entityId);
     }
@@ -536,6 +766,11 @@ module.exports = async (client, interaction) => {
         server.alarms[ids.entityId].everyone = !server.alarms[ids.entityId].everyone;
         client.setInstance(guildId, instance);
 
+        client.log(client.intlGet(null, 'infoCap'), client.intlGet(null, 'buttonValueChange', {
+            id: `${verifyId}`,
+            value: `${server.alarms[ids.entityId].everyone}`
+        }));
+
         await DiscordMessages.sendSmartAlarmMessage(guildId, ids.serverId, ids.entityId, interaction);
     }
     else if (interaction.customId.startsWith('SmartAlarmDelete')) {
@@ -582,6 +817,11 @@ module.exports = async (client, interaction) => {
         server.storageMonitors[ids.entityId].everyone = !server.storageMonitors[ids.entityId].everyone;
         client.setInstance(guildId, instance);
 
+        client.log(client.intlGet(null, 'infoCap'), client.intlGet(null, 'buttonValueChange', {
+            id: `${verifyId}`,
+            value: `${server.storageMonitors[ids.entityId].everyone}`
+        }));
+
         await DiscordMessages.sendStorageMonitorMessage(guildId, ids.serverId, ids.entityId, interaction);
     }
     else if (interaction.customId.startsWith('StorageMonitorToolCupboardInGame')) {
@@ -595,6 +835,11 @@ module.exports = async (client, interaction) => {
 
         server.storageMonitors[ids.entityId].inGame = !server.storageMonitors[ids.entityId].inGame;
         client.setInstance(guildId, instance);
+
+        client.log(client.intlGet(null, 'infoCap'), client.intlGet(null, 'buttonValueChange', {
+            id: `${verifyId}`,
+            value: `${server.storageMonitors[ids.entityId].inGame}`
+        }));
 
         await DiscordMessages.sendStorageMonitorMessage(guildId, ids.serverId, ids.entityId, interaction);
     }
@@ -644,12 +889,21 @@ module.exports = async (client, interaction) => {
         if (!rustplus || (rustplus && rustplus.serverId !== ids.serverId)) return;
 
         const entityInfo = await rustplus.getEntityInfoAsync(ids.entityId);
-        if (!(await rustplus.isResponseValid(entityInfo))) return;
+        if (!(await rustplus.isResponseValid(entityInfo))) {
+            if (server.storageMonitors[ids.entityId].reachable) {
+                await DiscordMessages.sendStorageMonitorNotFoundMessage(guildId, ids.serverId, ids.entityId);
+            }
+            server.storageMonitors[ids.entityId].reachable = false;
+            client.setInstance(guildId, instance);
+
+            await DiscordMessages.sendStorageMonitorMessage(guildId, ids.serverId, ids.entityId);
+            return;
+        }
 
         server.storageMonitors[ids.entityId].reachable = true;
         client.setInstance(guildId, instance);
 
-        const items = Recycler.calculate(entityInfo.entityInfo.payload.items);
+        const items = client.rustlabs.getRecycleDataFromArray(entityInfo.entityInfo.payload.items);
 
         const message = await DiscordMessages.sendStorageMonitorRecycleMessage(
             guildId, ids.serverId, ids.entityId, items);
@@ -704,6 +958,24 @@ module.exports = async (client, interaction) => {
 
             if (rustplus.serverId === ids.serverId) {
                 const active = (interaction.customId.startsWith('GroupTurnOn') ? true : false);
+
+                if (instance.generalSettings.smartSwitchNotifyInGameWhenChangedFromDiscord) {
+                    const user = interaction.user.username;
+                    const name = server.switchGroups[ids.groupId].name;
+                    const status = active ? client.intlGet(guildId, 'onCap') : client.intlGet(guildId, 'offCap');
+                    const str = client.intlGet(guildId, 'userTurnedOnOffSmartSwitchGroupFromDiscord', {
+                        user: user,
+                        name: name,
+                        status: status
+                    });
+
+                    await rustplus.sendInGameMessage(str);
+                }
+
+                client.log(client.intlGet(null, 'infoCap'), client.intlGet(null, 'buttonValueChange', {
+                    id: `${verifyId}`,
+                    value: `${active}`
+                }));
 
                 await SmartSwitchGroupHandler.TurnOnOffGroup(
                     client, rustplus, guildId, ids.serverId, ids.groupId, active);
@@ -773,20 +1045,6 @@ module.exports = async (client, interaction) => {
         const modal = DiscordModals.getGroupRemoveSwitchModal(guildId, ids.serverId, ids.groupId);
         await interaction.showModal(modal);
     }
-    else if (interaction.customId.startsWith('TrackerActive')) {
-        const ids = JSON.parse(interaction.customId.replace('TrackerActive', ''));
-        const tracker = instance.trackers[ids.trackerId];
-
-        if (!tracker) {
-            await interaction.message.delete();
-            return;
-        }
-
-        tracker.active = !tracker.active;
-        client.setInstance(guildId, instance);
-
-        await DiscordMessages.sendTrackerMessage(guildId, ids.trackerId, interaction);
-    }
     else if (interaction.customId.startsWith('TrackerEveryone')) {
         const ids = JSON.parse(interaction.customId.replace('TrackerEveryone', ''));
         const tracker = instance.trackers[ids.trackerId];
@@ -798,6 +1056,24 @@ module.exports = async (client, interaction) => {
 
         tracker.everyone = !tracker.everyone;
         client.setInstance(guildId, instance);
+
+        client.log(client.intlGet(null, 'infoCap'), client.intlGet(null, 'buttonValueChange', {
+            id: `${verifyId}`,
+            value: `${tracker.everyone}`
+        }));
+
+        await DiscordMessages.sendTrackerMessage(guildId, ids.trackerId, interaction);
+    }
+    else if (interaction.customId.startsWith('TrackerUpdate')) {
+        const ids = JSON.parse(interaction.customId.replace('TrackerUpdate', ''));
+        const tracker = instance.trackers[ids.trackerId];
+
+        if (!tracker) {
+            await interaction.message.delete();
+            return;
+        }
+
+        // TODO! Remove name change icon from status
 
         await DiscordMessages.sendTrackerMessage(guildId, ids.trackerId, interaction);
     }
@@ -869,6 +1145,16 @@ module.exports = async (client, interaction) => {
         tracker.inGame = !tracker.inGame;
         client.setInstance(guildId, instance);
 
+
+        client.log(client.intlGet(null, 'infoCap'), client.intlGet(null, 'buttonValueChange', {
+            id: `${verifyId}`,
+            value: `${tracker.inGame}`
+        }));
+
         await DiscordMessages.sendTrackerMessage(guildId, ids.trackerId, interaction);
     }
+
+    client.log(client.intlGet(null, 'infoCap'), client.intlGet(null, 'userButtonInteractionSuccess', {
+        id: `${verifyId}`
+    }));
 }

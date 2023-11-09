@@ -50,7 +50,8 @@ module.exports = (client, guild) => {
                 map: null,
                 server: null,
                 event: null,
-                team: null
+                team: null,
+                battlemetricsPlayers: null
             },
             activeServer: null,
             serverList: {},
@@ -61,7 +62,12 @@ module.exports = (client, guild) => {
                 buy: [],
                 sell: []
             },
-            teamChatColors: {}
+            teamChatColors: {},
+            blacklist: {
+                discordIds: [],
+                steamIds: []
+            },
+            aliases: []
         };
     }
     else {
@@ -146,7 +152,8 @@ module.exports = (client, guild) => {
                 map: null,
                 server: null,
                 event: null,
-                team: null
+                team: null,
+                battlemetricsPlayers: null
             }
         }
         else {
@@ -154,6 +161,8 @@ module.exports = (client, guild) => {
             if (!instance.informationMessageId.hasOwnProperty('server')) instance.informationMessageId.server = null;
             if (!instance.informationMessageId.hasOwnProperty('event')) instance.informationMessageId.event = null;
             if (!instance.informationMessageId.hasOwnProperty('team')) instance.informationMessageId.team = null;
+            if (!instance.informationMessageId.hasOwnProperty('team'))
+                instance.informationMessageId.battlemetricsPlayers = null;
         }
 
         if (!instance.hasOwnProperty('activeServer')) instance.activeServer = null;
@@ -169,6 +178,13 @@ module.exports = (client, guild) => {
         if (!instance.marketSubscriptionList.hasOwnProperty('buy')) instance.marketSubscriptionList['buy'] = [];
         if (!instance.marketSubscriptionList.hasOwnProperty('sell')) instance.marketSubscriptionList['sell'] = [];
         if (!instance.hasOwnProperty('teamChatColors')) instance.teamChatColors = {};
+        if (!instance.hasOwnProperty('blacklist')) instance.blacklist = {
+            discordIds: [],
+            steamIds: []
+        }
+        if (!instance.blacklist.hasOwnProperty('discordIds')) instance.blacklist['discordIds'] = [];
+        if (!instance.blacklist.hasOwnProperty('steamIds')) instance.blacklist['steamIds'] = [];
+        if (!instance.hasOwnProperty('aliases')) instance.aliases = [];
 
         for (const serverId of Object.keys(instance.serverList)) {
             if (!Object.keys(instance.serverListLite).includes(serverId)) {

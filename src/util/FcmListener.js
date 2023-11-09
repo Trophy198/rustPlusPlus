@@ -22,7 +22,7 @@ const Discord = require('discord.js');
 const Path = require('path');
 const PushReceiver = require('push-receiver');
 
-const BattlemetricsAPI = require('../util/battlemetricsAPI.js');
+const Battlemetrics = require('../structures/Battlemetrics');
 const Constants = require('../util/constants.js');
 const DiscordButtons = require('../discordTools/discordButtons.js');
 const DiscordEmbeds = require('../discordTools/discordEmbeds.js');
@@ -199,17 +199,14 @@ async function pairingServer(client, guild, full, data, body) {
     let message = undefined;
     if (server) message = await DiscordTools.getMessageById(guild.id, instance.channelId.servers, server.messageId);
 
-    let info = null;
-    let battlemetricsId = await BattlemetricsAPI.getBattlemetricsServerId(client, data.title);
-    if (battlemetricsId !== null && battlemetricsId !== undefined) {
-        info = await BattlemetricsAPI.getBattlemetricsServerInfo(client, battlemetricsId);
-        let onlinePlayers = await BattlemetricsAPI.getBattlemetricsServerOnlinePlayers(client, battlemetricsId);
-        if (BattlemetricsAPI.isBattlemetricsServerHidden(onlinePlayers)) {
-            battlemetricsId = null;
+    let battlemetricsId = null;
+    const bmInstance = new Battlemetrics(null, data.title);
+    await bmInstance.setup();
+    if (bmInstance.lastUpdateSuccessful) {
+        battlemetricsId = bmInstance.id;
+        if (!client.battlemetricsInstances.hasOwnProperty(bmInstance.id)) {
+            client.battlemetricsInstances[bmInstance.id] = bmInstance;
         }
-    }
-    else {
-        battlemetricsId = null;
     }
 
     instance.serverList[serverId] = {
@@ -219,8 +216,8 @@ async function pairingServer(client, guild, full, data, body) {
         steamId: body.playerId,
         playerToken: body.playerToken,
         description: body.desc.replace(/\\n/g, '\n').replace(/\\t/g, '\t'),
-        img: isValidUrl(body.img) ? body.img : Constants.DEFAULT_SERVER_IMG,
-        url: isValidUrl(body.url) ? body.url : Constants.DEFAULT_SERVER_URL,
+        img: isValidUrl(body.img) ? body.img.replace(/ /g, '%20') : Constants.DEFAULT_SERVER_IMG,
+        url: isValidUrl(body.url) ? body.url.replace(/ /g, '%20') : Constants.DEFAULT_SERVER_URL,
         notes: server ? server.notes : {},
         switches: server ? server.switches : {},
         alarms: server ? server.alarms : {},
@@ -229,7 +226,8 @@ async function pairingServer(client, guild, full, data, body) {
         switchGroups: server ? server.switchGroups : {},
         messageId: (message !== undefined) ? message.id : null,
         battlemetricsId: battlemetricsId,
-        connect: (info === null) ? null : `connect ${info.ip}:${info.port}`,
+        connect: (!bmInstance.lastUpdateSuccessful) ? null :
+            `connect ${bmInstance.server_ip}:${bmInstance.server_port}`,
         cargoShipEgressTimeMs: server ? server.cargoShipEgressTimeMs : Constants.DEFAULT_CARGO_SHIP_EGRESS_TIME_MS,
         oilRigLockedCrateUnlockTimeMs: server ? server.oilRigLockedCrateUnlockTimeMs :
             Constants.DEFAULT_OIL_RIG_LOCKED_CRATE_UNLOCK_TIME_MS,
@@ -265,7 +263,10 @@ async function pairingEntitySwitch(client, guild, full, data, body) {
         image: entityExist ? switches[body.entityId].image : 'smart_switch.png',
         autoDayNightOnOff: entityExist ? switches[body.entityId].autoDayNightOnOff : 0,
         location: entityExist ? switches[body.entityId].location : null,
+        x: entityExist ? switches[body.entityId].x : null,
+        y: entityExist ? switches[body.entityId].y : null,
         server: entityExist ? switches[body.entityId].server : body.name,
+        proximity: entityExist ? switches[body.entityId].proximity : Constants.PROXIMITY_SETTING_DEFAULT_METERS,
         messageId: entityExist ? switches[body.entityId].messageId : null
     };
     client.setInstance(guild.id, instance);
@@ -283,6 +284,8 @@ async function pairingEntitySwitch(client, guild, full, data, body) {
             if (player) {
                 const location = Map.getPos(player.x, player.y, rustplus.info.correctedMapSize, rustplus);
                 instance.serverList[serverId].switches[body.entityId].location = location.location;
+                instance.serverList[serverId].switches[body.entityId].x = location.x;
+                instance.serverList[serverId].switches[body.entityId].y = location.y;
             }
         }
 
@@ -383,19 +386,19 @@ async function pairingEntityStorageMonitor(client, guild, full, data, body) {
         }
 
         if (instance.serverList[serverId].storageMonitors[body.entityId].reachable) {
-            if (info.entityInfo.payload.capacity === 28) {
+            if (info.entityInfo.payload.capacity === Constants.STORAGE_MONITOR_TOOL_CUPBOARD_CAPACITY) {
                 instance.serverList[serverId].storageMonitors[body.entityId].type = 'toolCupboard';
                 instance.serverList[serverId].storageMonitors[body.entityId].image = 'tool_cupboard.png';
                 if (info.entityInfo.payload.protectionExpiry === 0) {
                     instance.serverList[serverId].storageMonitors[body.entityId].decaying = true;
                 }
             }
-            else if (info.entityInfo.payload.capacity === 30) {
+            else if (info.entityInfo.payload.capacity === Constants.STORAGE_MONITOR_VENDING_MACHINE_CAPACITY) {
                 instance.serverList[serverId].storageMonitors[body.entityId].type = 'vendingMachine';
                 instance.serverList[serverId].storageMonitors[body.entityId].image = 'vending_machine.png';
             }
-            else if (info.entityInfo.payload.capacity === 48) {
-                instance.serverList[serverId].storageMonitors[body.entityId].type = 'container';
+            else if (info.entityInfo.payload.capacity === Constants.STORAGE_MONITOR_LARGE_WOOD_BOX_CAPACITY) {
+                instance.serverList[serverId].storageMonitors[body.entityId].type = 'largeWoodBox';
                 instance.serverList[serverId].storageMonitors[body.entityId].image = 'large_wood_box.png';
             }
 
@@ -460,7 +463,7 @@ async function alarmRaidAlarm(client, guild, full, data, body) {
 
     if (rustplus && (serverId === rustplus.serverId)) {
         await DiscordMessages.sendMessage(guild.id, content, null, instance.channelId.activity);
-        rustplus.sendTeamMessageAsync(`${data.title}: ${data.message}`);
+        rustplus.sendInGameMessage(`${data.title}: ${data.message}`);
     }
 
     client.log(client.intlGet(null, 'infoCap'), `${data.title} ${data.message}`);

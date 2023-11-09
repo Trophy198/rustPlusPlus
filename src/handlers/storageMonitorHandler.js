@@ -18,6 +18,7 @@
 
 */
 
+const Constants = require('../util/constants.js');
 const DiscordMessages = require('../discordTools/discordMessages.js');
 
 module.exports = {
@@ -68,7 +69,7 @@ module.exports = {
                     }
 
                     if (info.entityInfo.payload.capacity !== 0) {
-                        if (info.entityInfo.payload.capacity === 28) {
+                        if (info.entityInfo.payload.capacity === Constants.STORAGE_MONITOR_TOOL_CUPBOARD_CAPACITY) {
                             instance.serverList[serverId].storageMonitors[entityId].type = 'toolCupboard';
                             if (info.entityInfo.payload.protectionExpiry === 0 &&
                                 instance.serverList[serverId].storageMonitors[entityId].decaying === false) {
@@ -78,7 +79,7 @@ module.exports = {
                                     guildId, serverId, entityId);
 
                                 if (instance.serverList[serverId].storageMonitors[entityId].inGame) {
-                                    rustplus.sendTeamMessageAsync(client.intlGet(rustplus.guildId, 'isDecaying', {
+                                    rustplus.sendInGameMessage(client.intlGet(rustplus.guildId, 'isDecaying', {
                                         device: instance.serverList[serverId].storageMonitors[entityId].name
                                     }));
                                 }
@@ -87,11 +88,13 @@ module.exports = {
                                 instance.serverList[serverId].storageMonitors[entityId].decaying = false;
                             }
                         }
-                        else if (info.entityInfo.payload.capacity === 30) {
+                        else if (info.entityInfo.payload.capacity ===
+                            Constants.STORAGE_MONITOR_VENDING_MACHINE_CAPACITY) {
                             instance.serverList[serverId].storageMonitors[entityId].type = 'vendingMachine';
                         }
-                        else if (info.entityInfo.payload.capacity === 48) {
-                            instance.serverList[serverId].storageMonitors[entityId].type = 'container';
+                        else if (info.entityInfo.payload.capacity ===
+                            Constants.STORAGE_MONITOR_LARGE_WOOD_BOX_CAPACITY) {
+                            instance.serverList[serverId].storageMonitors[entityId].type = 'largeWoodBox';
                         }
                         client.setInstance(guildId, instance);
                     }

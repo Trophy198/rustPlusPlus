@@ -19,7 +19,9 @@
 */
 
 const CommandHandler = require('../handlers/inGameCommandHandler.js');
+const Constants = require('../util/constants.js');
 const DiscordMessages = require('../discordTools/discordMessages.js');
+const InGameChatHandler = require('../handlers/inGameChatHandler.js');
 const SmartSwitchGroupHandler = require('../handlers/smartSwitchGroupHandler.js');
 const TeamChatHandler = require("../handlers/teamChatHandler.js");
 const TeamHandler = require('../handlers/teamHandler.js');
@@ -68,9 +70,36 @@ async function messageBroadcastTeamChanged(rustplus, client, message) {
 
 async function messageBroadcastTeamMessage(rustplus, client, message) {
     const instance = client.getInstance(rustplus.guildId);
+    const steamId = message.broadcast.teamMessage.message.steamId.toString();
 
-    message.broadcast.teamMessage.message.message =
-        message.broadcast.teamMessage.message.message.replace(/^<color.+?<\/color>/g, '');
+    if (steamId === rustplus.playerId) {
+        /* Delay inGameChatHandler */
+        clearTimeout(rustplus.inGameChatTimeout);
+        const commandDelayMs = parseInt(rustplus.generalSettings.commandDelay) * 1000;
+        rustplus.inGameChatTimeout = setTimeout(
+            InGameChatHandler.inGameChatHandler, commandDelayMs, rustplus, client);
+    }
+
+    let tempName = message.broadcast.teamMessage.message.name;
+    let tempMessage = message.broadcast.teamMessage.message.message;
+
+    tempName = tempName.replace(/^<size=.*?><color=.*?>/, '');  /* Rustafied */
+    tempName = tempName.replace(/<\/color><\/size>$/, '');      /* Rustafied */
+    message.broadcast.teamMessage.message.name = tempName;
+
+    tempMessage = tempMessage.replace(/^<size=.*?><color=.*?>/, '');  /* Rustafied */
+    tempMessage = tempMessage.replace(/<\/color><\/size>$/, '');      /* Rustafied */
+    tempMessage = tempMessage.replace(/^<color.+?<\/color>/g, '');      /* Unknown */
+    message.broadcast.teamMessage.message.message = tempMessage;
+
+    if (instance.blacklist['steamIds'].includes(`${steamId}`)) {
+        rustplus.log(client.intlGet(null, 'infoCap'), client.intlGet(null, `userPartOfBlacklistInGame`, {
+            user: `${message.broadcast.teamMessage.message.name} (${steamId})`,
+            message: message.broadcast.teamMessage.message.message
+        }));
+        TeamChatHandler(rustplus, client, message.broadcast.teamMessage.message);
+        return;
+    }
 
     const startsWithTrademark = message.broadcast.teamMessage.message.message
         .startsWith(instance.generalSettings.trademark);
@@ -78,6 +107,11 @@ async function messageBroadcastTeamMessage(rustplus, client, message) {
     const isCommand = await CommandHandler.inGameCommandHandler(rustplus, client, message);
 
     if (!isCommand && !startsWithTrademark) {
+        rustplus.log(client.intlGet(null, 'infoCap'), client.intlGet(null, `logInGameMessage`, {
+            message: message.broadcast.teamMessage.message.message,
+            user: `${message.broadcast.teamMessage.message.name} (${steamId})`
+        }));
+
         TeamChatHandler(rustplus, client, message.broadcast.teamMessage.message);
     }
 }
@@ -147,7 +181,7 @@ async function messageBroadcastEntityChangedSmartAlarm(rustplus, client, message
         await DiscordMessages.sendSmartAlarmTriggerMessage(rustplus.guildId, serverId, entityId);
 
         if (instance.generalSettings.smartAlarmNotifyInGame) {
-            rustplus.sendTeamMessageAsync(`${server.alarms[entityId].name}: ${server.alarms[entityId].message}`);
+            rustplus.sendInGameMessage(`${server.alarms[entityId].name}: ${server.alarms[entityId].message}`);
         }
     }
 
@@ -165,7 +199,7 @@ async function messageBroadcastEntityChangedStorageMonitor(rustplus, client, mes
     if (message.broadcast.entityChanged.payload.value === true) return;
 
     if (server.storageMonitors[entityId].type === 'toolCupboard' ||
-        message.broadcast.entityChanged.payload.capacity === 28) {
+        message.broadcast.entityChanged.payload.capacity === Constants.STORAGE_MONITOR_TOOL_CUPBOARD_CAPACITY) {
         setTimeout(updateToolCupboard.bind(null, rustplus, client, message), 2000);
     }
     else {
@@ -180,11 +214,11 @@ async function messageBroadcastEntityChangedStorageMonitor(rustplus, client, mes
         server.storageMonitors[entityId].reachable = await rustplus.isResponseValid(info) ? true : false;
 
         if (server.storageMonitors[entityId].reachable) {
-            if (info.entityInfo.payload.capacity === 30) {
+            if (info.entityInfo.payload.capacity === Constants.STORAGE_MONITOR_VENDING_MACHINE_CAPACITY) {
                 server.storageMonitors[entityId].type = 'vendingMachine';
             }
-            else if (info.entityInfo.payload.capacity === 48) {
-                server.storageMonitors[entityId].type = 'container';
+            else if (info.entityInfo.payload.capacity === Constants.STORAGE_MONITOR_LARGE_WOOD_BOX_CAPACITY) {
+                server.storageMonitors[entityId].type = 'largeWoodBox';
             }
         }
         client.setInstance(rustplus.guildId, instance);
@@ -218,7 +252,7 @@ async function updateToolCupboard(rustplus, client, message) {
             await DiscordMessages.sendDecayingNotificationMessage(rustplus.guildId, rustplus.serverId, entityId);
 
             if (server.storageMonitors[entityId].inGame) {
-                rustplus.sendTeamMessageAsync(client.intlGet(rustplus.guildId, 'isDecaying', {
+                rustplus.sendInGameMessage(client.intlGet(rustplus.guildId, 'isDecaying', {
                     device: server.storageMonitors[entityId].name
                 }));
             }

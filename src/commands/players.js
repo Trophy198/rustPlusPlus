@@ -44,7 +44,7 @@ module.exports = {
 						{ name: client.intlGet(guildId, 'any'), value: '2' }))
 				.addStringOption(option => option
 					.setName('name')
-					.setDescription(client.intlGet(guildId, 'commandsPlayersNameNameDesc'))
+					.setDescription(client.intlGet(guildId, 'theNameOfThePlayer'))
 					.setRequired(false))
 				.addStringOption(option => option
 					.setName('battlemetricsid')
@@ -381,7 +381,7 @@ async function displaySeveralUsers(client, interaction, battlemetricsId, playerI
 	for (const field of fields) {
 		embed.addFields({
 			name: fieldCounter === 0 ? client.intlGet(interaction.guildId, 'players') : '\u200B',
-			value: field,
+			value: field === '' ? '\u200B' : field,
 			inline: true
 		});
 		fieldCounter += 1;

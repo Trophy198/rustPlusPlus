@@ -70,6 +70,8 @@ class DiscordBot extends Discord.Client {
         this.battlemetricsIntervalId = null;
         this.battlemetricsIntervalCounter = 0;
 
+        this.voiceLeaveTimeouts = new Object();
+
         this.loadDiscordCommands();
         this.loadDiscordEvents();
         this.loadEnIntl();
@@ -252,7 +254,7 @@ class DiscordBot extends Discord.Client {
         for (const [steamId, content] of Object.entries(credentials)) {
             if (steamId === 'hoster') continue;
 
-            if (!(memberIds.includes(content.discordUserId))) {
+            if (!(memberIds.includes(content.discord_user_id))) {
                 steamIdRemoveCredentials.push(steamId);
             }
         }

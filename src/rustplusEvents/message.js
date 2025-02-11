@@ -101,19 +101,25 @@ async function messageBroadcastTeamMessage(rustplus, client, message) {
         return;
     }
 
-    const startsWithTrademark = message.broadcast.teamMessage.message.message
-        .startsWith(instance.generalSettings.trademark);
+    if (rustplus.messagesSentByBot.includes(message.broadcast.teamMessage.message.message)) {
+        /* Remove message from messagesSendByBot */
+        for (let i = rustplus.messagesSentByBot.length - 1; i >= 0; i--) {
+            if (rustplus.messagesSentByBot[i] === message.broadcast.teamMessage.message.message) {
+                rustplus.messagesSentByBot.splice(i, 1);
+            }
+        }
+        return;
+    }
 
     const isCommand = await CommandHandler.inGameCommandHandler(rustplus, client, message);
+    if (isCommand) return;
 
-    if (!isCommand && !startsWithTrademark) {
-        rustplus.log(client.intlGet(null, 'infoCap'), client.intlGet(null, `logInGameMessage`, {
-            message: message.broadcast.teamMessage.message.message,
-            user: `${message.broadcast.teamMessage.message.name} (${steamId})`
-        }));
+    rustplus.log(client.intlGet(null, 'infoCap'), client.intlGet(null, `logInGameMessage`, {
+        message: message.broadcast.teamMessage.message.message,
+        user: `${message.broadcast.teamMessage.message.name} (${steamId})`
+    }));
 
-        TeamChatHandler(rustplus, client, message.broadcast.teamMessage.message);
-    }
+    TeamChatHandler(rustplus, client, message.broadcast.teamMessage.message);
 }
 
 async function messageBroadcastEntityChanged(rustplus, client, message) {

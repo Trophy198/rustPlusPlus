@@ -75,6 +75,7 @@ class RustPlus extends RustPlusLib {
         this.smartSwitchIntervalCounter = 10;       /* Counter to decide when smart switches should be updated */
         this.smartAlarmIntervalCounter = 20;        /* Counter to decide when smart alarms should be updated */
         this.interactionSwitches = [];              /* Stores the ids of smart switches that are interacted in-game. */
+        this.messagesSentByBot = [];                /* Stores the last messages sent by the bot to the team chat */
 
         /* Chat handler variables */
         this.inGameChatQueue = [];
@@ -234,6 +235,13 @@ class RustPlus extends RustPlusLib {
             this.events[event].pop();
         }
         this.events[event].unshift(str);
+    }
+
+    updateBotMessages(message) {
+        if (this.messagesSentByBot === Constants.BOT_MESSAGE_HISTORY_LIMIT) {
+            this.messagesSentByBot.pop();
+        }
+        this.messagesSentByBot.unshift(message);
     }
 
     deleteThisRustplusInstance() {
@@ -926,7 +934,7 @@ class RustPlus extends RustPlusLib {
         }
 
         const item = Client.client.items.getClosestItemIdByName(itemSearchName)
-        if (item === undefined || itemSearchName === '') {
+        if (item === null || itemSearchName === '') {
             const str = Client.client.intlGet(this.guildId, 'noItemWithNameFound', {
                 name: itemSearchName
             });
@@ -1079,26 +1087,6 @@ class RustPlus extends RustPlusLib {
         const prefix = this.generalSettings.prefix;
         const commandDecay = `${prefix}${Client.client.intlGet(this.guildId, 'commandSyntaxDecay')}`;
         const commandDecayEn = `${prefix}${Client.client.intlGet('en', 'commandSyntaxDecay')}`;
-        const commandTwig = `${Client.client.intlGet(this.guildId, 'commandSyntaxTwig')}`;
-        const commandTwigEn = `${Client.client.intlGet('en', 'commandSyntaxTwig')}`;
-        const commandWood = `${Client.client.intlGet(this.guildId, 'commandSyntaxWood')}`;
-        const commandWoodEn = `${Client.client.intlGet('en', 'commandSyntaxWood')}`;
-        const commandStone = `${Client.client.intlGet(this.guildId, 'commandSyntaxStone')}`;
-        const commandStoneEn = `${Client.client.intlGet('en', 'commandSyntaxStone')}`;
-        const commandMetal = `${Client.client.intlGet(this.guildId, 'commandSyntaxMetal')}`;
-        const commandMetalEn = `${Client.client.intlGet('en', 'commandSyntaxMetal')}`;
-        const commandArmored = `${Client.client.intlGet(this.guildId, 'commandSyntaxArmored')}`;
-        const commandArmoredEn = `${Client.client.intlGet('en', 'commandSyntaxArmored')}`;
-
-        if (command.toLowerCase() === `${commandDecay}` || command.toLowerCase() === `${commandDecayEn}`) {
-            let str = `${Client.client.intlGet(this.guildId, 'commandSyntaxTwig')} (${Decay.TwigWallMaxHp}), `;
-            str += `${Client.client.intlGet(this.guildId, 'commandSyntaxWood')} (${Decay.WoodWallMaxHp}), `;
-            str += `${Client.client.intlGet(this.guildId, 'commandSyntaxStone')} (${Decay.StoneWallMaxHp}), `;
-            str += `${Client.client.intlGet(this.guildId, 'commandSyntaxMetal')} (${Decay.MetalWallMaxHp}), `;
-            str += `${Client.client.intlGet(this.guildId, 'commandSyntaxArmored')} (${Decay.ArmoredWallMaxHp})`;
-
-            return str;
-        }
 
         if (command.toLowerCase().startsWith(`${commandDecay} `)) {
             command = command.slice(`${commandDecay} `.length).trim();
@@ -1106,55 +1094,180 @@ class RustPlus extends RustPlusLib {
         else {
             command = command.slice(`${commandDecayEn} `.length).trim();
         }
-        const subcommand = command.replace(/ .*/, '');
-        const hp = command.slice(subcommand.length + 1);
 
-        let type = null;
-        switch (subcommand.toLowerCase()) {
-            case commandTwigEn:
-            case commandTwig: {
-                type = commandTwigEn;
-            } break;
+        const words = command.split(' ');
+        const lastWord = words[words.length - 1];
+        const lastWordLength = lastWord.length;
+        const restString = command.slice(0, -(lastWordLength)).trim();
 
-            case commandWoodEn:
-            case commandWood: {
-                type = commandWoodEn;
-            } break;
-
-            case commandStoneEn:
-            case commandStone: {
-                type = commandStoneEn;
-            } break;
-
-            case commandMetalEn:
-            case commandMetal: {
-                type = commandMetalEn;
-            } break;
-
-            case commandArmoredEn:
-            case commandArmored: {
-                type = commandArmoredEn;
-            } break;
-
-            default: {
-                return `${Client.client.intlGet(this.guildId, 'invalidSubcommand')}`;
-            } break;
-        }
-
-        const decaySeconds = Decay.getTimeLeftSeconds(Client.client, type, hp);
-        if (decaySeconds === null) {
-            return `${Client.client.intlGet(this.guildId, 'invalidHpInterval', { hp: hp })}`;
-        }
-        else if (decaySeconds === undefined) {
-            return `${Client.client.intlGet(this.guildId, 'invalidStructureType', { type: subcommand })}`;
+        let decayItemName = null, decayItemHp = null;
+        if (isNaN(lastWord)) {
+            decayItemName = command;
         }
         else {
-            const time = Timer.secondsToFullScale(decaySeconds);
-            return `${Client.client.intlGet(this.guildId, 'timeTillStructureDecay', {
-                time: time,
-                type: subcommand.toLowerCase()
-            })}`;
+            decayItemName = restString;
+            decayItemHp = parseInt(lastWord);
         }
+
+        let itemId = null;
+        let type = 'items';
+
+        let foundName = null;
+        if (!foundName) {
+            foundName = Client.client.rustlabs.getClosestOtherNameByName(decayItemName);
+            if (foundName) {
+                if (Client.client.rustlabs.decayData['other'].hasOwnProperty(foundName)) {
+                    type = 'other';
+                }
+                else {
+                    foundName = null;
+                }
+            }
+        }
+
+        if (!foundName) {
+            foundName = Client.client.rustlabs.getClosestBuildingBlockNameByName(decayItemName);
+            if (foundName) {
+                if (Client.client.rustlabs.decayData['buildingBlocks'].hasOwnProperty(foundName)) {
+                    type = 'buildingBlocks';
+                }
+                else {
+                    foundName = null;
+                }
+            }
+        }
+
+        if (!foundName) {
+            foundName = Client.client.items.getClosestItemIdByName(decayItemName);
+            if (foundName) {
+                if (!Client.client.rustlabs.decayData['items'].hasOwnProperty(foundName)) {
+                    foundName = null;
+                }
+            }
+        }
+
+        if (!foundName) {
+            const str = Client.client.intlGet(this.guildId, 'noItemWithNameFound', {
+                name: decayItemName
+            });
+            return str;
+        }
+        itemId = foundName;
+
+        let itemName = null;
+        let decayDetails = null;
+        if (type === 'items') {
+            itemName = Client.client.items.getName(itemId);
+            decayDetails = Client.client.rustlabs.getDecayDetailsById(itemId);
+        }
+        else {
+            itemName = itemId;
+            decayDetails = Client.client.rustlabs.getDecayDetailsByName(itemId);
+        }
+
+        if (decayDetails === null) {
+            const str = Client.client.intlGet(this.guildId, 'couldNotFindDecayDetails', {
+                name: itemName
+            });
+            return str;
+        }
+
+        const details = decayDetails[3];
+
+        const hp = decayItemHp === null ? details.hp : decayItemHp;
+        if (hp > details.hp) {
+            const str = client.intlGet(this.guildId, 'hpExceedMax', {
+                hp: hp,
+                max: details.hp
+            });
+            return str;
+        }
+
+        const decayMultiplier = hp / details.hp;
+
+        let decayString = `${itemName} (${hp}/${details.hp}) `;
+        const decayStrings = [];
+        if (details.decayString !== null) {
+            let str = `${Client.client.intlGet(this.guildId, 'decay')}: `;
+            if (hp === details.hp) {
+                decayStrings.push(`${str}${details.decayString}`);
+            }
+            else {
+                const time = Timer.secondsToFullScale(Math.floor(details.decay * decayMultiplier));
+                decayStrings.push(`${str}${time}`);
+            }
+        }
+
+        if (details.decayOutsideString !== null) {
+            let str = `${Client.client.intlGet(this.guildId, 'outside')}: `;
+            if (hp === details.hp) {
+                decayStrings.push(`${str}${details.decayOutsideString}`);
+            }
+            else {
+                const time = Timer.secondsToFullScale(Math.floor(details.decayOutside * decayMultiplier));
+                decayStrings.push(`${str}${time}`);
+            }
+        }
+
+        if (details.decayInsideString !== null) {
+            let str = `${Client.client.intlGet(this.guildId, 'inside')}: `;
+            if (hp === details.hp) {
+                decayStrings.push(`${str}${details.decayInsideString}`);
+            }
+            else {
+                const time = Timer.secondsToFullScale(Math.floor(details.decayInside * decayMultiplier));
+                decayStrings.push(`${str}${time}`);
+            }
+        }
+
+        if (details.decayUnderwaterString !== null) {
+            let str = `${Client.client.intlGet(this.guildId, 'underwater')}: `;
+            if (hp === details.hp) {
+                decayStrings.push(`${str}${details.decayUnderwaterString}`);
+            }
+            else {
+                const time = Timer.secondsToFullScale(Math.floor(details.decayUnderwater * decayMultiplier));
+                decayStrings.push(`${str}${time}`);
+            }
+        }
+        decayString += `${decayStrings.join(', ')}.`;
+
+        return decayString;
+    }
+
+    getCommandDespawn(command) {
+        const prefix = this.generalSettings.prefix;
+        const commandDespawn = `${prefix}${Client.client.intlGet(this.guildId, 'commandSyntaxDespawn')}`;
+        const commandDespawnEn = `${prefix}${Client.client.intlGet('en', 'commandSyntaxDespawn')}`;
+
+        if (command.toLowerCase().startsWith(`${commandDespawn} `)) {
+            command = command.slice(`${commandDespawn} `.length).trim();
+        }
+        else {
+            command = command.slice(`${commandDespawnEn} `.length).trim();
+        }
+
+        const itemId = Client.client.items.getClosestItemIdByName(command);
+        if (itemId === null) {
+            return Client.client.intlGet(this.guildId, 'noItemWithNameFound', {
+                name: command
+            });
+        }
+
+        const itemName = Client.client.items.getName(itemId);
+        const despawnDetails = Client.client.rustlabs.getDespawnDetailsById(itemId);
+        if (despawnDetails === null) {
+            return Client.client.intlGet(this.guildId, 'couldNotFindDespawnDetails', {
+                name: itemName
+            });
+        }
+
+        const despawnTime = despawnDetails[2].timeString;
+
+        return Client.client.intlGet(this.guildId, 'despawnTimeOfItem', {
+            item: itemName,
+            time: despawnTime
+        });
     }
 
     getCommandEvents(command) {
@@ -1607,7 +1720,7 @@ class RustPlus extends RustPlusLib {
                 }
 
                 const itemId = Client.client.items.getClosestItemIdByName(name);
-                if (itemId === undefined) {
+                if (itemId === null) {
                     return Client.client.intlGet(this.guildId, 'noItemWithNameFound', {
                         name: name
                     });
@@ -1653,7 +1766,7 @@ class RustPlus extends RustPlusLib {
                 }
 
                 const itemId = Client.client.items.getClosestItemIdByName(name);
-                if (itemId === undefined) {
+                if (itemId === null) {
                     return Client.client.intlGet(this.guildId, 'noItemWithNameFound', {
                         name: name
                     });
@@ -1686,7 +1799,7 @@ class RustPlus extends RustPlusLib {
                 }
 
                 const itemId = Client.client.items.getClosestItemIdByName(name);
-                if (itemId === undefined) {
+                if (itemId === null) {
                     return Client.client.intlGet(this.guildId, 'noItemWithNameFound', {
                         name: name
                     });
@@ -1898,7 +2011,9 @@ class RustPlus extends RustPlusLib {
             return null;
         }
 
-        const messageMaxLength = Constants.MAX_LENGTH_TEAM_MESSAGE - this.trademarkString.length;
+        const trademark = this.generalSettings.trademark;
+        const trademarkString = (trademark === 'NOT SHOWING') ? '' : `${trademark} | `;
+        const messageMaxLength = Constants.MAX_LENGTH_TEAM_MESSAGE - trademarkString.length;
         const leftLength = `...xxx ${Client.client.intlGet(this.guildId, 'more')}.`.length;
 
         let string = '';
@@ -2055,7 +2170,7 @@ class RustPlus extends RustPlusLib {
         }
 
         const item = Client.client.items.getClosestItemIdByName(itemSearchName)
-        if (item === undefined || itemSearchName === '') {
+        if (item === null || itemSearchName === '') {
             const str = Client.client.intlGet(this.guildId, 'noItemWithNameFound', {
                 name: itemSearchName
             });
@@ -2079,7 +2194,7 @@ class RustPlus extends RustPlusLib {
         ]);
 
         let str = `${itemName}: `;
-        for (const item of recycleData) {
+        for (const item of recycleData['recycler']) {
             str += `${Client.client.items.getName(item.itemId)} x${item.quantity}, `;
         }
         str = str.slice(0, -2);
@@ -2101,7 +2216,7 @@ class RustPlus extends RustPlusLib {
         const itemResearchName = command;
 
         const item = Client.client.items.getClosestItemIdByName(itemResearchName)
-        if (item === undefined || itemResearchName === '') {
+        if (item === null || itemResearchName === '') {
             const str = Client.client.intlGet(this.guildId, 'noItemWithNameFound', {
                 name: itemResearchName
             });
@@ -2165,7 +2280,7 @@ class RustPlus extends RustPlusLib {
                     });
                 }
 
-                const discordUserId = credentials[player.steamId].discordUserId;
+                const discordUserId = credentials[player.steamId].discord_user_id;
                 const user = await DiscordTools.getUserById(this.guildId, discordUserId);
 
                 const content = {
@@ -2229,6 +2344,41 @@ class RustPlus extends RustPlusLib {
         }
 
         return strings;
+    }
+
+    getCommandStack(command) {
+        const prefix = this.generalSettings.prefix;
+        const commandStack = `${prefix}${Client.client.intlGet(this.guildId, 'commandSyntaxStack')}`;
+        const commandStackEn = `${prefix}${Client.client.intlGet('en', 'commandSyntaxStack')}`;
+
+        if (command.toLowerCase().startsWith(`${commandStack} `)) {
+            command = command.slice(`${commandStack} `.length).trim();
+        }
+        else {
+            command = command.slice(`${commandStackEn} `.length).trim();
+        }
+
+        const itemId = Client.client.items.getClosestItemIdByName(command);
+        if (itemId === null) {
+            return Client.client.intlGet(this.guildId, 'noItemWithNameFound', {
+                name: command
+            });
+        }
+
+        const itemName = Client.client.items.getName(itemId);
+        const stackDetails = Client.client.rustlabs.getStackDetailsById(itemId);
+        if (stackDetails === null) {
+            return Client.client.intlGet(this.guildId, 'couldNotFindStackDetails', {
+                name: itemName
+            });
+        }
+
+        const quantity = stackDetails[2].quantity;
+
+        return Client.client.intlGet(this.guildId, 'stackSizeOfItem', {
+            item: itemName,
+            quantity: quantity
+        });
     }
 
     getCommandSteamId(command, callerSteamId, callerName) {

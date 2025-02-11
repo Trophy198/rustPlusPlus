@@ -32,11 +32,11 @@ module.exports = {
 			.setDescription(client.intlGet(guildId, 'commandsResearchDesc'))
 			.addStringOption(option => option
 				.setName('name')
-				.setDescription(client.intlGet(guildId, 'commandsResearchNameDesc'))
+				.setDescription(client.intlGet(guildId, 'theNameOfTheItem'))
 				.setRequired(false))
 			.addStringOption(option => option
 				.setName('id')
-				.setDescription(client.intlGet(guildId, 'commandsResearchIdDesc'))
+				.setDescription(client.intlGet(guildId, 'theIdOfTheItem'))
 				.setRequired(false));
 	},
 
@@ -55,7 +55,7 @@ module.exports = {
 		let itemId = null;
 		if (researchItemName !== null) {
 			const item = client.items.getClosestItemIdByName(researchItemName)
-			if (item === undefined) {
+			if (item === null) {
 				const str = client.intlGet(guildId, 'noItemWithNameFound', {
 					name: researchItemName
 				});

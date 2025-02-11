@@ -34,8 +34,11 @@ module.exports = {
             if (rustplus.inGameChatQueue.length !== 0) {
                 clearTimeout(rustplus.inGameChatTimeout);
                 rustplus.inGameChatTimeout = null;
+
                 const messageFromQueue = rustplus.inGameChatQueue[0];
                 rustplus.inGameChatQueue = rustplus.inGameChatQueue.slice(1);
+
+                rustplus.updateBotMessages(messageFromQueue);
 
                 await rustplus.sendTeamMessageAsync(messageFromQueue);
                 rustplus.log(client.intlGet(guildId, 'messageCap'), messageFromQueue);
@@ -55,19 +58,11 @@ module.exports = {
 
             if (Array.isArray(message)) {
                 for (const msg of message) {
-                    const strings = msg.match(new RegExp(`.{1,${messageMaxLength}}(\\s|$)`, 'g'));
-
-                    for (const str of strings) {
-                        rustplus.inGameChatQueue.push(`${trademarkString}${str}`);
-                    }
+                    handleMessage(rustplus, msg, trademarkString, messageMaxLength)
                 }
             }
             else if (typeof message === 'string') {
-                const strings = message.match(new RegExp(`.{1,${messageMaxLength}}(\\s|$)`, 'g'));
-
-                for (const str of strings) {
-                    rustplus.inGameChatQueue.push(`${trademarkString}${str}`);
-                }
+                handleMessage(rustplus, message, trademarkString, messageMaxLength)
             }
         }
 
@@ -77,3 +72,13 @@ module.exports = {
         }
     },
 };
+
+function handleMessage(rustplus, message, trademarkString, maxLength) {
+    if (typeof message !== 'string') return;
+
+    const strings = message.match(new RegExp(`.{1,${maxLength}}(\\s|$)`, 'g'));
+
+    for (const str of strings) {
+        rustplus.inGameChatQueue.push(`${trademarkString}${str}`);
+    }
+}

@@ -43,11 +43,11 @@ module.exports = {
                         { name: client.intlGet(guildId, 'sell'), value: 'sell' }))
                 .addStringOption(option => option
                     .setName('name')
-                    .setDescription(client.intlGet(guildId, 'commandsMarketSearchNameDesc'))
+                    .setDescription(client.intlGet(guildId, 'theNameOfTheItem'))
                     .setRequired(false))
                 .addStringOption(option => option
                     .setName('id')
-                    .setDescription(client.intlGet(guildId, 'commandsMarketSearchIdDesc'))
+                    .setDescription(client.intlGet(guildId, 'theIdOfTheItem'))
                     .setRequired(false)))
             .addSubcommand(subcommand => subcommand
                 .setName('subscribe')
@@ -62,11 +62,11 @@ module.exports = {
                         { name: client.intlGet(guildId, 'sell'), value: 'sell' }))
                 .addStringOption(option => option
                     .setName('name')
-                    .setDescription(client.intlGet(guildId, 'commandsMarketSubscribeNameDesc'))
+                    .setDescription(client.intlGet(guildId, 'theNameOfTheItem'))
                     .setRequired(false))
                 .addStringOption(option => option
                     .setName('id')
-                    .setDescription(client.intlGet(guildId, 'commandsMarketSubscribeIdDesc'))
+                    .setDescription(client.intlGet(guildId, 'theIdOfTheItem'))
                     .setRequired(false)))
             .addSubcommand(subcommand => subcommand
                 .setName('unsubscribe')
@@ -81,11 +81,11 @@ module.exports = {
                         { name: client.intlGet(guildId, 'sell'), value: 'sell' }))
                 .addStringOption(option => option
                     .setName('name')
-                    .setDescription(client.intlGet(guildId, 'commandsMarketUnsubscribeNameDesc'))
+                    .setDescription(client.intlGet(guildId, 'theNameOfTheItem'))
                     .setRequired(false))
                 .addStringOption(option => option
                     .setName('id')
-                    .setDescription(client.intlGet(guildId, 'commandsMarketUnsubscribeIdDesc'))
+                    .setDescription(client.intlGet(guildId, 'theIdOfTheItem'))
                     .setRequired(false)))
             .addSubcommand(subcommand => subcommand
                 .setName('list')
@@ -118,7 +118,7 @@ module.exports = {
                 let itemId = null;
                 if (searchItemName !== null) {
                     const item = client.items.getClosestItemIdByName(searchItemName)
-                    if (item === undefined) {
+                    if (item === null) {
                         const str = client.intlGet(interaction.guildId, 'noItemWithNameFound', {
                             name: searchItemName
                         });
@@ -236,7 +236,7 @@ module.exports = {
                 let itemId = null;
                 if (subscribeItemName !== null) {
                     const item = client.items.getClosestItemIdByName(subscribeItemName)
-                    if (item === undefined) {
+                    if (item === null) {
                         const str = client.intlGet(interaction.guildId, 'noItemWithNameFound', {
                             name: subscribeItemName
                         });
@@ -304,7 +304,7 @@ module.exports = {
                 let itemId = null;
                 if (subscribeItemName !== null) {
                     const item = client.items.getClosestItemIdByName(subscribeItemName)
-                    if (item === undefined) {
+                    if (item === null) {
                         const str = client.intlGet(interaction.guildId, 'noItemWithNameFound', {
                             name: subscribeItemName
                         });

@@ -32,16 +32,24 @@ module.exports = {
 			.setDescription(client.intlGet(guildId, 'commandsRecycleDesc'))
 			.addStringOption(option => option
 				.setName('name')
-				.setDescription(client.intlGet(guildId, 'commandsRecycleNameDesc'))
+				.setDescription(client.intlGet(guildId, 'theNameOfTheItem'))
 				.setRequired(false))
 			.addStringOption(option => option
 				.setName('id')
-				.setDescription(client.intlGet(guildId, 'commandsRecycleIdDesc'))
+				.setDescription(client.intlGet(guildId, 'theIdOfTheItem'))
 				.setRequired(false))
 			.addIntegerOption(option => option
 				.setName('quantity')
 				.setDescription(client.intlGet(guildId, 'commandsRecycleQuantityDesc'))
-				.setRequired(false));
+				.setRequired(false))
+			.addStringOption(option => option
+				.setName('recycler-type')
+				.setDescription(client.intlGet(guildId, 'commandsRecycleRecyclerTypeDesc'))
+				.setRequired(false)
+				.addChoices(
+					{ name: client.intlGet(guildId, 'recycler'), value: 'recycler' },
+					{ name: client.intlGet(guildId, 'shredder'), value: 'shredder' },
+					{ name: client.intlGet(guildId, 'safe-zone-recycler'), value: 'safe-zone-recycler' }));
 	},
 
 	async execute(client, interaction) {
@@ -56,11 +64,12 @@ module.exports = {
 		const recycleItemName = interaction.options.getString('name');
 		const recycleItemId = interaction.options.getString('id');
 		const recycleItemQuantity = interaction.options.getInteger('quantity');
+		const recycleItemRecyclerType = interaction.options.getString('recycler-type');
 
 		let itemId = null;
 		if (recycleItemName !== null) {
 			const item = client.items.getClosestItemIdByName(recycleItemName)
-			if (item === undefined) {
+			if (item === null) {
 				const str = client.intlGet(guildId, 'noItemWithNameFound', {
 					name: recycleItemName
 				});
@@ -104,13 +113,14 @@ module.exports = {
 		}
 
 		const quantity = recycleItemQuantity === null ? 1 : recycleItemQuantity;
+		const recyclerType = recycleItemRecyclerType === null ? 'recycler' : recycleItemRecyclerType;
 
 		client.log(client.intlGet(null, 'infoCap'), client.intlGet(null, 'slashCommandValueChange', {
 			id: `${verifyId}`,
-			value: `${recycleItemName} ${recycleItemId} ${recycleItemQuantity}`
+			value: `${recycleItemName} ${recycleItemId} ${recycleItemQuantity} ${recycleItemRecyclerType}`
 		}));
 
-		await DiscordMessages.sendRecycleMessage(interaction, recycleDetails, quantity);
+		await DiscordMessages.sendRecycleMessage(interaction, recycleDetails, quantity, recyclerType);
 		client.log(client.intlGet(null, 'infoCap'), client.intlGet(guildId, 'commandsRecycleDesc'));
 	},
 };

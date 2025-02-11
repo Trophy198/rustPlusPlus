@@ -6,8 +6,10 @@
 - **/blacklist** - Blacklist a user from using the bot.
 - **/cctv** - Get cctv camera codes for monuments.
 - **/craft** - Display the cost to craft an item.
-- **/credentials** - Setup FCM-Credentials.
+- **/credentials** - Setup Credentials.
+- **/decay** - Display the decay time of an item.
 - **/help** - Get help message.
+- **/item** - Get the details of an item.
 - **/leader** - Transfer leadership.
 - **/map** - Display the In-Game Map.
 - **/market** - Search for or subscribe to items in vending machines.
@@ -18,6 +20,7 @@
 - **/role** - Setup a specific role to use rustplusplus.
 - **/storagemonitor** - Change image of paired Storage Monitors.
 - **/switch** - Change image of paired Storage Monitors.
+- **/upkeep** - Get the upkeep cost of an item.
 - **/uptime** - Get the current uptime for rustplusplus.
 - **/voice** - Let rustplusplus join voicechat.
 
@@ -29,7 +32,7 @@
 - **connection/connections** - Display latest team connections.
 - **craft** - Display the cost to craft an item.
 - **death/deaths** - Display latest deaths.
-- **decay** - Get decay time of different wall-types.
+- **decay** - Display the decay time of an item.
 - **events** - Get recent events.
 - **heli** - Get information regarding Patrol Helicopter.
 - **large** - Get information regarding Large Oil Rig.

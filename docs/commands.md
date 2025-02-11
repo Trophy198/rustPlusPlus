@@ -14,8 +14,10 @@ Slash Command | Description
 [**/blacklist**](commands.md#blacklist) | Blacklist a user from using the bot.
 [**/cctv**](commands.md#cctv) | Posts CCTV codes for a monument.
 [**/craft**](commands.md#craft) | Display the cost to craft an item.
-[**/credentials**](commands.md#credentials) | Set/Clear the FCM Credentials for the user account.
+[**/credentials**](commands.md#credentials) | Set/Clear the Credentials for the user account.
+[**/decay**](commands.md#decay) | Display the decay time of an item.
 [**/help**](commands.md#help) | Display help message.
+[**/item**](commands.md#item) | Get the details of an item.
 [**/leader**](commands.md#leader) | Give or take the leadership from/to a team member.
 [**/map**](commands.md#map) | Get the currently connected server map image.
 [**/market**](commands.md#market) | Operations for In-Game Vending Machines.
@@ -26,6 +28,7 @@ Slash Command | Description
 [**/role**](commands.md#role) | Set/Clear a specific role that will be able to see the rustplusplus category content.
 [**/storagemonitor**](commands.md#storagemonitors) | Operations on Storage Monitors.
 [**/switch**](commands.md#switch) | Operations on Smart Switches.
+[**/upkeep**](commands.md#upkeep) | Get the upkeep cost of an item.
 [**/uptime**](commands.md#uptime) | Display uptime of the bot and server.
 [**/voice**](commands.md#voice) | Operations on Voice Feature.
 
@@ -102,29 +105,37 @@ Subcommand | Options | Description | Required
 
 ## **/credentials**
 
-> **Add/Remove the FCM Credentials for the user account.**
+> **Add/Remove the Credentials for the user account.**
 
 Subcommand | Options | Description | Required
 ---------- | ------- | ----------- | --------
-`add` | &nbsp; | Add FCM Credentials. | &nbsp;
-&nbsp; | `keys_private_key` | Keys Private Key. | `True`
-&nbsp; | `keys_public_key` | Keys Public Key. | `True`
-&nbsp; | `keys_auth_secret` | Keys Auth Secret. | `True`
-&nbsp; | `fcm_token` | FCM Token. | `True`
-&nbsp; | `fcm_push_set` | FCM Push Set. | `True`
-&nbsp; | `gcm_token` | GCM Token. | `True`
-&nbsp; | `gcm_android_id` | FCM Android ID. | `True`
+`add` | &nbsp; | Add Credentials. | &nbsp;
+&nbsp; | `gcm_android_id` | GCM Android ID. | `True`
 &nbsp; | `gcm_security_token` | GCM Security Token. | `True`
-&nbsp; | `gcm_app_id` | GCM App ID. | `True`
 &nbsp; | `steam_id` | Steam ID. | `True`
+&nbsp; | `issued_date` | Issued date of the credentials. | `True`
+&nbsp; | `expire_date` | Expire date of the credentials. | `True`
 &nbsp; | `hoster` | Should be hoster. | `False`
-`remove` | &nbsp; | Remove FCM Credentials. | &nbsp;
+`remove` | &nbsp; | Remove Credentials. | &nbsp;
 &nbsp; | `steam_id` | Steam ID. | `False`
-`show` | &nbsp; | Show all registered FCM Credentials. | &nbsp;
+`show` | &nbsp; | Show all registered Credentials. | &nbsp;
 `set_hoster` | &nbsp; | Set the hoster. | &nbsp;
 &nbsp; | `steam_id` | Steam ID. | `False`
 
 ![Discord Slash Command credentials Image](images/slash_commands/credentials.png)
+
+
+## **/decay**
+
+> **Display the decay time of an item.**
+
+Subcommand | Options | Description | Required
+---------- | ------- | ----------- | --------
+&nbsp; | `name` | The name of the item. | `False`
+&nbsp; | `id` | The id of the item. | `False`
+&nbsp; | `hp` | THe current HP of the item. | `False`
+
+![Discord Slash Command decay Image](images/slash_commands/decay.png)
 
 
 ## **/help**
@@ -132,6 +143,18 @@ Subcommand | Options | Description | Required
 > Display help message.
 
 ![Discord Slash Command help Image](images/slash_commands/help.png)
+
+
+## **/item**
+
+> **Get the details of an item.**
+
+Subcommand | Options | Description | Required
+---------- | ------- | ----------- | --------
+&nbsp; | `name` | The name of the item. | `False`
+&nbsp; | `id` | The id of the item. | `False`
+
+![Discord Slash Command item Image](images/slash_commands/item.png)
 
 
 ## **/leader**
@@ -282,6 +305,19 @@ Subcommand | Options | Description | Required
 
 ![Discord Slash Command switch Image](images/slash_commands/switch.png)
 
+
+## **/upkeep**
+
+> **Get the upkeep cost of an item.**
+
+Subcommand | Options | Description | Required
+---------- | ------- | ----------- | --------
+&nbsp; | `name` | The name of the item. | `False`
+&nbsp; | `id` | The id of the item. | `False`
+
+![Discord Slash Command upkeep Image](images/slash_commands/upkeep.png)
+
+
 ## **/uptime**
 
 > **Display uptime of the bot and server.**
@@ -316,7 +352,7 @@ In-Game Command | Description
 [**connection/connections**](commands.md#connectionconnections) | Get recent connection events.
 [**craft**](commands.md#craft-ingame) | Display the cost to craft an item.
 [**death/deaths**](commands.md#deathdeaths) | Get recent death events.
-[**decay**](commands.md#decay) | Get time before structure decay.
+[**decay**](commands.md#decay-ingame) | Display the decay time of an item.
 [**events**](commands.md#events) | Get recent events.
 [**heli**](commands.md#heli) | Get information about Patrol Helicopter (Location, time since last downed, time since last on map).
 [**large**](commands.md#large) | Get information about Large Oil Rig (Time till crate unlocks, time since last trigger).
@@ -409,12 +445,13 @@ In-Game Command | Description
 ![In-Game Command death Image](images/ingame_commands/death_ingame.png)
 
 
-## **decay**
+## **decay ingame**
 
-> **Get time before structure decay.**
+> **Display the decay time of an item.**
 <br>Command: `!decay`
-<br>Command: `!decay stone 100`
-<br>Command: `!decay armored 1000`
+<br>Command: `!decay Sheet Metal Door`
+<br>Command: `!decay Tug Boat 100`
+<br>Command: `!decay armored wall 450`
 
 ![In-Game Command decay Image](images/ingame_commands/decay_ingame.png)
 

@@ -547,6 +547,10 @@ class DiscordBot extends Discord.Client {
     isAdministrator(interaction) {
         return interaction.member.permissions.has(Discord.PermissionFlagsBits.Administrator);
     }
+
+    isDeveloper(interaction) {
+        return Config.discord.developerId === interaction.user.id;
+    }
 }
 
 module.exports = DiscordBot;

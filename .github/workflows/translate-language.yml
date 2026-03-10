@@ -4,10 +4,6 @@ on:
   pull_request:
     branches:
       - master
-    paths:
-      - "src/languages/en.json"
-      - "src/external/translate_language_json.py"
-      - ".github/workflows/translate-language.yml"
 
 permissions:
   contents: write
@@ -19,7 +15,6 @@ concurrency:
 
 jobs:
   translate-language:
-    if: ${{ !github.event.pull_request.head.repo.fork }}
     runs-on: ubuntu-latest
 
     steps:

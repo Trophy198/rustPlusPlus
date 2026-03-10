@@ -47,7 +47,8 @@ module.exports = async (client, interaction) => {
         const server = instance.serverList[ids.serverId];
         const cargoShipEgressTime = parseInt(interaction.fields.getTextInputValue('CargoShipEgressTime'));
         const oilRigCrateUnlockTime = parseInt(interaction.fields.getTextInputValue('OilRigCrateUnlockTime'));
-        const deepSeaWipeCooldown = parseInt(interaction.fields.getTextInputValue('DeepSeaWipeCooldownTime'));
+        const deepSeaMinWipeCooldown = parseInt(interaction.fields.getTextInputValue('DeepSeaMinWipeCooldownTime'));
+        const deepSeaMaxWipeCooldown = parseInt(interaction.fields.getTextInputValue('DeepSeaMaxWipeCooldownTime'));
         const deepSeaWipeDuration = parseInt(interaction.fields.getTextInputValue('DeepSeaWipeDurationTime'));
 
         if (!server) {
@@ -61,8 +62,11 @@ module.exports = async (client, interaction) => {
         if (oilRigCrateUnlockTime && ((oilRigCrateUnlockTime * 1000) !== server.oilRigLockedCrateUnlockTimeMs)) {
             server.oilRigLockedCrateUnlockTimeMs = oilRigCrateUnlockTime * 1000;
         }
-        if (deepSeaWipeCooldown && ((deepSeaWipeCooldown * 1000) !== server.deepSeaWipeCooldownMs)) {
-            server.deepSeaWipeCooldownMs = deepSeaWipeCooldown * 1000;
+        if (deepSeaMinWipeCooldown && ((deepSeaMinWipeCooldown * 1000) !== server.deepSeaMinWipeCooldownMs)) {
+            server.deepSeaMinWipeCooldownMs = deepSeaMinWipeCooldown * 1000;
+        }
+        if (deepSeaMaxWipeCooldown && ((deepSeaMaxWipeCooldown * 1000) !== server.deepSeaMaxWipeCooldownMs)) {
+            server.deepSeaMaxWipeCooldownMs = deepSeaMaxWipeCooldown * 1000;
         }
         if (deepSeaWipeDuration && ((deepSeaWipeDuration * 1000) !== server.deepSeaWipeDurationMs)) {
             server.deepSeaWipeDurationMs = deepSeaWipeDuration * 1000;
@@ -71,7 +75,7 @@ module.exports = async (client, interaction) => {
 
         client.log(client.intlGet(null, 'infoCap'), client.intlGet(null, 'modalValueChange', {
             id: `${verifyId}`,
-            value: `${server.cargoShipEgressTimeMs}, ${server.oilRigLockedCrateUnlockTimeMs}, ${server.deepSeaWipeCooldownMs}, ${server.deepSeaWipeDurationMs}`
+            value: `${server.cargoShipEgressTimeMs}, ${server.oilRigLockedCrateUnlockTimeMs}, ${server.deepSeaMinWipeCooldownMs}, ${server.deepSeaMaxWipeCooldownMs}, ${server.deepSeaWipeDurationMs}`
         }));
     }
     else if (interaction.customId.startsWith('ServerEdit')) {

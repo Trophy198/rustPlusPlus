@@ -763,6 +763,7 @@
     "total": "Toplam",
     "tracker": "İzleyici",
     "trackerAddPlayerDesc": "Oyuncu Ekle - {tracker}",
+    "trackerPlayerInputInvalid": "Geçersiz izleyici oyuncu girişi. SteamID64, BattleMetrics oyuncu kimliği, Steam profil URL'si (/profiles/), Steam vanity URL'si (/id/) veya BattleMetrics oyuncu URL'si kullanın.",
     "trackerRemovePlayerDesc": "Oyuncu Sil - {tracker}",
     "trademarkShownBeforeMessage": "{trademark} mesajlardan önce gösterilecek.",
     "trainYard": "Tren İstasyonu",

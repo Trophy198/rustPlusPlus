@@ -763,6 +763,7 @@
     "total": "Total",
     "tracker": "Tracker",
     "trackerAddPlayerDesc": "Ajouter un joueur au {tracker}",
+    "trackerPlayerInputInvalid": "Entrée de joueur invalide. Utilisez un SteamID64, un identifiant de joueur BattleMetrics, une URL de profil Steam (/profiles/), une URL personnalisée Steam (/id/) ou une URL de joueur BattleMetrics.",
     "trackerRemovePlayerDesc": "Retirer un joueur depuie le {tracker}",
     "trademarkShownBeforeMessage": "{trademark} sera affiché avant les messages.",
     "trainYard": "Gare de Triage",

@@ -763,6 +763,7 @@
     "total": "Всего",
     "tracker": "Трекер",
     "trackerAddPlayerDesc": "Добавить игрока в {tracker}",
+    "trackerPlayerInputInvalid": "Недопустимый ввод игрока трекера. Используйте SteamID64, ID игрока BattleMetrics, URL профиля Steam (/profiles/), URL Steam (/id/) или URL игрока BattleMetrics.",
     "trackerRemovePlayerDesc": "Удалить игрока из {tracker}",
     "trademarkShownBeforeMessage": "{trademark} будет отображаться перед сообщениями.",
     "trainYard": "Железнодорожное депо",

@@ -764,6 +764,7 @@
     "total": "Gesamt",
     "tracker": "Tracker",
     "trackerAddPlayerDesc": "Spieler zu `{tracker}` hinzufügen",
+    "trackerPlayerInputInvalid": "Ungültige Eingabe des Trackerspielers. Verwenden Sie eine SteamID64, eine BattleMetrics-Spieler-ID, eine Steam-Profil-URL (/profiles/), eine Steam-Vanity-URL (/id/) oder eine BattleMetrics-Spieler-URL.",
     "trackerRemovePlayerDesc": "Entferne Spieler von `{tracker}`",
     "trademarkShownBeforeMessage": "{trademark} wird vor Nachrichten angezeigt.",
     "trainYard": "Güterbahnhof",

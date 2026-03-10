@@ -763,6 +763,7 @@
     "total": "Total",
     "tracker": "Tracker",
     "trackerAddPlayerDesc": "Aggiungi giocatore a {tracker}",
+    "trackerPlayerInputInvalid": "Input giocatore tracker non valido. Utilizza uno SteamID64, un ID giocatore BattleMetrics, un URL profilo Steam (/profiles/), un URL personalizzato Steam (/id/) o un URL giocatore BattleMetrics.",
     "trackerRemovePlayerDesc": "Rimuovi giocatore da {tracker}",
     "trademarkShownBeforeMessage": "{trademark} sarà mostrato prima dei messaggi.",
     "trainYard": "Cantiere dei Treni",

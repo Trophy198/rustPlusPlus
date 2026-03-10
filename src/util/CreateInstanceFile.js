@@ -1,5 +1,6 @@
 /*
     Copyright (C) 2022 Alexander Emanuelsson (alexemanuelol)
+    Copyright (C) 2026 FaiThiX
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -66,6 +67,9 @@ module.exports = (client, guild) => {
             teamChatColors: {},
             blacklist: {
                 discordIds: [],
+                steamIds: []
+            },
+            whitelist: {
                 steamIds: []
             },
             aliases: []
@@ -185,6 +189,10 @@ module.exports = (client, guild) => {
         }
         if (!instance.blacklist.hasOwnProperty('discordIds')) instance.blacklist['discordIds'] = [];
         if (!instance.blacklist.hasOwnProperty('steamIds')) instance.blacklist['steamIds'] = [];
+        if (!instance.hasOwnProperty('whitelist')) instance.whitelist = {
+            steamIds: []
+        }
+        if (!instance.whitelist.hasOwnProperty('steamIds')) instance.whitelist['steamIds'] = [];
         if (!instance.hasOwnProperty('aliases')) instance.aliases = [];
 
         for (const serverId of Object.keys(instance.serverList)) {

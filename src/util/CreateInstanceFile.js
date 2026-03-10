@@ -210,8 +210,11 @@ module.exports = (client, guild) => {
         if (!content.hasOwnProperty('oilRigLockedCrateUnlockTimeMs')) {
             content.oilRigLockedCrateUnlockTimeMs = Constants.DEFAULT_OIL_RIG_LOCKED_CRATE_UNLOCK_TIME_MS;
         }
-        if (!content.hasOwnProperty('deepSeaWipeCooldownMs')) {
-            content.deepSeaWipeCooldownMs = Constants.DEFAULT_DEEP_SEA_WIPE_COOLDOWN_MS;
+        if (!content.hasOwnProperty('deepSeaMinWipeCooldownMs')) {
+            content.deepSeaMinWipeCooldownMs = Constants.DEFAULT_DEEP_SEA_MIN_WIPE_COOLDOWN_MS;
+        }
+        if (!content.hasOwnProperty('deepSeaMaxWipeCooldownMs')) {
+            content.deepSeaMaxWipeCooldownMs = Constants.DEFAULT_DEEP_SEA_MAX_WIPE_COOLDOWN_MS;
         }
         if (!content.hasOwnProperty('deepSeaWipeDurationMs')) {
             content.deepSeaWipeDurationMs = Constants.DEFAULT_DEEP_SEA_WIPE_DURATION_MS;

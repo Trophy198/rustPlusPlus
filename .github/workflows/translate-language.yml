@@ -41,7 +41,7 @@ jobs:
         env:
           DEEPL_API_KEY: ${{ secrets.DEEPL_API_KEY }}
         run: |
-          python translate_language_json.py \
+          python src/external/translate_language_json.py \
             --source src/languages/en.json \
             --output-dir src/languages \
             --provider deepl

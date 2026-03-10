@@ -439,6 +439,7 @@
     "invalidGuildOrChannel": "Invalid guild or channel.",
     "invalidHpInterval": "Invalid HP interval {hp}.",
     "invalidId": "Invalid ID: {id}.",
+    "trackerPlayerInputInvalid": "Invalid tracker player input. Use a SteamID64, BattleMetrics player ID, Steam profile URL (/profiles/), Steam vanity URL (/id/), or BattleMetrics player URL.",
     "invalidStructureType": "Invalid Structure type {type}.",
     "invalidSubcommand": "Invalid subcommand.",
     "invalidTimeDistance": "Invalid time distance: {distance}, prev: {prevTime}, new: {newTime}",

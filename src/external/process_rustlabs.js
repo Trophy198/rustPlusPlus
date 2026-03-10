@@ -22,6 +22,8 @@ const Axios = require('axios');
 const Fs = require('fs');
 const Path = require('path');
 
+const RustlabsStaticStorage = require('../util/RustlabsStaticStorage');
+const getStaticFilesStorage = require('../util/getStaticFilesStorage');
 const Utils = require('../util/utils.js');
 
 
@@ -106,7 +108,10 @@ const RUSTLABS_ALL_OTHER_REGEX = /\/entity\/(.*?)">(.*?)</gm
 
 /* Global variables */
 
-const ITEMS = JSON.parse(Fs.readFileSync(Path.join(__dirname, '..', 'staticFiles', 'items.json'), 'utf8'));
+const itemsJsonPath = Path.join(RustlabsStaticStorage.getDefaultJsonSourcePath(), 'items.json');
+const ITEMS = Fs.existsSync(itemsJsonPath) ?
+    JSON.parse(Fs.readFileSync(itemsJsonPath, 'utf8')) :
+    getStaticFilesStorage().getDatasetObject('items');
 
 const rustlabsLootContainers = new Object();
 const rustlabsBuildingBlocks = new Object();

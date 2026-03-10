@@ -5,6 +5,7 @@
     "main": "index.ts",
     "scripts": {
         "start": "ts-node .",
+        "build:static-db": "node scripts/buildStaticFilesDb.js",
         "preinstall": "npx npm-force-resolutions",
         "test": "tsc --noEmit -p ."
     },

@@ -747,6 +747,7 @@
     "total": "Total",
     "tracker": "Tracker",
     "trackerAddPlayerDesc": "Lägg till spelare till {tracker}",
+    "trackerPlayerInputInvalid": "Ogiltig tracker-spelarindata. Använd ett SteamID64, BattleMetrics-spelar-ID, Steam-profil-URL (/profiles/), Steam-vanity-URL (/id/) eller BattleMetrics-spelar-URL.",
     "trackerRemovePlayerDesc": "Ta bort spelare från {tracker}",
     "trademarkShownBeforeMessage": "{trademark} kommer att visas före meddelanden.",
     "trainYard": "Tåggård",

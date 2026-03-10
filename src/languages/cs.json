@@ -747,6 +747,7 @@
     "total": "Total",
     "tracker": "Tracker",
     "trackerAddPlayerDesc": "Přidat hráče do {tracker}",
+    "trackerPlayerInputInvalid": "Neplatný vstup hráče trackeru. Použijte SteamID64, ID hráče BattleMetrics, URL profilu Steam (/profiles/), URL Steam vanity (/id/) nebo URL hráče BattleMetrics.",
     "trackerRemovePlayerDesc": "Odstranit hráče z {tracker}",
     "trademarkShownBeforeMessage": "{trademark} se zobrazí před zprávami.",
     "trainYard": "Nádraží",

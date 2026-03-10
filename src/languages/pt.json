@@ -747,6 +747,7 @@
     "total": "Total",
     "tracker": "Rastreador",
     "trackerAddPlayerDesc": "Adicionar Jogador ao {tracker}",
+    "trackerPlayerInputInvalid": "Entrada inválida do jogador no rastreador. Use um SteamID64, ID de jogador BattleMetrics, URL do perfil Steam (/profiles/), URL personalizada Steam (/id/) ou URL do jogador BattleMetrics.",
     "trackerRemovePlayerDesc": "Remover Jogador de {tracker}",
     "trademarkShownBeforeMessage": "{trademark} será exibido antes das mensagens.",
     "trainYard": "Estação de Comboios",

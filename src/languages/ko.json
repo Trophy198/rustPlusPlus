@@ -747,6 +747,7 @@
     "total": "Total",
     "tracker": "Tracker",
     "trackerAddPlayerDesc": "{tracker} 에 플레이어 추가",
+    "trackerPlayerInputInvalid": "추적기 플레이어 입력값이 잘못되었습니다. SteamID64, BattleMetrics 플레이어 ID, Steam 프로필 URL(/profiles/), Steam 바니티 URL(/id/), 또는 BattleMetrics 플레이어 URL을 사용하세요.",
     "trackerRemovePlayerDesc": "{tracker} 에서 플레이어 제거",
     "trademarkShownBeforeMessage": "메시지 앞에 {trademark}가 표시됩니다.",
     "trainYard": "기차 차고지",

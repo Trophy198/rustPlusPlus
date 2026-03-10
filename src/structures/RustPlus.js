@@ -2922,6 +2922,13 @@ class RustPlus extends RustPlusLib {
 
         const respawnMinSeconds = Math.max(0, (deepSeaMinWipeCooldown - (now - wasOnMap)) / 1000);
         const respawnMaxSeconds = Math.max(0, (deepSeaMaxWipeCooldown - (now - wasOnMap)) / 1000);
+        if (respawnMinSeconds === 0) {
+            return Client.client.intlGet(this.guildId, 'deepSeaCanRespawnNow', {
+                time: Timer.secondsToFullScale(secondsSince),
+                respawnMax: Timer.secondsToFullScale(respawnMaxSeconds, 's')
+            });
+        }
+
         return Client.client.intlGet(this.guildId, 'timeSinceDeepSeaWasOnMap', {
             time: Timer.secondsToFullScale(secondsSince),
             respawnMin: Timer.secondsToFullScale(respawnMinSeconds, 's'),

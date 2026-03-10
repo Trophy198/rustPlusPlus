@@ -81,13 +81,13 @@ module.exports = {
                 style: Discord.TextInputStyle.Short
             })),
             new Discord.ActionRowBuilder().addComponents(TextInput.getTextInput({
-                customId: 'DeepSeaWipeMinCooldownTime',
+                customId: 'DeepSeaMinWipeCooldownTime',
                 label: Client.client.intlGet(guildId, 'customTimerEditDeepSeaMinWipeCooldownLabel'),
                 value: `${server.deepSeaMinWipeCooldownMs / 1000}`,
                 style: Discord.TextInputStyle.Short
             })),
             new Discord.ActionRowBuilder().addComponents(TextInput.getTextInput({
-                customId: 'DeepSeaWipeMaxCooldownTime',
+                customId: 'DeepSeaMaxWipeCooldownTime',
                 label: Client.client.intlGet(guildId, 'customTimerEditDeepSeaMaxWipeCooldownLabel'),
                 value: `${server.deepSeaMaxWipeCooldownMs / 1000}`,
                 style: Discord.TextInputStyle.Short

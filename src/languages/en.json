@@ -351,6 +351,7 @@
     "deepSeaLeftMap": "Deep Sea Left Map",
     "deepSeaLeftMapSetting": "When Deep Sea left the map, send a notification.",
     "deepSeaNotCurrentlyOnMap": "Deep Sea is not currently active.",
+    "deepSeaCanRespawnNow": "The last Deep Sea was {time} ago. Deep Sea can respawn now and will respawn within {respawnMax} at the latest.",
     "timeSinceDeepSeaWasOnMap": "The last Deep Sea was {time} ago. It should respawn in approximately {respawnMin}-{respawnMax}.",
     "deleteUnreachableDevicesCap": "DELETE UNREACHABLE DEVICES",
     "despawnTime": "Despawn Time",

@@ -124,6 +124,11 @@
         "name": "NVGM Scientist Suit",
         "description": "A hazmat suit made from radiation resistant rubber."
     },
+    "94971664": {
+        "shortname": "component.box.stone.large",
+        "name": "Stone Storage Box",
+        "description": "Keep your stone in this storage box. Stores up to 48 items."
+    },
     "95950017": {
         "shortname": "metalpipe",
         "name": "Metal Pipe",
@@ -694,6 +699,11 @@
         "name": "Semi Automatic Body",
         "description": "The firing mechanism of a semi automatic weapon."
     },
+    "574701440": {
+        "shortname": "component.box.scrap.large",
+        "name": "Scrap Storage Box",
+        "description": "Keep your scrap in this storage box. Stores up to 48 items."
+    },
     "576509618": {
         "shortname": "fun.boomboxportable",
         "name": "Portable Boom Box",
@@ -853,6 +863,11 @@
         "shortname": "shotgun.m4",
         "name": "M4 Shotgun",
         "description": "A semi automatic military issue shotgun"
+    },
+    "679690962": {
+        "shortname": "component.box.tools.large",
+        "name": "Tools Storage Box",
+        "description": "Keep your tools in this storage box. Stores up to 48 items."
     },
     "680234026": {
         "shortname": "fish.yellowperch",
@@ -1254,6 +1269,11 @@
         "name": "Raw Fish",
         "description": "Raw Fish."
     },
+    "992944937": {
+        "shortname": "component.box.ore.large",
+        "name": "Ore Storage Box",
+        "description": "Keep your ore in this storage box. Stores up to 48 items."
+    },
     "996293980": {
         "shortname": "skull.human",
         "name": "Human Skull",
@@ -1284,6 +1304,11 @@
         "name": "Duo Submarine",
         "description": "A small two-person submarine."
     },
+    "1023919015": {
+        "shortname": "component.box.food.large",
+        "name": "Food Storage Box",
+        "description": "Keep your food in this storage box. Stores up to 48 items."
+    },
     "1028889957": {
         "shortname": "lightupmirror.medium",
         "name": "Light-Up Mirror Medium",
@@ -1293,6 +1318,11 @@
         "shortname": "bluedogtags",
         "name": "Blue Dog Tags",
         "description": "Blue Dog Tags"
+    },
+    "1044081720": {
+        "shortname": "component.box.wood.large",
+        "name": "Wood Storage Box",
+        "description": "Keep your wood in this storage box. Stores up to 48 items."
     },
     "1046904719": {
         "shortname": "diverhatchet",
@@ -1588,6 +1618,11 @@
         "shortname": "50cal.mounted.right",
         "name": "#50cal",
         "description": "#50cal.desc"
+    },
+    "1254295946": {
+        "shortname": "component.box.armor.large",
+        "name": "Armor Storage Box",
+        "description": "Keep your armor in this storage box. Stores up to 48 items."
     },
     "1258768145": {
         "shortname": "sunglasses02black",
@@ -1908,6 +1943,11 @@
         "shortname": "wantedposter.wantedposter4",
         "name": "Wanted Poster 4",
         "description": "A poster that can display a given player's face as wanted."
+    },
+    "1465782238": {
+        "shortname": "component.box.metal.large",
+        "name": "Metal Storage Box",
+        "description": "Keep your metal things in this storage box. Stores up to 48 items."
     },
     "1467878256": {
         "shortname": "pie.pork",
@@ -2359,6 +2399,11 @@
         "name": "Disco Floor",
         "description": "A vibrant flashing floor that pulses in time to music."
     },
+    "1736620421": {
+        "shortname": "component.box.clothing.large",
+        "name": "Clothing Storage Box",
+        "description": "Keep your clothing in this storage box. Stores up to 48 items."
+    },
     "1744298439": {
         "shortname": "firework.boomer.blue",
         "name": "Blue Boomer",
@@ -2583,6 +2628,11 @@
         "shortname": "piston2",
         "name": "Medium Quality Pistons",
         "description": "Medium quality pistons for a combustion engine. Pistons convert expanding combustion gases into the motion that turns a crankshaft."
+    },
+    "1884461210": {
+        "shortname": "component.box.charcoal.large",
+        "name": "Charcoal Storage Box",
+        "description": "Keep your charcoal in this storage box. Stores up to 48 items."
     },
     "1885488976": {
         "shortname": "spookyspeaker",
@@ -3423,6 +3473,36 @@
         "shortname": "command.block",
         "name": "Command Block",
         "description": "A block that runs commands"
+    },
+    "-1593678393": {
+        "shortname": "component.box.ammo.large",
+        "name": "Ammo Storage Box",
+        "description": "Keep your ammunition in this storage box. Stores up to 48 items."
+    },
+    "-413663149": {
+        "shortname": "component.box.comps.large",
+        "name": "Comps Storage Box",
+        "description": "Keep your components in this storage box. Stores up to 48 items."
+    },
+    "-1998423571": {
+        "shortname": "component.box.explosives.large",
+        "name": "Explosives Storage Box",
+        "description": "Keep your explosives in this storage box. Stores up to 48 items."
+    },
+    "-544295594": {
+        "shortname": "component.box.guns.large",
+        "name": "Guns Storage Box",
+        "description": "Keep your guns in this storage box. Stores up to 48 items."
+    },
+    "-800824218": {
+        "shortname": "component.box.meds.large",
+        "name": "Meds Storage Box",
+        "description": "Keep your medical things in this storage box. Stores up to 48 items."
+    },
+    "-10594280": {
+        "shortname": "component.box.sulfur.large",
+        "name": "Sulfur Storage Box",
+        "description": "Keep your sulfur in this storage box. Stores up to 48 items."
     },
     "-1488398114": {
         "shortname": "composter",

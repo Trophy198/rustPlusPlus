@@ -273,6 +273,10 @@ class MapMarkers {
         this.updateVendingMachines(mapMarkers);
         this.updateGenericRadiuses(mapMarkers);
         this.updateTravelingVendors(mapMarkers);
+
+        if (this.rustplus && typeof (this.rustplus.persistMapMarkersRuntimeState) === 'function') {
+            this.rustplus.persistMapMarkersRuntimeState();
+        }
     }
 
     updatePlayers(mapMarkers) {

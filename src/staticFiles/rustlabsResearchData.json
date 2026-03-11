@@ -4,19 +4,19 @@
     "workbench": null
   },
   "14241751": {
-    "researchTable": 20,
+    "researchTable": 15,
     "workbench": {
       "type": "1524187186",
-      "scrap": 22,
-      "totalScrap": 730
+      "scrap": 15,
+      "totalScrap": 435
     }
   },
   "15388698": {
-    "researchTable": 20,
+    "researchTable": 15,
     "workbench": {
       "type": "1524187186",
-      "scrap": 22,
-      "totalScrap": 210
+      "scrap": 15,
+      "totalScrap": 90
     }
   },
   "21402876": {
@@ -24,67 +24,75 @@
     "workbench": null
   },
   "51984655": {
-    "researchTable": 125,
+    "researchTable": 60,
     "workbench": {
       "type": "-41896755",
-      "scrap": 150,
-      "totalScrap": 1320
+      "scrap": 60,
+      "totalScrap": 690
     }
   },
   "60528587": {
-    "researchTable": 125,
+    "researchTable": 60,
     "workbench": {
       "type": "-41896755",
-      "scrap": 150,
-      "totalScrap": 414
+      "scrap": 60,
+      "totalScrap": 165
     }
   },
   "95950017": {
-    "researchTable": 125,
+    "researchTable": 60,
     "workbench": null
   },
   "99588025": {
-    "researchTable": 125,
+    "researchTable": 60,
     "workbench": {
       "type": "1524187186",
-      "scrap": 138,
-      "totalScrap": 652
+      "scrap": 60,
+      "totalScrap": 270
     }
   },
   "140006625": {
-    "researchTable": 75,
+    "researchTable": 30,
     "workbench": {
-      "type": "-41896755",
-      "scrap": 90,
-      "totalScrap": 366
+      "type": "210787554",
+      "scrap": 30,
+      "totalScrap": 300
     }
   },
   "143803535": {
-    "researchTable": 75,
+    "researchTable": 30,
     "workbench": {
       "type": "-41896755",
-      "scrap": 90,
-      "totalScrap": 1020
+      "scrap": 30,
+      "totalScrap": 450
     }
   },
   "170758448": {
-    "researchTable": 125,
+    "researchTable": 60,
     "workbench": {
-      "type": "-41896755",
-      "scrap": 150,
-      "totalScrap": 564
+      "type": "210787554",
+      "scrap": 60,
+      "totalScrap": 240
     }
   },
   "171931394": {
     "researchTable": 10,
     "workbench": null
   },
-  "190184021": {
-    "researchTable": 20,
+  "184516676": {
+    "researchTable": 15,
     "workbench": {
       "type": "1524187186",
-      "scrap": 22,
-      "totalScrap": 127
+      "scrap": 15,
+      "totalScrap": 60
+    }
+  },
+  "190184021": {
+    "researchTable": 15,
+    "workbench": {
+      "type": "1524187186",
+      "scrap": 15,
+      "totalScrap": 60
     }
   },
   "196700171": {
@@ -99,52 +107,68 @@
     "researchTable": 10,
     "workbench": null
   },
-  "223891266": {
-    "researchTable": 20,
+  "210787554": {
+    "researchTable": 60,
     "workbench": {
       "type": "1524187186",
-      "scrap": 22,
-      "totalScrap": 44
+      "scrap": 60,
+      "totalScrap": 90
+    }
+  },
+  "223891266": {
+    "researchTable": 15,
+    "workbench": {
+      "type": "1524187186",
+      "scrap": 15,
+      "totalScrap": 30
     }
   },
   "237239288": {
-    "researchTable": 75,
+    "researchTable": 30,
     "workbench": {
       "type": "1524187186",
-      "scrap": 83,
-      "totalScrap": 232
+      "scrap": 30,
+      "totalScrap": 105
     }
   },
   "254522515": {
-    "researchTable": 75,
+    "researchTable": 30,
     "workbench": {
       "type": "-41896755",
-      "scrap": 90,
-      "totalScrap": 330
+      "scrap": 30,
+      "totalScrap": 120
     }
   },
   "268565518": {
-    "researchTable": 125,
+    "researchTable": 60,
     "workbench": {
-      "type": "-41896755",
-      "scrap": 150,
-      "totalScrap": 714
+      "type": "210787554",
+      "scrap": 60,
+      "totalScrap": 360
     }
   },
   "304481038": {
-    "researchTable": 20,
+    "researchTable": 15,
     "workbench": {
       "type": "1524187186",
-      "scrap": 22,
-      "totalScrap": 542
+      "scrap": 15,
+      "totalScrap": 360
     }
   },
   "352499047": {
-    "researchTable": 125,
+    "researchTable": 60,
     "workbench": {
       "type": "1524187186",
-      "scrap": 138,
-      "totalScrap": 796
+      "scrap": 60,
+      "totalScrap": 465
+    }
+  },
+  "405905095": {
+    "researchTable": 15,
+    "workbench": {
+      "type": "1524187186",
+      "scrap": 15,
+      "totalScrap": 240
     }
   },
   "418081930": {
@@ -152,55 +176,55 @@
     "workbench": null
   },
   "442289265": {
-    "researchTable": 125,
+    "researchTable": 60,
     "workbench": {
       "type": "-41896755",
-      "scrap": 150,
-      "totalScrap": 2160
+      "scrap": 60,
+      "totalScrap": 990
     }
   },
   "442886268": {
-    "researchTable": 500,
+    "researchTable": 120,
     "workbench": {
       "type": "-41896755",
-      "scrap": 600,
-      "totalScrap": 2760
+      "scrap": 120,
+      "totalScrap": 1110
     }
   },
   "443432036": {
-    "researchTable": 20,
+    "researchTable": 15,
     "workbench": {
-      "type": "1524187186",
-      "scrap": 22,
-      "totalScrap": 66
+      "type": "210787554",
+      "scrap": 15,
+      "totalScrap": 150
     }
   },
   "479143914": {
-    "researchTable": 125,
+    "researchTable": 60,
     "workbench": null
   },
   "492357192": {
-    "researchTable": 20,
+    "researchTable": 15,
     "workbench": {
-      "type": "-41896755",
-      "scrap": 24,
-      "totalScrap": 204
+      "type": "210787554",
+      "scrap": 15,
+      "totalScrap": 225
     }
   },
   "528668503": {
-    "researchTable": 75,
+    "researchTable": 30,
     "workbench": {
       "type": "1524187186",
-      "scrap": 83,
-      "totalScrap": 813
+      "scrap": 30,
+      "totalScrap": 465
     }
   },
   "553270375": {
-    "researchTable": 75,
+    "researchTable": 30,
     "workbench": {
-      "type": "-41896755",
-      "scrap": 90,
-      "totalScrap": 564
+      "type": "210787554",
+      "scrap": 30,
+      "totalScrap": 375
     }
   },
   "559147458": {
@@ -208,11 +232,11 @@
     "workbench": null
   },
   "567235583": {
-    "researchTable": 125,
+    "researchTable": 60,
     "workbench": {
       "type": "-1607980696",
-      "scrap": 125,
-      "totalScrap": 3125
+      "scrap": 60,
+      "totalScrap": 960
     }
   },
   "588596902": {
@@ -220,27 +244,27 @@
     "workbench": null
   },
   "593465182": {
-    "researchTable": 20,
+    "researchTable": 15,
     "workbench": {
       "type": "1524187186",
-      "scrap": 22,
-      "totalScrap": 110
+      "scrap": 15,
+      "totalScrap": 60
     }
   },
   "596469572": {
-    "researchTable": 20,
+    "researchTable": 15,
     "workbench": {
-      "type": "-41896755",
-      "scrap": 24,
-      "totalScrap": 138
+      "type": "210787554",
+      "scrap": 15,
+      "totalScrap": 225
     }
   },
   "602628465": {
-    "researchTable": 125,
+    "researchTable": 60,
     "workbench": {
       "type": "-41896755",
-      "scrap": 150,
-      "totalScrap": 390
+      "scrap": 60,
+      "totalScrap": 150
     }
   },
   "602741290": {
@@ -248,99 +272,111 @@
     "workbench": null
   },
   "605467368": {
-    "researchTable": 125,
+    "researchTable": 60,
     "workbench": {
       "type": "-1607980696",
-      "scrap": 125,
-      "totalScrap": 500
+      "scrap": 60,
+      "totalScrap": 300
     }
   },
   "610102428": {
-    "researchTable": 20,
+    "researchTable": 15,
     "workbench": {
-      "type": "1524187186",
-      "scrap": 22,
-      "totalScrap": 171
+      "type": "210787554",
+      "scrap": 15,
+      "totalScrap": 255
     }
   },
   "613961768": {
     "researchTable": 10,
     "workbench": null
   },
+  "625599716": {
+    "researchTable": 60,
+    "workbench": {
+      "type": "-41896755",
+      "scrap": 60,
+      "totalScrap": 210
+    }
+  },
   "649912614": {
-    "researchTable": 75,
+    "researchTable": 30,
     "workbench": {
       "type": "1524187186",
-      "scrap": 83,
-      "totalScrap": 708
+      "scrap": 30,
+      "totalScrap": 420
     }
   },
   "656371026": {
-    "researchTable": 20,
+    "researchTable": 15,
     "workbench": {
-      "type": "-1607980696",
-      "scrap": 20,
-      "totalScrap": 145
+      "type": "210787554",
+      "scrap": 15,
+      "totalScrap": 225
     }
   },
   "656371027": {
-    "researchTable": 20,
+    "researchTable": 15,
     "workbench": {
-      "type": "-41896755",
-      "scrap": 24,
-      "totalScrap": 264
+      "type": "210787554",
+      "scrap": 15,
+      "totalScrap": 210
     }
   },
   "656371028": {
-    "researchTable": 20,
-    "workbench": null
+    "researchTable": 15,
+    "workbench": {
+      "type": "210787554",
+      "scrap": 15,
+      "totalScrap": 195
+    }
   },
   "665332906": {
-    "researchTable": 20,
+    "researchTable": 15,
     "workbench": {
-      "type": "1524187186",
-      "scrap": 22,
-      "totalScrap": 171
+      "type": "210787554",
+      "scrap": 15,
+      "totalScrap": 90
     }
   },
   "671063303": {
-    "researchTable": 75,
+    "researchTable": 30,
     "workbench": {
       "type": "1524187186",
-      "scrap": 83,
-      "totalScrap": 171
+      "scrap": 30,
+      "totalScrap": 90
     }
   },
   "671706427": {
-    "researchTable": 125,
+    "researchTable": 60,
     "workbench": {
       "type": "-1607980696",
-      "scrap": 125,
-      "totalScrap": 125
+      "scrap": 60,
+      "totalScrap": 60
     }
   },
   "742745918": {
-    "researchTable": 20,
+    "researchTable": 15,
     "workbench": {
-      "type": "1524187186",
-      "scrap": 22,
-      "totalScrap": 193
+      "type": "210787554",
+      "scrap": 15,
+      "totalScrap": 270
     }
   },
   "762289806": {
-    "researchTable": 20,
+    "researchTable": 15,
     "workbench": {
-      "type": "1524187186",
-      "scrap": 22,
-      "totalScrap": 171
+      "type": "210787554",
+      "scrap": 15,
+      "totalScrap": 90
     }
   },
   "785728077": {
-    "researchTable": 75,
+    "researchTable": 30,
     "workbench": {
       "type": "1524187186",
-      "scrap": 83,
-      "totalScrap": 625
+      "scrap": 30,
+      "totalScrap": 390
     }
   },
   "794356786": {
@@ -352,11 +388,11 @@
     "workbench": null
   },
   "795371088": {
-    "researchTable": 125,
+    "researchTable": 60,
     "workbench": {
       "type": "-41896755",
-      "scrap": 150,
-      "totalScrap": 630
+      "scrap": 60,
+      "totalScrap": 300
     }
   },
   "803222026": {
@@ -364,11 +400,19 @@
     "workbench": null
   },
   "818877484": {
-    "researchTable": 125,
+    "researchTable": 60,
     "workbench": {
       "type": "-41896755",
-      "scrap": 150,
-      "totalScrap": 930
+      "scrap": 60,
+      "totalScrap": 420
+    }
+  },
+  "829641693": {
+    "researchTable": 15,
+    "workbench": {
+      "type": "1524187186",
+      "scrap": 15,
+      "totalScrap": 255
     }
   },
   "832133926": {
@@ -380,115 +424,123 @@
     "workbench": null
   },
   "850280505": {
-    "researchTable": 75,
+    "researchTable": 30,
     "workbench": {
       "type": "1524187186",
-      "scrap": 83,
-      "totalScrap": 105
+      "scrap": 30,
+      "totalScrap": 45
     }
   },
   "866889860": {
-    "researchTable": 20,
+    "researchTable": 15,
     "workbench": {
       "type": "1524187186",
-      "scrap": 22,
-      "totalScrap": 326
+      "scrap": 15,
+      "totalScrap": 135
     }
   },
   "884424049": {
-    "researchTable": 75,
+    "researchTable": 30,
     "workbench": {
       "type": "1524187186",
-      "scrap": 83,
-      "totalScrap": 271
+      "scrap": 30,
+      "totalScrap": 225
     }
   },
   "888415708": {
-    "researchTable": 20,
+    "researchTable": 15,
     "workbench": {
-      "type": "-41896755",
-      "scrap": 24,
-      "totalScrap": 186
+      "type": "210787554",
+      "scrap": 15,
+      "totalScrap": 225
     }
   },
   "895374329": {
-    "researchTable": 125,
+    "researchTable": 60,
     "workbench": {
-      "type": "-41896755",
-      "scrap": 150,
-      "totalScrap": 564
+      "type": "210787554",
+      "scrap": 60,
+      "totalScrap": 240
     }
   },
   "926800282": {
-    "researchTable": 20,
+    "researchTable": 15,
     "workbench": {
-      "type": "-41896755",
-      "scrap": 24,
-      "totalScrap": 264
+      "type": "210787554",
+      "scrap": 15,
+      "totalScrap": 210
     }
   },
   "935692442": {
-    "researchTable": 20,
+    "researchTable": 15,
     "workbench": {
       "type": "1524187186",
-      "scrap": 22,
-      "totalScrap": 88
+      "scrap": 15,
+      "totalScrap": 60
     }
   },
   "936496778": {
-    "researchTable": 75,
+    "researchTable": 30,
     "workbench": {
       "type": "1524187186",
-      "scrap": 83,
-      "totalScrap": 359
+      "scrap": 30,
+      "totalScrap": 165
     }
   },
   "952603248": {
-    "researchTable": 75,
+    "researchTable": 30,
     "workbench": {
       "type": "1524187186",
-      "scrap": 83,
-      "totalScrap": 769
+      "scrap": 30,
+      "totalScrap": 435
     }
   },
   "962186730": {
-    "researchTable": 75,
+    "researchTable": 30,
     "workbench": {
       "type": "1524187186",
-      "scrap": 83,
-      "totalScrap": 597
+      "scrap": 30,
+      "totalScrap": 240
     }
   },
   "963906841": {
     "researchTable": 10,
     "workbench": null
   },
+  "969768382": {
+    "researchTable": 60,
+    "workbench": {
+      "type": "1524187186",
+      "scrap": 60,
+      "totalScrap": 195
+    }
+  },
   "980333378": {
     "researchTable": 10,
     "workbench": null
   },
   "988652725": {
-    "researchTable": 20,
+    "researchTable": 15,
     "workbench": {
-      "type": "-41896755",
-      "scrap": 24,
-      "totalScrap": 498
+      "type": "210787554",
+      "scrap": 15,
+      "totalScrap": 225
     }
   },
   "1072924620": {
-    "researchTable": 20,
+    "researchTable": 15,
     "workbench": {
-      "type": "-1607980696",
-      "scrap": 20,
-      "totalScrap": 145
+      "type": "210787554",
+      "scrap": 15,
+      "totalScrap": 225
     }
   },
   "1079279582": {
-    "researchTable": 75,
+    "researchTable": 30,
     "workbench": {
       "type": "-41896755",
-      "scrap": 90,
-      "totalScrap": 240
+      "scrap": 30,
+      "totalScrap": 90
     }
   },
   "1099314009": {
@@ -496,64 +548,76 @@
     "workbench": null
   },
   "1104520648": {
-    "researchTable": 125,
+    "researchTable": 60,
     "workbench": {
       "type": "-41896755",
-      "scrap": 150,
-      "totalScrap": 1200
+      "scrap": 60,
+      "totalScrap": 450
     }
   },
   "1110385766": {
-    "researchTable": 500,
+    "researchTable": 120,
     "workbench": {
       "type": "-1607980696",
-      "scrap": 500,
-      "totalScrap": 1500
+      "scrap": 120,
+      "totalScrap": 540
     }
   },
   "1142993169": {
-    "researchTable": 20,
+    "researchTable": 15,
     "workbench": {
-      "type": "1524187186",
-      "scrap": 22,
-      "totalScrap": 149
+      "type": "210787554",
+      "scrap": 15,
+      "totalScrap": 75
+    }
+  },
+  "1145722690": {
+    "researchTable": 60,
+    "workbench": {
+      "type": "-41896755",
+      "scrap": 60,
+      "totalScrap": 630
     }
   },
   "1149964039": {
-    "researchTable": 75,
+    "researchTable": 30,
     "workbench": {
-      "type": "-41896755",
-      "scrap": 90,
-      "totalScrap": 564
+      "type": "210787554",
+      "scrap": 30,
+      "totalScrap": 240
     }
   },
   "1153652756": {
-    "researchTable": 75,
+    "researchTable": 30,
     "workbench": {
       "type": "1524187186",
-      "scrap": 83,
-      "totalScrap": 293
+      "scrap": 30,
+      "totalScrap": 120
     }
   },
   "1158340331": {
-    "researchTable": 20,
+    "researchTable": 15,
     "workbench": {
-      "type": "-41896755",
-      "scrap": 24,
-      "totalScrap": 264
+      "type": "210787554",
+      "scrap": 15,
+      "totalScrap": 210
     }
   },
   "1158340332": {
-    "researchTable": 20,
+    "researchTable": 15,
     "workbench": {
-      "type": "-1607980696",
-      "scrap": 20,
-      "totalScrap": 145
+      "type": "210787554",
+      "scrap": 15,
+      "totalScrap": 225
     }
   },
   "1158340334": {
-    "researchTable": 20,
-    "workbench": null
+    "researchTable": 15,
+    "workbench": {
+      "type": "210787554",
+      "scrap": 15,
+      "totalScrap": 195
+    }
   },
   "1159991980": {
     "researchTable": 10,
@@ -564,203 +628,219 @@
     "workbench": null
   },
   "1168856825": {
-    "researchTable": 75,
+    "researchTable": 30,
+    "workbench": {
+      "type": "210787554",
+      "scrap": 30,
+      "totalScrap": 90
+    }
+  },
+  "1168916338": {
+    "researchTable": 15,
     "workbench": {
       "type": "1524187186",
-      "scrap": 83,
-      "totalScrap": 210
+      "scrap": 15,
+      "totalScrap": 75
     }
   },
   "1171735914": {
-    "researchTable": 20,
+    "researchTable": 15,
     "workbench": {
-      "type": "-41896755",
-      "scrap": 24,
-      "totalScrap": 384
+      "type": "210787554",
+      "scrap": 15,
+      "totalScrap": 240
+    }
+  },
+  "1174484438": {
+    "researchTable": 15,
+    "workbench": {
+      "type": "210787554",
+      "scrap": 15,
+      "totalScrap": 75
     }
   },
   "1177596584": {
-    "researchTable": 125,
+    "researchTable": 60,
     "workbench": {
-      "type": "-41896755",
-      "scrap": 150,
-      "totalScrap": 714
+      "type": "210787554",
+      "scrap": 60,
+      "totalScrap": 435
     }
   },
   "1181207482": {
-    "researchTable": 125,
+    "researchTable": 60,
     "workbench": {
       "type": "-41896755",
-      "scrap": 150,
-      "totalScrap": 570
+      "scrap": 60,
+      "totalScrap": 195
     }
   },
   "1186655046": {
-    "researchTable": 125,
+    "researchTable": 60,
     "workbench": {
-      "type": "-41896755",
-      "scrap": 150,
-      "totalScrap": 714
+      "type": "210787554",
+      "scrap": 60,
+      "totalScrap": 300
     }
   },
   "1199391518": {
-    "researchTable": 75,
+    "researchTable": 30,
     "workbench": null
   },
   "1221063409": {
-    "researchTable": 500,
+    "researchTable": 120,
     "workbench": {
       "type": "-1607980696",
-      "scrap": 500,
-      "totalScrap": 1125
+      "scrap": 120,
+      "totalScrap": 300
     }
   },
   "1234878710": {
-    "researchTable": 75,
+    "researchTable": 30,
     "workbench": {
-      "type": "1524187186",
-      "scrap": 83,
-      "totalScrap": 276
+      "type": "210787554",
+      "scrap": 30,
+      "totalScrap": 135
     }
   },
   "1234880403": {
-    "researchTable": 75,
+    "researchTable": 30,
     "workbench": null
   },
   "1248356124": {
-    "researchTable": 500,
+    "researchTable": 120,
     "workbench": {
       "type": "-1607980696",
-      "scrap": 500,
-      "totalScrap": 2125
+      "scrap": 120,
+      "totalScrap": 720
     }
   },
   "1259919256": {
-    "researchTable": 75,
+    "researchTable": 30,
     "workbench": {
       "type": "1524187186",
-      "scrap": 83,
-      "totalScrap": 193
+      "scrap": 30,
+      "totalScrap": 90
     }
   },
   "1263920163": {
-    "researchTable": 75,
+    "researchTable": 30,
     "workbench": {
       "type": "-41896755",
-      "scrap": 90,
-      "totalScrap": 1710
+      "scrap": 30,
+      "totalScrap": 840
     }
   },
   "1266491000": {
-    "researchTable": 125,
+    "researchTable": 60,
     "workbench": {
       "type": "-41896755",
-      "scrap": 150,
-      "totalScrap": 150
+      "scrap": 60,
+      "totalScrap": 60
     }
   },
   "1293102274": {
-    "researchTable": 20,
+    "researchTable": 15,
     "workbench": {
-      "type": "1524187186",
-      "scrap": 22,
-      "totalScrap": 276
+      "type": "210787554",
+      "scrap": 15,
+      "totalScrap": 135
     }
   },
   "1296788329": {
-    "researchTable": 125,
+    "researchTable": 60,
     "workbench": {
       "type": "-41896755",
-      "scrap": 150,
-      "totalScrap": 2460
+      "scrap": 60,
+      "totalScrap": 1110
     }
   },
   "1318558775": {
-    "researchTable": 500,
+    "researchTable": 120,
     "workbench": {
       "type": "-1607980696",
-      "scrap": 500,
-      "totalScrap": 1000
+      "scrap": 120,
+      "totalScrap": 420
     }
   },
   "1326180354": {
-    "researchTable": 20,
+    "researchTable": 15,
     "workbench": {
       "type": "1524187186",
-      "scrap": 22,
-      "totalScrap": 188
+      "scrap": 15,
+      "totalScrap": 135
     }
   },
   "1330084809": {
-    "researchTable": 20,
-    "workbench": null
+    "researchTable": 15,
+    "workbench": {
+      "type": "210787554",
+      "scrap": 15,
+      "totalScrap": 195
+    }
   },
   "1353298668": {
-    "researchTable": 500,
+    "researchTable": 120,
     "workbench": {
       "type": "-1607980696",
-      "scrap": 500,
-      "totalScrap": 625
+      "scrap": 120,
+      "totalScrap": 180
     }
   },
   "1366282552": {
-    "researchTable": 20,
-    "workbench": {
-      "type": "1524187186",
-      "scrap": 22,
-      "totalScrap": 193
-    }
+    "researchTable": 10,
+    "workbench": null
   },
   "1371909803": {
-    "researchTable": 20,
+    "researchTable": 15,
     "workbench": {
-      "type": "-41896755",
-      "scrap": 24,
-      "totalScrap": 408
+      "type": "210787554",
+      "scrap": 15,
+      "totalScrap": 285
     }
   },
   "1373240771": {
-    "researchTable": 20,
+    "researchTable": 15,
     "workbench": {
       "type": "1524187186",
-      "scrap": 22,
-      "totalScrap": 188
+      "scrap": 15,
+      "totalScrap": 75
     }
   },
   "1373971859": {
-    "researchTable": 125,
+    "researchTable": 60,
     "workbench": {
       "type": "-41896755",
-      "scrap": 150,
-      "totalScrap": 1170
+      "scrap": 60,
+      "totalScrap": 510
     }
   },
   "1376065505": {
-    "researchTable": 125,
+    "researchTable": 60,
     "workbench": {
-      "type": "-41896755",
-      "scrap": 150,
-      "totalScrap": 414
+      "type": "210787554",
+      "scrap": 60,
+      "totalScrap": 180
     }
   },
   "1382263453": {
-    "researchTable": 75,
+    "researchTable": 30,
     "workbench": {
       "type": "1524187186",
-      "scrap": 83,
-      "totalScrap": 409
+      "scrap": 30,
+      "totalScrap": 165
     }
   },
   "1401987718": {
-    "researchTable": 75,
+    "researchTable": 30,
     "workbench": null
   },
   "1413014235": {
-    "researchTable": 20,
+    "researchTable": 15,
     "workbench": {
-      "type": "1524187186",
-      "scrap": 22,
-      "totalScrap": 44
+      "type": "210787554",
+      "scrap": 15,
+      "totalScrap": 210
     }
   },
   "1414245162": {
@@ -768,19 +848,27 @@
     "workbench": null
   },
   "1424075905": {
-    "researchTable": 20,
+    "researchTable": 15,
     "workbench": {
       "type": "1524187186",
-      "scrap": 22,
-      "totalScrap": 22
+      "scrap": 15,
+      "totalScrap": 15
+    }
+  },
+  "1428574144": {
+    "researchTable": 15,
+    "workbench": {
+      "type": "210787554",
+      "scrap": 15,
+      "totalScrap": 300
     }
   },
   "1430085198": {
-    "researchTable": 75,
+    "researchTable": 30,
     "workbench": {
-      "type": "-41896755",
-      "scrap": 90,
-      "totalScrap": 654
+      "type": "210787554",
+      "scrap": 30,
+      "totalScrap": 330
     }
   },
   "1443579727": {
@@ -788,27 +876,35 @@
     "workbench": null
   },
   "1451568081": {
-    "researchTable": 20,
+    "researchTable": 15,
     "workbench": {
       "type": "1524187186",
-      "scrap": 22,
-      "totalScrap": 276
+      "scrap": 15,
+      "totalScrap": 135
+    }
+  },
+  "1456143403": {
+    "researchTable": 30,
+    "workbench": {
+      "type": "-41896755",
+      "scrap": 30,
+      "totalScrap": 420
     }
   },
   "1478091698": {
-    "researchTable": 125,
+    "researchTable": 60,
     "workbench": {
       "type": "-41896755",
-      "scrap": 150,
-      "totalScrap": 1470
+      "scrap": 60,
+      "totalScrap": 750
     }
   },
   "1491189398": {
-    "researchTable": 20,
+    "researchTable": 15,
     "workbench": {
       "type": "1524187186",
-      "scrap": 22,
-      "totalScrap": 105
+      "scrap": 15,
+      "totalScrap": 45
     }
   },
   "1516985844": {
@@ -820,19 +916,19 @@
     "workbench": null
   },
   "1534542921": {
-    "researchTable": 20,
+    "researchTable": 15,
     "workbench": {
       "type": "1524187186",
-      "scrap": 22,
-      "totalScrap": 88
+      "scrap": 15,
+      "totalScrap": 45
     }
   },
   "1538126328": {
-    "researchTable": 20,
+    "researchTable": 15,
     "workbench": {
-      "type": "1524187186",
-      "scrap": 22,
-      "totalScrap": 215
+      "type": "210787554",
+      "scrap": 15,
+      "totalScrap": 285
     }
   },
   "1540934679": {
@@ -840,27 +936,27 @@
     "workbench": null
   },
   "1545779598": {
-    "researchTable": 500,
+    "researchTable": 120,
     "workbench": {
       "type": "-1607980696",
-      "scrap": 500,
-      "totalScrap": 2500
+      "scrap": 120,
+      "totalScrap": 780
     }
   },
   "1556365900": {
-    "researchTable": 75,
+    "researchTable": 30,
     "workbench": {
       "type": "-41896755",
-      "scrap": 90,
-      "totalScrap": 1020
+      "scrap": 30,
+      "totalScrap": 450
     }
   },
   "1559779253": {
-    "researchTable": 125,
+    "researchTable": 60,
     "workbench": {
-      "type": "-41896755",
-      "scrap": 150,
-      "totalScrap": 414
+      "type": "210787554",
+      "scrap": 60,
+      "totalScrap": 180
     }
   },
   "1569882109": {
@@ -868,63 +964,67 @@
     "workbench": null
   },
   "1581210395": {
-    "researchTable": 20,
+    "researchTable": 15,
     "workbench": {
       "type": "1524187186",
-      "scrap": 22,
-      "totalScrap": 66
+      "scrap": 15,
+      "totalScrap": 30
     }
   },
   "1588298435": {
-    "researchTable": 500,
+    "researchTable": 120,
     "workbench": {
       "type": "-1607980696",
-      "scrap": 500,
-      "totalScrap": 3000
+      "scrap": 120,
+      "totalScrap": 900
     }
   },
   "1588492232": {
-    "researchTable": 125,
+    "researchTable": 60,
     "workbench": {
-      "type": "-41896755",
-      "scrap": 150,
-      "totalScrap": 426
+      "type": "210787554",
+      "scrap": 60,
+      "totalScrap": 330
     }
   },
   "1602646136": {
     "researchTable": 10,
     "workbench": null
   },
+  "1604837581": {
+    "researchTable": 10,
+    "workbench": null
+  },
   "1608640313": {
-    "researchTable": 20,
+    "researchTable": 15,
     "workbench": {
       "type": "1524187186",
-      "scrap": 22,
-      "totalScrap": 22
+      "scrap": 15,
+      "totalScrap": 15
     }
   },
   "1619039771": {
-    "researchTable": 75,
+    "researchTable": 30,
     "workbench": {
-      "type": "-41896755",
-      "scrap": 90,
-      "totalScrap": 450
+      "type": "210787554",
+      "scrap": 30,
+      "totalScrap": 135
     }
   },
   "1638322904": {
-    "researchTable": 125,
+    "researchTable": 60,
     "workbench": {
       "type": "-41896755",
-      "scrap": 150,
-      "totalScrap": 2910
+      "scrap": 60,
+      "totalScrap": 1170
     }
   },
   "1655650836": {
-    "researchTable": 125,
+    "researchTable": 60,
     "workbench": {
       "type": "-41896755",
-      "scrap": 150,
-      "totalScrap": 564
+      "scrap": 60,
+      "totalScrap": 225
     }
   },
   "1658229558": {
@@ -936,19 +1036,23 @@
     "workbench": null
   },
   "1675639563": {
-    "researchTable": 20,
+    "researchTable": 15,
     "workbench": {
       "type": "1524187186",
-      "scrap": 22,
-      "totalScrap": 44
+      "scrap": 15,
+      "totalScrap": 30
     }
   },
+  "1680793490": {
+    "researchTable": 10,
+    "workbench": null
+  },
   "1696050067": {
-    "researchTable": 125,
+    "researchTable": 60,
     "workbench": {
-      "type": "-41896755",
-      "scrap": 150,
-      "totalScrap": 240
+      "type": "210787554",
+      "scrap": 60,
+      "totalScrap": 120
     }
   },
   "1711033574": {
@@ -956,16 +1060,32 @@
     "workbench": null
   },
   "1712070256": {
-    "researchTable": 125,
+    "researchTable": 60,
     "workbench": {
       "type": "-1607980696",
-      "scrap": 125,
-      "totalScrap": 375
+      "scrap": 60,
+      "totalScrap": 240
     }
   },
   "1714496074": {
     "researchTable": 10,
     "workbench": null
+  },
+  "1714509152": {
+    "researchTable": 30,
+    "workbench": {
+      "type": "-41896755",
+      "scrap": 30,
+      "totalScrap": 570
+    }
+  },
+  "1719587208": {
+    "researchTable": 60,
+    "workbench": {
+      "type": "-41896755",
+      "scrap": 60,
+      "totalScrap": 1050
+    }
   },
   "1722154847": {
     "researchTable": 10,
@@ -976,55 +1096,63 @@
     "workbench": null
   },
   "1751045826": {
-    "researchTable": 75,
+    "researchTable": 30,
     "workbench": {
       "type": "-41896755",
-      "scrap": 90,
-      "totalScrap": 240
+      "scrap": 30,
+      "totalScrap": 90
     }
   },
   "1796682209": {
-    "researchTable": 125,
+    "researchTable": 60,
     "workbench": {
       "type": "-41896755",
-      "scrap": 150,
-      "totalScrap": 1620
+      "scrap": 60,
+      "totalScrap": 810
     }
   },
   "1814288539": {
     "researchTable": 10,
     "workbench": null
   },
+  "1831249347": {
+    "researchTable": 30,
+    "workbench": {
+      "type": "-41896755",
+      "scrap": 30,
+      "totalScrap": 660
+    }
+  },
   "1840822026": {
-    "researchTable": 75,
+    "researchTable": 30,
     "workbench": {
       "type": "1524187186",
-      "scrap": 83,
-      "totalScrap": 791
+      "scrap": 30,
+      "totalScrap": 450
     }
   },
   "1849887541": {
-    "researchTable": 75,
+    "researchTable": 30,
     "workbench": {
-      "type": "-41896755",
-      "scrap": 90,
-      "totalScrap": 180
+      "type": "210787554",
+      "scrap": 30,
+      "totalScrap": 195
     }
   },
   "1850456855": {
-    "researchTable": 75,
+    "researchTable": 30,
     "workbench": {
       "type": "-41896755",
-      "scrap": 90,
-      "totalScrap": 354
+      "scrap": 30,
+      "totalScrap": 135
     }
   },
   "1874610722": {
-    "researchTable": 125,
+    "researchTable": 60,
     "workbench": {
-      "type": "-1607980696",
-      "scrap": 125,
-      "totalScrap": 270
+      "type": "210787554",
+      "scrap": 60,
+      "totalScrap": 300
     }
   },
   "1877339384": {
@@ -1032,27 +1160,31 @@
     "workbench": null
   },
   "1882709339": {
-    "researchTable": 75,
+    "researchTable": 30,
     "workbench": null
   },
   "1883981798": {
-    "researchTable": 20,
-    "workbench": null
+    "researchTable": 15,
+    "workbench": {
+      "type": "210787554",
+      "scrap": 15,
+      "totalScrap": 195
+    }
   },
   "1883981800": {
-    "researchTable": 20,
+    "researchTable": 15,
     "workbench": {
-      "type": "-1607980696",
-      "scrap": 20,
-      "totalScrap": 145
+      "type": "210787554",
+      "scrap": 15,
+      "totalScrap": 225
     }
   },
   "1883981801": {
-    "researchTable": 20,
+    "researchTable": 15,
     "workbench": {
-      "type": "-41896755",
-      "scrap": 24,
-      "totalScrap": 264
+      "type": "210787554",
+      "scrap": 15,
+      "totalScrap": 210
     }
   },
   "1946219319": {
@@ -1060,27 +1192,35 @@
     "workbench": null
   },
   "1948067030": {
-    "researchTable": 125,
+    "researchTable": 60,
     "workbench": {
       "type": "-41896755",
-      "scrap": 150,
-      "totalScrap": 810
+      "scrap": 60,
+      "totalScrap": 300
     }
   },
   "1950721418": {
-    "researchTable": 75,
+    "researchTable": 30,
     "workbench": {
       "type": "1524187186",
-      "scrap": 83,
-      "totalScrap": 171
+      "scrap": 30,
+      "totalScrap": 75
     }
   },
   "1951603367": {
-    "researchTable": 20,
+    "researchTable": 15,
     "workbench": {
-      "type": "1524187186",
-      "scrap": 22,
-      "totalScrap": 22
+      "type": "210787554",
+      "scrap": 15,
+      "totalScrap": 15
+    }
+  },
+  "1954597876": {
+    "researchTable": 30,
+    "workbench": {
+      "type": "-41896755",
+      "scrap": 30,
+      "totalScrap": 690
     }
   },
   "1965232394": {
@@ -1088,83 +1228,111 @@
     "workbench": null
   },
   "1975934948": {
-    "researchTable": 500,
+    "researchTable": 120,
     "workbench": null
   },
   "1983621560": {
-    "researchTable": 75,
+    "researchTable": 30,
     "workbench": {
       "type": "1524187186",
-      "scrap": 83,
-      "totalScrap": 442
+      "scrap": 30,
+      "totalScrap": 195
     }
   },
   "1989785143": {
-    "researchTable": 75,
+    "researchTable": 30,
     "workbench": {
       "type": "-41896755",
-      "scrap": 90,
-      "totalScrap": 504
+      "scrap": 30,
+      "totalScrap": 195
     }
   },
   "1992974553": {
     "researchTable": 10,
     "workbench": null
   },
-  "2005491391": {
-    "researchTable": 125,
+  "1993693904": {
+    "researchTable": 30,
     "workbench": {
-      "type": "-41896755",
-      "scrap": 150,
-      "totalScrap": 2160
-    }
-  },
-  "2023888403": {
-    "researchTable": 75,
-    "workbench": {
-      "type": "-41896755",
-      "scrap": 90,
+      "type": "1524187186",
+      "scrap": 30,
       "totalScrap": 90
     }
   },
+  "2005491391": {
+    "researchTable": 60,
+    "workbench": {
+      "type": "-41896755",
+      "scrap": 60,
+      "totalScrap": 990
+    }
+  },
+  "2023888403": {
+    "researchTable": 30,
+    "workbench": {
+      "type": "210787554",
+      "scrap": 30,
+      "totalScrap": 165
+    }
+  },
+  "2036395619": {
+    "researchTable": 30,
+    "workbench": null
+  },
   "2040726127": {
-    "researchTable": 75,
+    "researchTable": 30,
     "workbench": {
       "type": "1524187186",
-      "scrap": 83,
-      "totalScrap": 603
+      "scrap": 30,
+      "totalScrap": 375
     }
   },
   "2041899972": {
-    "researchTable": 125,
+    "researchTable": 60,
     "workbench": {
       "type": "-41896755",
-      "scrap": 150,
-      "totalScrap": 720
+      "scrap": 60,
+      "totalScrap": 270
+    }
+  },
+  "2047789913": {
+    "researchTable": 60,
+    "workbench": {
+      "type": "-41896755",
+      "scrap": 60,
+      "totalScrap": 210
+    }
+  },
+  "2083256995": {
+    "researchTable": 60,
+    "workbench": {
+      "type": "1524187186",
+      "scrap": 60,
+      "totalScrap": 480
     }
   },
   "2087678962": {
-    "researchTable": 75,
+    "researchTable": 30,
     "workbench": {
-      "type": "-41896755",
-      "scrap": 90,
-      "totalScrap": 384
+      "type": "210787554",
+      "scrap": 30,
+      "totalScrap": 120
     }
   },
   "2090395347": {
-    "researchTable": 75,
+    "researchTable": 30,
     "workbench": {
-      "type": "1524187186",
-      "scrap": 83,
-      "totalScrap": 127
+      "type": "210787554",
+      "scrap": 30,
+      "totalScrap": 45
     }
   },
   "2100007442": {
-    "researchTable": 20,
+    "researchTable": 15,
     "workbench": {
-      "type": "1524187186",
-      "scrap": 22,
-      "totalScrap": 193
+      "type": "210787554",
+      "scrap": 15,
+      "totalScrap": 105
     }
   },
   "2114754781": {
@@ -1172,83 +1340,119 @@
     "workbench": null
   },
   "-1685290200": {
-    "researchTable": 75,
+    "researchTable": 30,
     "workbench": {
       "type": "-41896755",
-      "scrap": 90,
-      "totalScrap": 480
+      "scrap": 30,
+      "totalScrap": 240
     }
   },
   "-1036635990": {
-    "researchTable": 75,
+    "researchTable": 30,
     "workbench": {
       "type": "-41896755",
-      "scrap": 90,
-      "totalScrap": 660
+      "scrap": 30,
+      "totalScrap": 300
     }
   },
   "-727717969": {
-    "researchTable": 75,
+    "researchTable": 30,
     "workbench": {
       "type": "-41896755",
-      "scrap": 90,
-      "totalScrap": 570
-    }
-  },
-  "-1211166256": {
-    "researchTable": 125,
-    "workbench": {
-      "type": "-41896755",
-      "scrap": 150,
-      "totalScrap": 1860
-    }
-  },
-  "-2124352573": {
-    "researchTable": 20,
-    "workbench": null
-  },
-  "-1615281216": {
-    "researchTable": 125,
-    "workbench": {
-      "type": "-1607980696",
-      "scrap": 125,
+      "scrap": 30,
       "totalScrap": 270
     }
   },
-  "-2139580305": {
-    "researchTable": 500,
+  "-1211166256": {
+    "researchTable": 60,
     "workbench": {
       "type": "-41896755",
-      "scrap": 600,
-      "totalScrap": 966
+      "scrap": 60,
+      "totalScrap": 750
+    }
+  },
+  "-2124352573": {
+    "researchTable": 15,
+    "workbench": null
+  },
+  "-1615281216": {
+    "researchTable": 60,
+    "workbench": {
+      "type": "210787554",
+      "scrap": 60,
+      "totalScrap": 360
+    }
+  },
+  "-903796529": {
+    "researchTable": 60,
+    "workbench": {
+      "type": "-41896755",
+      "scrap": 60,
+      "totalScrap": 150
+    }
+  },
+  "-2139580305": {
+    "researchTable": 120,
+    "workbench": {
+      "type": "210787554",
+      "scrap": 120,
+      "totalScrap": 495
     }
   },
   "-2072273936": {
     "researchTable": 10,
     "workbench": null
   },
-  "-1273339005": {
-    "researchTable": 75,
+  "-187304968": {
+    "researchTable": 30,
+    "workbench": {
+      "type": "-41896755",
+      "scrap": 30,
+      "totalScrap": 540
+    }
+  },
+  "-1104881824": {
+    "researchTable": 15,
     "workbench": {
       "type": "1524187186",
-      "scrap": 83,
-      "totalScrap": 254
+      "scrap": 15,
+      "totalScrap": 135
+    }
+  },
+  "-1273339005": {
+    "researchTable": 30,
+    "workbench": {
+      "type": "1524187186",
+      "scrap": 30,
+      "totalScrap": 105
     }
   },
   "-1262185308": {
-    "researchTable": 75,
+    "researchTable": 30,
     "workbench": {
       "type": "1524187186",
-      "scrap": 83,
-      "totalScrap": 686
+      "scrap": 30,
+      "totalScrap": 405
     }
   },
   "-690968985": {
-    "researchTable": 20,
+    "researchTable": 15,
+    "workbench": {
+      "type": "210787554",
+      "scrap": 15,
+      "totalScrap": 105
+    }
+  },
+  "-851288382": {
+    "researchTable": 30,
+    "workbench": null
+  },
+  "-321247698": {
+    "researchTable": 120,
     "workbench": {
       "type": "1524187186",
-      "scrap": 22,
-      "totalScrap": 232
+      "scrap": 120,
+      "totalScrap": 210
     }
   },
   "-1903165497": {
@@ -1256,11 +1460,11 @@
     "workbench": null
   },
   "-1549739227": {
-    "researchTable": 75,
+    "researchTable": 30,
     "workbench": {
       "type": "-41896755",
-      "scrap": 90,
-      "totalScrap": 240
+      "scrap": 30,
+      "totalScrap": 90
     }
   },
   "-761829530": {
@@ -1268,43 +1472,67 @@
     "workbench": null
   },
   "-1778897469": {
-    "researchTable": 20,
+    "researchTable": 15,
     "workbench": {
-      "type": "1524187186",
-      "scrap": 22,
-      "totalScrap": 215
+      "type": "210787554",
+      "scrap": 15,
+      "totalScrap": 120
     }
   },
   "-1040518150": {
-    "researchTable": 125,
+    "researchTable": 60,
     "workbench": {
-      "type": "-41896755",
-      "scrap": 150,
-      "totalScrap": 564
+      "type": "210787554",
+      "scrap": 60,
+      "totalScrap": 420
+    }
+  },
+  "-34498533": {
+    "researchTable": 15,
+    "workbench": {
+      "type": "1524187186",
+      "scrap": 15,
+      "totalScrap": 315
+    }
+  },
+  "-411735114": {
+    "researchTable": 30,
+    "workbench": {
+      "type": "1524187186",
+      "scrap": 30,
+      "totalScrap": 300
     }
   },
   "-1117626326": {
-    "researchTable": 20,
+    "researchTable": 15,
     "workbench": {
       "type": "1524187186",
-      "scrap": 22,
-      "totalScrap": 254
+      "scrap": 15,
+      "totalScrap": 120
+    }
+  },
+  "-2018158920": {
+    "researchTable": 15,
+    "workbench": {
+      "type": "1524187186",
+      "scrap": 15,
+      "totalScrap": 45
     }
   },
   "-1501451746": {
-    "researchTable": 125,
+    "researchTable": 60,
     "workbench": {
-      "type": "-41896755",
-      "scrap": 150,
-      "totalScrap": 414
+      "type": "210787554",
+      "scrap": 60,
+      "totalScrap": 180
     }
   },
   "-803263829": {
-    "researchTable": 75,
+    "researchTable": 30,
     "workbench": {
       "type": "-41896755",
-      "scrap": 90,
-      "totalScrap": 330
+      "scrap": 30,
+      "totalScrap": 120
     }
   },
   "-1488398114": {
@@ -1312,79 +1540,87 @@
     "workbench": null
   },
   "-1588628467": {
-    "researchTable": 75,
+    "researchTable": 30,
     "workbench": {
-      "type": "-41896755",
-      "scrap": 90,
-      "totalScrap": 276
+      "type": "210787554",
+      "scrap": 30,
+      "totalScrap": 270
     }
   },
   "-1950721390": {
-    "researchTable": 20,
+    "researchTable": 15,
     "workbench": {
       "type": "-41896755",
-      "scrap": 24,
-      "totalScrap": 414
+      "scrap": 15,
+      "totalScrap": 165
     }
   },
   "-216999575": {
-    "researchTable": 75,
+    "researchTable": 30,
+    "workbench": {
+      "type": "210787554",
+      "scrap": 30,
+      "totalScrap": 150
+    }
+  },
+  "-1056824343": {
+    "researchTable": 30,
     "workbench": {
       "type": "-41896755",
-      "scrap": 90,
-      "totalScrap": 360
+      "scrap": 30,
+      "totalScrap": 180
     }
   },
   "-502177121": {
-    "researchTable": 75,
+    "researchTable": 30,
     "workbench": {
-      "type": "1524187186",
-      "scrap": 83,
-      "totalScrap": 254
+      "type": "210787554",
+      "scrap": 30,
+      "totalScrap": 120
     }
   },
   "-765183617": {
-    "researchTable": 125,
+    "researchTable": 60,
     "workbench": {
       "type": "1524187186",
-      "scrap": 138,
-      "totalScrap": 658
+      "scrap": 60,
+      "totalScrap": 405
     }
   },
   "-1519126340": {
-    "researchTable": 75,
+    "researchTable": 30,
     "workbench": {
       "type": "1524187186",
-      "scrap": 83,
-      "totalScrap": 503
+      "scrap": 30,
+      "totalScrap": 210
     }
   },
   "-1196547867": {
-    "researchTable": 75,
+    "researchTable": 30,
     "workbench": {
-      "type": "-41896755",
-      "scrap": 90,
-      "totalScrap": 474
+      "type": "210787554",
+      "scrap": 30,
+      "totalScrap": 225
     }
   },
   "-784870360": {
-    "researchTable": 75,
+    "researchTable": 30,
     "workbench": {
-      "type": "1524187186",
-      "scrap": 83,
-      "totalScrap": 232
+      "type": "210787554",
+      "scrap": 30,
+      "totalScrap": 105
     }
   },
   "-1448252298": {
-    "researchTable": 20,
+    "researchTable": 15,
     "workbench": {
-      "type": "1524187186",
-      "scrap": 22,
-      "totalScrap": 171
+      "type": "210787554",
+      "scrap": 15,
+      "totalScrap": 90
     }
   },
   "-1673693549": {
-    "researchTable": 75,
+    "researchTable": 30,
     "workbench": null
   },
   "-75944661": {
@@ -1392,43 +1628,51 @@
     "workbench": null
   },
   "-1321651331": {
-    "researchTable": 125,
+    "researchTable": 60,
     "workbench": {
       "type": "-1607980696",
-      "scrap": 125,
-      "totalScrap": 1125
+      "scrap": 60,
+      "totalScrap": 480
     }
   },
   "-592016202": {
-    "researchTable": 500,
+    "researchTable": 120,
     "workbench": {
       "type": "-1607980696",
-      "scrap": 500,
-      "totalScrap": 1625
+      "scrap": 120,
+      "totalScrap": 600
+    }
+  },
+  "-484006286": {
+    "researchTable": 30,
+    "workbench": {
+      "type": "-41896755",
+      "scrap": 30,
+      "totalScrap": 690
     }
   },
   "-1215753368": {
-    "researchTable": 125,
+    "researchTable": 60,
     "workbench": {
       "type": "-41896755",
-      "scrap": 150,
-      "totalScrap": 1320
+      "scrap": 60,
+      "totalScrap": 690
     }
   },
   "-936921910": {
-    "researchTable": 75,
+    "researchTable": 30,
     "workbench": {
       "type": "-41896755",
-      "scrap": 90,
-      "totalScrap": 1110
+      "scrap": 30,
+      "totalScrap": 480
     }
   },
   "-939424778": {
-    "researchTable": 20,
+    "researchTable": 15,
     "workbench": {
-      "type": "1524187186",
-      "scrap": 22,
-      "totalScrap": 171
+      "type": "210787554",
+      "scrap": 15,
+      "totalScrap": 90
     }
   },
   "-196667575": {
@@ -1436,27 +1680,27 @@
     "workbench": null
   },
   "-1880231361": {
-    "researchTable": 125,
+    "researchTable": 60,
     "workbench": {
-      "type": "-41896755",
-      "scrap": 150,
-      "totalScrap": 414
+      "type": "210787554",
+      "scrap": 60,
+      "totalScrap": 180
     }
   },
   "-265292885": {
-    "researchTable": 20,
+    "researchTable": 15,
     "workbench": {
-      "type": "1524187186",
-      "scrap": 22,
-      "totalScrap": 88
+      "type": "210787554",
+      "scrap": 15,
+      "totalScrap": 120
     }
   },
   "-1166712463": {
-    "researchTable": 20,
+    "researchTable": 15,
     "workbench": {
-      "type": "1524187186",
-      "scrap": 22,
-      "totalScrap": 110
+      "type": "210787554",
+      "scrap": 15,
+      "totalScrap": 135
     }
   },
   "-1999722522": {
@@ -1464,99 +1708,115 @@
     "workbench": null
   },
   "-148794216": {
-    "researchTable": 75,
+    "researchTable": 30,
     "workbench": {
       "type": "-41896755",
-      "scrap": 90,
-      "totalScrap": 618
+      "scrap": 30,
+      "totalScrap": 240
     }
   },
   "-1767794021": {
-    "researchTable": 125,
+    "researchTable": 60,
     "workbench": {
       "type": "-41896755",
-      "scrap": 150,
-      "totalScrap": 2310
+      "scrap": 60,
+      "totalScrap": 1050
     }
   },
   "-265876753": {
     "researchTable": 10,
     "workbench": null
   },
-  "-839576748": {
-    "researchTable": 75,
+  "-19318653": {
+    "researchTable": 30,
     "workbench": {
       "type": "-41896755",
-      "scrap": 90,
-      "totalScrap": 660
+      "scrap": 30,
+      "totalScrap": 600
+    }
+  },
+  "-839576748": {
+    "researchTable": 30,
+    "workbench": {
+      "type": "-41896755",
+      "scrap": 30,
+      "totalScrap": 240
     }
   },
   "-1252059217": {
-    "researchTable": 75,
+    "researchTable": 30,
     "workbench": {
       "type": "1524187186",
-      "scrap": 83,
-      "totalScrap": 166
+      "scrap": 30,
+      "totalScrap": 60
     }
   },
   "-1507239837": {
-    "researchTable": 75,
+    "researchTable": 30,
     "workbench": {
-      "type": "-41896755",
-      "scrap": 90,
-      "totalScrap": 294
+      "type": "210787554",
+      "scrap": 30,
+      "totalScrap": 150
     }
   },
   "-1102429027": {
-    "researchTable": 125,
+    "researchTable": 60,
     "workbench": {
       "type": "-41896755",
-      "scrap": 150,
-      "totalScrap": 570
+      "scrap": 60,
+      "totalScrap": 195
     }
   },
   "-1778159885": {
-    "researchTable": 125,
+    "researchTable": 60,
     "workbench": {
       "type": "-41896755",
-      "scrap": 150,
-      "totalScrap": 570
+      "scrap": 60,
+      "totalScrap": 195
     }
   },
   "-1773144852": {
     "researchTable": 10,
     "workbench": null
   },
-  "-691113464": {
-    "researchTable": 500,
+  "-92315244": {
+    "researchTable": 60,
     "workbench": {
       "type": "-41896755",
-      "scrap": 600,
-      "totalScrap": 2430
+      "scrap": 60,
+      "totalScrap": 810
+    }
+  },
+  "-691113464": {
+    "researchTable": 120,
+    "workbench": {
+      "type": "-41896755",
+      "scrap": 120,
+      "totalScrap": 690
     }
   },
   "-967648160": {
-    "researchTable": 500,
+    "researchTable": 120,
     "workbench": {
       "type": "-41896755",
-      "scrap": 600,
-      "totalScrap": 1830
+      "scrap": 120,
+      "totalScrap": 570
     }
   },
   "-335089230": {
-    "researchTable": 125,
+    "researchTable": 60,
     "workbench": {
       "type": "1524187186",
-      "scrap": 138,
-      "totalScrap": 790
+      "scrap": 60,
+      "totalScrap": 330
     }
   },
   "-1802083073": {
-    "researchTable": 20,
+    "researchTable": 15,
     "workbench": {
-      "type": "-1607980696",
-      "scrap": 20,
-      "totalScrap": 145
+      "type": "210787554",
+      "scrap": 15,
+      "totalScrap": 225
     }
   },
   "-1023065463": {
@@ -1564,83 +1824,95 @@
     "workbench": null
   },
   "-1841918730": {
-    "researchTable": 125,
+    "researchTable": 60,
     "workbench": {
       "type": "-41896755",
-      "scrap": 150,
-      "totalScrap": 2910
+      "scrap": 60,
+      "totalScrap": 1170
     }
   },
   "-1214542497": {
-    "researchTable": 500,
+    "researchTable": 120,
     "workbench": {
       "type": "-1607980696",
-      "scrap": 500,
-      "totalScrap": 2000
+      "scrap": 120,
+      "totalScrap": 660
     }
   },
   "-1663759755": {
-    "researchTable": 125,
+    "researchTable": 60,
     "workbench": {
       "type": "-41896755",
-      "scrap": 150,
-      "totalScrap": 780
+      "scrap": 60,
+      "totalScrap": 360
     }
   },
   "-218009552": {
-    "researchTable": 125,
+    "researchTable": 60,
     "workbench": {
       "type": "-41896755",
-      "scrap": 150,
-      "totalScrap": 2310
+      "scrap": 60,
+      "totalScrap": 1050
     }
   },
   "-1989600732": {
-    "researchTable": 75,
+    "researchTable": 30,
     "workbench": {
       "type": "1524187186",
-      "scrap": 83,
-      "totalScrap": 166
+      "scrap": 30,
+      "totalScrap": 60
     }
   },
   "-143132326": {
-    "researchTable": 75,
+    "researchTable": 30,
     "workbench": {
       "type": "1524187186",
-      "scrap": 83,
-      "totalScrap": 398
+      "scrap": 30,
+      "totalScrap": 165
     }
   },
   "-1691396643": {
-    "researchTable": 125,
+    "researchTable": 60,
     "workbench": {
       "type": "-41896755",
-      "scrap": 150,
-      "totalScrap": 1320
+      "scrap": 60,
+      "totalScrap": 690
     }
   },
   "-44876289": {
-    "researchTable": 20,
+    "researchTable": 15,
     "workbench": {
-      "type": "1524187186",
-      "scrap": 22,
-      "totalScrap": 276
+      "type": "210787554",
+      "scrap": 15,
+      "totalScrap": 135
     }
   },
   "-2012470695": {
-    "researchTable": 20,
+    "researchTable": 15,
     "workbench": {
       "type": "1524187186",
-      "scrap": 22,
-      "totalScrap": 66
+      "scrap": 15,
+      "totalScrap": 45
+    }
+  },
+  "-963819285": {
+    "researchTable": 30,
+    "workbench": null
+  },
+  "-1987565603": {
+    "researchTable": 30,
+    "workbench": {
+      "type": "-41896755",
+      "scrap": 30,
+      "totalScrap": 600
     }
   },
   "-1163532624": {
-    "researchTable": 20,
+    "researchTable": 15,
     "workbench": {
       "type": "1524187186",
-      "scrap": 22,
-      "totalScrap": 254
+      "scrap": 15,
+      "totalScrap": 90
     }
   },
   "-850982208": {
@@ -1648,51 +1920,51 @@
     "workbench": null
   },
   "-1693832478": {
-    "researchTable": 125,
+    "researchTable": 60,
     "workbench": {
-      "type": "-41896755",
-      "scrap": 150,
-      "totalScrap": 564
+      "type": "210787554",
+      "scrap": 60,
+      "totalScrap": 240
     }
   },
   "-1992717673": {
-    "researchTable": 125,
+    "researchTable": 60,
     "workbench": {
       "type": "-41896755",
-      "scrap": 150,
-      "totalScrap": 1050
+      "scrap": 60,
+      "totalScrap": 390
     }
   },
   "-1100168350": {
-    "researchTable": 75,
+    "researchTable": 30,
     "workbench": {
-      "type": "-41896755",
-      "scrap": 90,
-      "totalScrap": 1140
+      "type": "210787554",
+      "scrap": 30,
+      "totalScrap": 180
     }
   },
   "-798293154": {
-    "researchTable": 75,
+    "researchTable": 30,
     "workbench": {
-      "type": "-41896755",
-      "scrap": 90,
-      "totalScrap": 564
+      "type": "210787554",
+      "scrap": 30,
+      "totalScrap": 150
     }
   },
   "-110921842": {
-    "researchTable": 75,
+    "researchTable": 30,
     "workbench": {
       "type": "-41896755",
-      "scrap": 90,
-      "totalScrap": 900
+      "scrap": 30,
+      "totalScrap": 330
     }
   },
   "-1469578201": {
-    "researchTable": 75,
+    "researchTable": 30,
     "workbench": {
       "type": "-41896755",
-      "scrap": 90,
-      "totalScrap": 90
+      "scrap": 30,
+      "totalScrap": 30
     }
   },
   "-946369541": {
@@ -1700,15 +1972,19 @@
     "workbench": null
   },
   "-89874794": {
-    "researchTable": 20,
-    "workbench": null
+    "researchTable": 15,
+    "workbench": {
+      "type": "210787554",
+      "scrap": 15,
+      "totalScrap": 195
+    }
   },
   "-1966748496": {
-    "researchTable": 75,
+    "researchTable": 30,
     "workbench": {
       "type": "1524187186",
-      "scrap": 83,
-      "totalScrap": 354
+      "scrap": 30,
+      "totalScrap": 285
     }
   },
   "-1137865085": {
@@ -1716,19 +1992,19 @@
     "workbench": null
   },
   "-586784898": {
-    "researchTable": 20,
+    "researchTable": 15,
     "workbench": {
       "type": "1524187186",
-      "scrap": 22,
-      "totalScrap": 66
+      "scrap": 15,
+      "totalScrap": 30
     }
   },
   "-493159321": {
-    "researchTable": 20,
+    "researchTable": 15,
     "workbench": {
-      "type": "-41896755",
-      "scrap": 24,
-      "totalScrap": 264
+      "type": "210787554",
+      "scrap": 15,
+      "totalScrap": 210
     }
   },
   "-1819233322": {
@@ -1736,27 +2012,27 @@
     "workbench": null
   },
   "-746647361": {
-    "researchTable": 75,
+    "researchTable": 30,
     "workbench": {
-      "type": "-41896755",
-      "scrap": 90,
-      "totalScrap": 270
+      "type": "210787554",
+      "scrap": 30,
+      "totalScrap": 255
     }
   },
   "-194953424": {
-    "researchTable": 500,
+    "researchTable": 120,
     "workbench": {
       "type": "-1607980696",
-      "scrap": 500,
-      "totalScrap": 1500
+      "scrap": 120,
+      "totalScrap": 540
     }
   },
   "-1199897169": {
-    "researchTable": 20,
+    "researchTable": 15,
     "workbench": {
       "type": "-41896755",
-      "scrap": 24,
-      "totalScrap": 414
+      "scrap": 15,
+      "totalScrap": 165
     }
   },
   "-148229307": {
@@ -1764,39 +2040,55 @@
     "workbench": null
   },
   "-1021495308": {
-    "researchTable": 125,
+    "researchTable": 60,
     "workbench": null
   },
   "-1199897172": {
-    "researchTable": 20,
+    "researchTable": 15,
     "workbench": {
       "type": "-41896755",
-      "scrap": 24,
-      "totalScrap": 438
+      "scrap": 15,
+      "totalScrap": 180
     }
   },
   "-819720157": {
-    "researchTable": 75,
+    "researchTable": 30,
     "workbench": {
       "type": "1524187186",
-      "scrap": 83,
-      "totalScrap": 536
+      "scrap": 30,
+      "totalScrap": 225
     }
   },
   "-1539025626": {
-    "researchTable": 20,
+    "researchTable": 15,
     "workbench": {
       "type": "1524187186",
-      "scrap": 22,
-      "totalScrap": 88
+      "scrap": 15,
+      "totalScrap": 60
+    }
+  },
+  "-482348853": {
+    "researchTable": 30,
+    "workbench": {
+      "type": "1524187186",
+      "scrap": 30,
+      "totalScrap": 255
+    }
+  },
+  "-759279626": {
+    "researchTable": 30,
+    "workbench": {
+      "type": "-41896755",
+      "scrap": 30,
+      "totalScrap": 600
     }
   },
   "-1405508498": {
-    "researchTable": 125,
+    "researchTable": 60,
     "workbench": {
       "type": "-41896755",
-      "scrap": 150,
-      "totalScrap": 1470
+      "scrap": 60,
+      "totalScrap": 750
     }
   },
   "-2097376851": {
@@ -1804,211 +2096,247 @@
     "workbench": null
   },
   "-1518883088": {
-    "researchTable": 125,
+    "researchTable": 60,
     "workbench": {
       "type": "-41896755",
-      "scrap": 150,
-      "totalScrap": 720
+      "scrap": 60,
+      "totalScrap": 255
+    }
+  },
+  "-781866273": {
+    "researchTable": 15,
+    "workbench": {
+      "type": "-41896755",
+      "scrap": 15,
+      "totalScrap": 525
     }
   },
   "-1286302544": {
-    "researchTable": 20,
+    "researchTable": 15,
     "workbench": {
-      "type": "1524187186",
-      "scrap": 22,
-      "totalScrap": 254
+      "type": "210787554",
+      "scrap": 15,
+      "totalScrap": 120
     }
   },
   "-1302129395": {
-    "researchTable": 75,
+    "researchTable": 30,
     "workbench": {
       "type": "1524187186",
-      "scrap": 83,
-      "totalScrap": 166
+      "scrap": 30,
+      "totalScrap": 120
+    }
+  },
+  "-1127003365": {
+    "researchTable": 30,
+    "workbench": {
+      "type": "-41896755",
+      "scrap": 30,
+      "totalScrap": 600
+    }
+  },
+  "-357442017": {
+    "researchTable": 30,
+    "workbench": {
+      "type": "-41896755",
+      "scrap": 30,
+      "totalScrap": 600
+    }
+  },
+  "-952411326": {
+    "researchTable": 15,
+    "workbench": {
+      "type": "1524187186",
+      "scrap": 15,
+      "totalScrap": 255
     }
   },
   "-365097295": {
-    "researchTable": 75,
+    "researchTable": 30,
     "workbench": {
-      "type": "-41896755",
-      "scrap": 90,
-      "totalScrap": 270
+      "type": "210787554",
+      "scrap": 30,
+      "totalScrap": 210
     }
   },
   "-2049214035": {
-    "researchTable": 20,
+    "researchTable": 15,
     "workbench": {
-      "type": "1524187186",
-      "scrap": 22,
-      "totalScrap": 193
+      "type": "210787554",
+      "scrap": 15,
+      "totalScrap": 105
     }
   },
   "-956706906": {
-    "researchTable": 75,
+    "researchTable": 30,
     "workbench": {
       "type": "-41896755",
-      "scrap": 90,
-      "totalScrap": 480
+      "scrap": 30,
+      "totalScrap": 180
     }
   },
   "-1429456799": {
-    "researchTable": 75,
+    "researchTable": 30,
     "workbench": {
       "type": "-41896755",
-      "scrap": 90,
-      "totalScrap": 570
+      "scrap": 30,
+      "totalScrap": 210
     }
   },
   "-892718768": {
-    "researchTable": 20,
+    "researchTable": 15,
     "workbench": {
       "type": "1524187186",
-      "scrap": 22,
-      "totalScrap": 193
+      "scrap": 15,
+      "totalScrap": 105
     }
   },
-  "-1736356576": {
-    "researchTable": 20,
+  "-1827561369": {
+    "researchTable": 30,
     "workbench": {
-      "type": "1524187186",
-      "scrap": 22,
-      "totalScrap": 237
+      "type": "-41896755",
+      "scrap": 30,
+      "totalScrap": 870
+    }
+  },
+  "-594596146": {
+    "researchTable": 30,
+    "workbench": null
+  },
+  "-1736356576": {
+    "researchTable": 15,
+    "workbench": {
+      "type": "210787554",
+      "scrap": 15,
+      "totalScrap": 135
     }
   },
   "-1044468317": {
-    "researchTable": 20,
+    "researchTable": 15,
     "workbench": {
-      "type": "-41896755",
-      "scrap": 24,
-      "totalScrap": 162
+      "type": "210787554",
+      "scrap": 15,
+      "totalScrap": 225
     }
   },
   "-566907190": {
-    "researchTable": 20,
+    "researchTable": 15,
     "workbench": {
-      "type": "-41896755",
-      "scrap": 24,
-      "totalScrap": 114
-    }
-  },
-  "-2002277461": {
-    "researchTable": 75,
-    "workbench": {
-      "type": "-41896755",
-      "scrap": 90,
-      "totalScrap": 420
+      "type": "210787554",
+      "scrap": 15,
+      "totalScrap": 210
     }
   },
   "-699558439": {
-    "researchTable": 20,
+    "researchTable": 15,
     "workbench": {
       "type": "-41896755",
-      "scrap": 24,
-      "totalScrap": 264
+      "scrap": 15,
+      "totalScrap": 105
+    }
+  },
+  "-2002277461": {
+    "researchTable": 30,
+    "workbench": {
+      "type": "-41896755",
+      "scrap": 30,
+      "totalScrap": 150
     }
   },
   "-742865266": {
-    "researchTable": 125,
+    "researchTable": 60,
     "workbench": {
       "type": "-1607980696",
-      "scrap": 125,
-      "totalScrap": 2250
+      "scrap": 60,
+      "totalScrap": 780
     }
   },
   "-458565393": {
-    "researchTable": 75,
+    "researchTable": 30,
     "workbench": {
-      "type": "1524187186",
-      "scrap": 83,
-      "totalScrap": 210
+      "type": "210787554",
+      "scrap": 30,
+      "totalScrap": 90
     }
   },
   "-1985799200": {
-    "researchTable": 20,
+    "researchTable": 15,
     "workbench": {
       "type": "1524187186",
-      "scrap": 22,
-      "totalScrap": 210
-    }
-  },
-  "-1104881824": {
-    "researchTable": 20,
-    "workbench": {
-      "type": "1524187186",
-      "scrap": 22,
-      "totalScrap": 315
+      "scrap": 15,
+      "totalScrap": 90
     }
   },
   "-262590403": {
-    "researchTable": 125,
+    "researchTable": 60,
     "workbench": {
       "type": "-41896755",
-      "scrap": 150,
-      "totalScrap": 240
+      "scrap": 60,
+      "totalScrap": 90
     }
   },
   "-1978999529": {
-    "researchTable": 75,
+    "researchTable": 30,
     "workbench": {
       "type": "1524187186",
-      "scrap": 83,
-      "totalScrap": 437
+      "scrap": 30,
+      "totalScrap": 315
     }
   },
   "-1506397857": {
-    "researchTable": 75,
+    "researchTable": 30,
     "workbench": {
       "type": "1524187186",
-      "scrap": 83,
-      "totalScrap": 83
+      "scrap": 30,
+      "totalScrap": 30
     }
   },
   "-1780802565": {
-    "researchTable": 125,
+    "researchTable": 60,
     "workbench": {
       "type": "-41896755",
-      "scrap": 150,
-      "totalScrap": 390
+      "scrap": 60,
+      "totalScrap": 150
     }
   },
   "-384243979": {
-    "researchTable": 75,
+    "researchTable": 30,
     "workbench": {
       "type": "-41896755",
-      "scrap": 90,
-      "totalScrap": 2850
+      "scrap": 30,
+      "totalScrap": 1140
     }
   },
   "-559599960": {
-    "researchTable": 20,
+    "researchTable": 15,
     "workbench": {
       "type": "1524187186",
-      "scrap": 22,
-      "totalScrap": 232
+      "scrap": 15,
+      "totalScrap": 105
     }
   },
   "-1878475007": {
-    "researchTable": 125,
+    "researchTable": 60,
     "workbench": {
       "type": "1524187186",
-      "scrap": 138,
-      "totalScrap": 929
+      "scrap": 60,
+      "totalScrap": 510
     }
   },
   "-948291630": {
-    "researchTable": 75,
+    "researchTable": 30,
     "workbench": {
-      "type": "-41896755",
-      "scrap": 90,
-      "totalScrap": 654
+      "type": "210787554",
+      "scrap": 30,
+      "totalScrap": 165
     }
   },
   "-904863145": {
-    "researchTable": 125,
+    "researchTable": 60,
     "workbench": {
       "type": "-41896755",
-      "scrap": 150,
-      "totalScrap": 2010
+      "scrap": 60,
+      "totalScrap": 930
     }
   },
   "-2067472972": {
@@ -2016,59 +2344,91 @@
     "workbench": null
   },
   "-2025184684": {
-    "researchTable": 75,
+    "researchTable": 30,
     "workbench": {
       "type": "1524187186",
-      "scrap": 83,
-      "totalScrap": 127
+      "scrap": 30,
+      "totalScrap": 60
     }
   },
   "-1695367501": {
-    "researchTable": 20,
+    "researchTable": 15,
     "workbench": {
       "type": "1524187186",
-      "scrap": 22,
-      "totalScrap": 149
+      "scrap": 15,
+      "totalScrap": 75
     }
   },
-  "-1850571427": {
-    "researchTable": 75,
+  "-1290278434": {
+    "researchTable": 15,
     "workbench": {
       "type": "1524187186",
-      "scrap": 83,
-      "totalScrap": 879
+      "scrap": 15,
+      "totalScrap": 345
     }
   },
   "-855748505": {
     "researchTable": 10,
     "workbench": null
   },
+  "-430416124": {
+    "researchTable": 10,
+    "workbench": null
+  },
+  "-348232115": {
+    "researchTable": 60,
+    "workbench": {
+      "type": "-1607980696",
+      "scrap": 60,
+      "totalScrap": 120
+    }
+  },
   "-1754948969": {
     "researchTable": 10,
     "workbench": null
   },
-  "-1293296287": {
-    "researchTable": 75,
+  "-2115299615": {
+    "researchTable": 15,
     "workbench": {
       "type": "-41896755",
-      "scrap": 90,
-      "totalScrap": 1230
+      "scrap": 15,
+      "totalScrap": 195
+    }
+  },
+  "-1293296287": {
+    "researchTable": 30,
+    "workbench": {
+      "type": "-41896755",
+      "scrap": 30,
+      "totalScrap": 450
+    }
+  },
+  "-158718378": {
+    "researchTable": 15,
+    "workbench": {
+      "type": "1524187186",
+      "scrap": 15,
+      "totalScrap": 270
     }
   },
   "-692338819": {
-    "researchTable": 20,
+    "researchTable": 15,
     "workbench": {
-      "type": "1524187186",
-      "scrap": 22,
-      "totalScrap": 44
+      "type": "210787554",
+      "scrap": 15,
+      "totalScrap": 60
     }
   },
+  "-1850297170": {
+    "researchTable": 10,
+    "workbench": null
+  },
   "-132247350": {
-    "researchTable": 20,
+    "researchTable": 15,
     "workbench": {
-      "type": "1524187186",
-      "scrap": 22,
-      "totalScrap": 44
+      "type": "210787554",
+      "scrap": 15,
+      "totalScrap": 75
     }
   },
   "-1138208076": {
@@ -2076,75 +2436,91 @@
     "workbench": null
   },
   "-695978112": {
-    "researchTable": 75,
+    "researchTable": 30,
     "workbench": {
-      "type": "-41896755",
-      "scrap": 90,
-      "totalScrap": 474
+      "type": "210787554",
+      "scrap": 30,
+      "totalScrap": 240
     }
   },
   "-582782051": {
-    "researchTable": 75,
+    "researchTable": 30,
     "workbench": {
       "type": "1524187186",
-      "scrap": 83,
-      "totalScrap": 514
+      "scrap": 30,
+      "totalScrap": 210
     }
   },
   "-48090175": {
-    "researchTable": 20,
+    "researchTable": 15,
     "workbench": {
       "type": "1524187186",
-      "scrap": 22,
-      "totalScrap": 110
+      "scrap": 15,
+      "totalScrap": 75
+    }
+  },
+  "-1659598760": {
+    "researchTable": 15,
+    "workbench": {
+      "type": "1524187186",
+      "scrap": 15,
+      "totalScrap": 405
     }
   },
   "-1517740219": {
-    "researchTable": 20,
+    "researchTable": 15,
     "workbench": {
       "type": "1524187186",
-      "scrap": 22,
-      "totalScrap": 149
+      "scrap": 15,
+      "totalScrap": 75
     }
   },
   "-1800345240": {
-    "researchTable": 20,
+    "researchTable": 15,
     "workbench": {
       "type": "1524187186",
-      "scrap": 22,
-      "totalScrap": 171
+      "scrap": 15,
+      "totalScrap": 90
     }
   },
   "-1100422738": {
-    "researchTable": 20,
+    "researchTable": 15,
     "workbench": {
       "type": "1524187186",
-      "scrap": 22,
-      "totalScrap": 420
+      "scrap": 15,
+      "totalScrap": 180
     }
   },
   "-563624462": {
-    "researchTable": 20,
+    "researchTable": 15,
     "workbench": {
-      "type": "1524187186",
-      "scrap": 22,
-      "totalScrap": 149
+      "type": "210787554",
+      "scrap": 15,
+      "totalScrap": 75
     }
   },
   "-781014061": {
-    "researchTable": 20,
+    "researchTable": 15,
+    "workbench": {
+      "type": "210787554",
+      "scrap": 15,
+      "totalScrap": 105
+    }
+  },
+  "-1866909924": {
+    "researchTable": 15,
     "workbench": {
       "type": "1524187186",
-      "scrap": 22,
-      "totalScrap": 88
+      "scrap": 15,
+      "totalScrap": 225
     }
   },
   "-1535621066": {
-    "researchTable": 20,
+    "researchTable": 15,
     "workbench": {
       "type": "1524187186",
-      "scrap": 22,
-      "totalScrap": 276
+      "scrap": 15,
+      "totalScrap": 120
     }
   },
   "-1583967946": {
@@ -2152,35 +2528,35 @@
     "workbench": null
   },
   "-1049172752": {
-    "researchTable": 20,
+    "researchTable": 15,
     "workbench": {
-      "type": "1524187186",
-      "scrap": 22,
-      "totalScrap": 149
+      "type": "210787554",
+      "scrap": 15,
+      "totalScrap": 240
     }
   },
   "-1614955425": {
-    "researchTable": 75,
+    "researchTable": 30,
     "workbench": {
       "type": "-41896755",
-      "scrap": 90,
-      "totalScrap": 528
+      "scrap": 30,
+      "totalScrap": 210
     }
   },
   "-626174997": {
-    "researchTable": 125,
+    "researchTable": 60,
     "workbench": {
-      "type": "-41896755",
-      "scrap": 150,
-      "totalScrap": 414
+      "type": "210787554",
+      "scrap": 60,
+      "totalScrap": 300
     }
   },
   "-1758372725": {
-    "researchTable": 125,
+    "researchTable": 60,
     "workbench": {
       "type": "-41896755",
-      "scrap": 150,
-      "totalScrap": 1620
+      "scrap": 60,
+      "totalScrap": 810
     }
   },
   "-97956382": {
@@ -2188,70 +2564,82 @@
     "workbench": null
   },
   "-1671551935": {
-    "researchTable": 75,
+    "researchTable": 30,
     "workbench": {
       "type": "-41896755",
-      "scrap": 90,
-      "totalScrap": 3000
+      "scrap": 30,
+      "totalScrap": 1200
+    }
+  },
+  "-280812482": {
+    "researchTable": 15,
+    "workbench": {
+      "type": "1524187186",
+      "scrap": 15,
+      "totalScrap": 45
     }
   },
   "-1478445584": {
-    "researchTable": 20,
+    "researchTable": 15,
     "workbench": {
       "type": "1524187186",
-      "scrap": 22,
-      "totalScrap": 188
+      "scrap": 15,
+      "totalScrap": 75
     }
   },
   "-463122489": {
-    "researchTable": 75,
+    "researchTable": 30,
     "workbench": {
       "type": "1524187186",
-      "scrap": 83,
-      "totalScrap": 514
+      "scrap": 30,
+      "totalScrap": 210
     }
   },
   "-1863559151": {
-    "researchTable": 20,
+    "researchTable": 15,
     "workbench": {
-      "type": "1524187186",
-      "scrap": 22,
-      "totalScrap": 44
+      "type": "210787554",
+      "scrap": 15,
+      "totalScrap": 90
     }
   },
   "-1284169891": {
-    "researchTable": 75,
+    "researchTable": 30,
     "workbench": {
-      "type": "-41896755",
-      "scrap": 90,
-      "totalScrap": 360
+      "type": "210787554",
+      "scrap": 30,
+      "totalScrap": 240
     }
   },
   "-1367281941": {
-    "researchTable": 75,
+    "researchTable": 30,
     "workbench": {
       "type": "1524187186",
-      "scrap": 83,
-      "totalScrap": 520
+      "scrap": 30,
+      "totalScrap": 345
     }
   },
   "-132516482": {
-    "researchTable": 125,
+    "researchTable": 60,
     "workbench": {
       "type": "-1607980696",
-      "scrap": 125,
-      "totalScrap": 250
+      "scrap": 60,
+      "totalScrap": 180
     }
   },
   "-1819763926": {
-    "researchTable": 125,
+    "researchTable": 60,
     "workbench": {
-      "type": "-41896755",
-      "scrap": 150,
-      "totalScrap": 804
+      "type": "210787554",
+      "scrap": 60,
+      "totalScrap": 345
     }
   },
   "-1478212975": {
+    "researchTable": 10,
+    "workbench": null
+  },
+  "-459159118": {
     "researchTable": 10,
     "workbench": null
   },
@@ -2259,40 +2647,52 @@
     "researchTable": 10,
     "workbench": null
   },
+  "-274709858": {
+    "researchTable": 30,
+    "workbench": null
+  },
   "-1336109173": {
     "researchTable": 10,
     "workbench": null
   },
   "-1023374709": {
-    "researchTable": 20,
+    "researchTable": 15,
     "workbench": {
       "type": "1524187186",
-      "scrap": 22,
-      "totalScrap": 453
+      "scrap": 15,
+      "totalScrap": 195
     }
   },
   "-180129657": {
     "researchTable": 10,
     "workbench": null
   },
+  "-593892112": {
+    "researchTable": 60,
+    "workbench": {
+      "type": "1524187186",
+      "scrap": 60,
+      "totalScrap": 150
+    }
+  },
   "-1234735557": {
     "researchTable": 10,
     "workbench": null
   },
   "-92759291": {
-    "researchTable": 20,
+    "researchTable": 15,
     "workbench": {
       "type": "1524187186",
-      "scrap": 22,
-      "totalScrap": 431
+      "scrap": 15,
+      "totalScrap": 180
     }
   },
   "-316250604": {
-    "researchTable": 125,
+    "researchTable": 60,
     "workbench": {
       "type": "1524187186",
-      "scrap": 138,
-      "totalScrap": 304
+      "scrap": 60,
+      "totalScrap": 120
     }
   },
   "-1183726687": {

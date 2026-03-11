@@ -231,11 +231,25 @@ class RustPlus extends RustPlusLib {
         for (const [id, timer] of Object.entries(this.mapMarkers.cargoShipEgressTimers)) {
             const endAtMs = this.getTimerEndAtMs(timer);
             if (endAtMs === null) continue;
+
+            const parsedId = parseInt(id);
+            if (!Number.isInteger(parsedId)) continue;
+            const cargoShip = this.mapMarkers.getMarkerByTypeId(this.mapMarkers.types.CargoShip, parsedId);
+
             cargoShipEgressTimers.push({
-                id: parseInt(id),
-                endAtMs: endAtMs
+                id: parsedId,
+                endAtMs: endAtMs,
+                x: cargoShip ? cargoShip.x : null,
+                y: cargoShip ? cargoShip.y : null
             });
         }
+
+        const cargoShipsState = this.mapMarkers.cargoShips.map(cargoShip => ({
+            id: cargoShip.id,
+            x: cargoShip.x,
+            y: cargoShip.y,
+            onItsWayOut: cargoShip.onItsWayOut === true
+        }));
 
         return {
             timeSinceCargoShipWasOutMs: this.dateToTimestamp(this.mapMarkers.timeSinceCargoShipWasOut),
@@ -253,7 +267,8 @@ class RustPlus extends RustPlusLib {
             crateLargeOilRigLocation: this.mapMarkers.crateLargeOilRigLocation,
             crateSmallOilRigUnlockAtMs: this.getTimerEndAtMs(this.mapMarkers.crateSmallOilRigTimer),
             crateLargeOilRigUnlockAtMs: this.getTimerEndAtMs(this.mapMarkers.crateLargeOilRigTimer),
-            cargoShipEgressTimers: cargoShipEgressTimers
+            cargoShipEgressTimers: cargoShipEgressTimers,
+            cargoShipsState: cargoShipsState
         };
     }
 
@@ -306,6 +321,43 @@ class RustPlus extends RustPlusLib {
         }
     }
 
+    findCargoShipForPersistedState(cargoData, reservedCargoShipIds = new Set()) {
+        if (!this.mapMarkers) return null;
+
+        const availableCargoShips = this.mapMarkers.cargoShips.filter(cargoShip => !reservedCargoShipIds.has(cargoShip.id));
+        if (availableCargoShips.length === 0) return null;
+
+        const persistedId = parseInt(cargoData.id);
+        if (Number.isInteger(persistedId)) {
+            const cargoShipById = availableCargoShips.find(cargoShip => cargoShip.id === persistedId);
+            if (cargoShipById) return cargoShipById;
+        }
+
+        const persistedX = cargoData.x;
+        const persistedY = cargoData.y;
+        if (typeof (persistedX) === 'number' && Number.isFinite(persistedX) &&
+            typeof (persistedY) === 'number' && Number.isFinite(persistedY)) {
+            let closestCargoShip = null;
+            let closestDistance = Number.POSITIVE_INFINITY;
+
+            for (const cargoShip of availableCargoShips) {
+                const distance = Map.getDistance(cargoShip.x, cargoShip.y, persistedX, persistedY);
+                if (distance < closestDistance) {
+                    closestDistance = distance;
+                    closestCargoShip = cargoShip;
+                }
+            }
+
+            if (closestCargoShip !== null) return closestCargoShip;
+        }
+
+        if (availableCargoShips.length === 1) {
+            return availableCargoShips[0];
+        }
+
+        return null;
+    }
+
     restoreMapMarkersRuntimeState() {
         if (!this.mapMarkers) return;
 
@@ -343,17 +395,19 @@ class RustPlus extends RustPlusLib {
             persisted.crateLargeOilRigLocation
         );
 
+        for (const cargoShip of this.mapMarkers.cargoShips) {
+            cargoShip.onItsWayOut = false;
+        }
+
         if (Array.isArray(persisted.cargoShipEgressTimers)) {
             for (const [id, timer] of Object.entries(this.mapMarkers.cargoShipEgressTimers)) {
                 if (timer) timer.stop();
                 delete this.mapMarkers.cargoShipEgressTimers[id];
             }
 
+            const reservedCargoShipIds = new Set();
             for (const timerData of persisted.cargoShipEgressTimers) {
-                const id = parseInt(timerData.id);
-                if (!Number.isInteger(id)) continue;
-
-                const cargoShip = this.mapMarkers.getMarkerByTypeId(this.mapMarkers.types.CargoShip, id);
+                const cargoShip = this.findCargoShipForPersistedState(timerData, reservedCargoShipIds);
                 if (!cargoShip) continue;
 
                 const endAtMs = Number(timerData.endAtMs);
@@ -361,12 +415,30 @@ class RustPlus extends RustPlusLib {
                 const remainingMs = Math.floor(endAtMs - Date.now());
                 if (remainingMs <= 0) continue;
 
+                const id = cargoShip.id;
+                reservedCargoShipIds.add(id);
+                cargoShip.onItsWayOut = false;
+
                 this.mapMarkers.cargoShipEgressTimers[id] = new Timer.timer(
                     this.mapMarkers.notifyCargoShipEgress.bind(this.mapMarkers),
                     remainingMs,
                     id
                 );
                 this.mapMarkers.cargoShipEgressTimers[id].start();
+            }
+        }
+
+        if (Array.isArray(persisted.cargoShipsState)) {
+            const reservedCargoShipIds = new Set();
+            for (const cargoData of persisted.cargoShipsState) {
+                if (!cargoData || cargoData.onItsWayOut !== true) continue;
+
+                const cargoShip = this.findCargoShipForPersistedState(cargoData, reservedCargoShipIds);
+                if (!cargoShip) continue;
+                if (this.mapMarkers.cargoShipEgressTimers[cargoShip.id]) continue;
+
+                cargoShip.onItsWayOut = true;
+                reservedCargoShipIds.add(cargoShip.id);
             }
         }
     }

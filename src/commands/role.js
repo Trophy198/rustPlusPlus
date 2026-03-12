@@ -20,6 +20,7 @@
 
 const Builder = require('@discordjs/builders');
 
+const Constants = require('../util/constants.js');
 const DiscordEmbeds = require('../discordTools/discordEmbeds');
 const DiscordTools = require('../discordTools/discordTools');
 const PermissionHandler = require('../handlers/permissionHandler.js');
@@ -217,37 +218,59 @@ module.exports = {
 				} break;
 
 				case 'list': {
-					const globalRoleNames = instance.roles
-						.map(id => DiscordTools.getRole(interaction.guildId, id))
-						.filter(r => r)
-						.map(r => r.name);
+					const globalRoleMentions = instance.roles
+						.map(id => {
+							const role = DiscordTools.getRole(interaction.guildId, id);
+							return role ? `<@&${id}>` : null;
+						})
+						.filter(r => r);
 
-					let description = `**${client.intlGet(interaction.guildId, 'roleListGlobal')}:** `;
-					description += globalRoleNames.length > 0
-						? globalRoleNames.join(', ')
-						: client.intlGet(interaction.guildId, 'roleListNone');
+					const fields = [];
+
+					fields.push({
+						name: client.intlGet(interaction.guildId, 'roleListGlobal'),
+						value: globalRoleMentions.length > 0
+							? globalRoleMentions.join('\n')
+							: client.intlGet(interaction.guildId, 'roleListNone'),
+						inline: false
+					});
 
 					const channelOverrides = [];
 					for (const [ch, roleIds] of Object.entries(instance.channelRoles)) {
 						if (roleIds && roleIds.length > 0) {
-							const names = roleIds
-								.map(id => DiscordTools.getRole(interaction.guildId, id))
-								.filter(r => r)
-								.map(r => r.name);
-							if (names.length > 0) {
-								channelOverrides.push(`**${ch}:** ${names.join(', ')}`);
+							const mentions = roleIds
+								.map(id => {
+									const role = DiscordTools.getRole(interaction.guildId, id);
+									return role ? `<@&${id}>` : null;
+								})
+								.filter(r => r);
+							if (mentions.length > 0) {
+								channelOverrides.push({ channel: ch, roles: mentions });
 							}
 						}
 					}
 
 					if (channelOverrides.length > 0) {
-						description += `\n\n**${client.intlGet(interaction.guildId, 'roleListChannel')}:**\n`;
-						description += channelOverrides.join('\n');
+						for (const override of channelOverrides) {
+							fields.push({
+								name: `#${override.channel}`,
+								value: override.roles.join('\n'),
+								inline: true
+							});
+						}
 					}
 
-					await client.interactionEditReply(interaction,
-						DiscordEmbeds.getActionInfoEmbed(0,
-							`${client.intlGet(interaction.guildId, 'roleListTitle')}\n\n${description}`));
+					const embed = DiscordEmbeds.getEmbed({
+						title: client.intlGet(interaction.guildId, 'roleListTitle'),
+						color: Constants.COLOR_DEFAULT,
+						fields: fields,
+						timestamp: true
+					});
+
+					await client.interactionEditReply(interaction, {
+						embeds: [embed],
+						ephemeral: true
+					});
 					return;
 				}
 

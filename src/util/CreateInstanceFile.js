@@ -31,6 +31,21 @@ module.exports = (client, guild) => {
         instance = {
             firstTime: true,
             role: null,
+            roles: [],
+            channelRoles: {
+                information: [],
+                servers: [],
+                settings: [],
+                commands: [],
+                events: [],
+                teamchat: [],
+                switches: [],
+                switchGroups: [],
+                alarms: [],
+                storageMonitors: [],
+                activity: [],
+                trackers: []
+            },
             generalSettings: client.readGeneralSettingsTemplate(),
             notificationSettings: client.readNotificationSettingsTemplate(),
             channelId: {
@@ -84,6 +99,26 @@ module.exports = (client, guild) => {
 
         if (!instance.hasOwnProperty('role')) {
             instance.role = null;
+        }
+
+        if (!instance.hasOwnProperty('roles')) {
+            instance.roles = instance.role !== null ? [instance.role] : [];
+        }
+
+        const channelNames = ['information', 'servers', 'settings', 'commands', 'events',
+            'teamchat', 'switches', 'switchGroups', 'alarms', 'storageMonitors', 'activity', 'trackers'];
+        if (!instance.hasOwnProperty('channelRoles')) {
+            instance.channelRoles = {};
+            for (const ch of channelNames) {
+                instance.channelRoles[ch] = [];
+            }
+        }
+        else {
+            for (const ch of channelNames) {
+                if (!instance.channelRoles.hasOwnProperty(ch)) {
+                    instance.channelRoles[ch] = [];
+                }
+            }
         }
 
         if (!instance.hasOwnProperty('generalSettings')) {

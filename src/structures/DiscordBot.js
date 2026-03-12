@@ -530,13 +530,22 @@ class DiscordBot extends Discord.Client {
             return false;
         }
 
-        /* If role isn't setup yet, validate as true */
-        if (instance.role === null) return true;
+        const roles = instance.roles || [];
+        if (roles.length === 0) return true;
 
-        if (!interaction.member.permissions.has(Discord.PermissionsBitField.Flags.Administrator) &&
-            !interaction.member.roles.cache.has(instance.role)) {
-            let role = DiscordTools.getRole(interaction.guildId, instance.role);
-            const str = this.intlGet(interaction.guildId, 'notPartOfRole', { role: role.name });
+        if (interaction.member.permissions.has(Discord.PermissionsBitField.Flags.Administrator)) {
+            return true;
+        }
+
+        const hasRole = roles.some(roleId => interaction.member.roles.cache.has(roleId));
+
+        if (!hasRole) {
+            const roleNames = roles
+                .map(id => DiscordTools.getRole(interaction.guildId, id))
+                .filter(r => r)
+                .map(r => r.name)
+                .join(', ');
+            const str = this.intlGet(interaction.guildId, 'notPartOfRole', { role: roleNames });
             await this.interactionReply(interaction, DiscordEmbeds.getActionInfoEmbed(1, str));
             this.log(this.intlGet(null, 'warningCap'), str);
             return false;

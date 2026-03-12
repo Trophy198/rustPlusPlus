@@ -68,7 +68,7 @@ async function addTextChannel(name, idName, client, guild, parent, permissionWri
         }
     }
 
-    const perms = PermissionHandler.getPermissionsReset(client, guild, permissionWrite);
+    const perms = PermissionHandler.getPermissionsReset(client, guild, permissionWrite, idName);
 
     try {
         await channel.permissionOverwrites.set(perms);
@@ -76,10 +76,4 @@ async function addTextChannel(name, idName, client, guild, parent, permissionWri
     catch (e) {
         /* Ignore */
     }
-
-    /* Currently, this halts the entire application... Too lazy to fix...
-       It is possible to just remove the channels and let the bot recreate them with correct name language */
-    //channel.setName(name);
-
-    channel.lockPermissions();
 }

@@ -5,13 +5,20 @@
     team member positions and event markers (cargo ship, patrol helicopter, chinook, crates,
     vending machines, ...). Data is pushed over a WebSocket from the bot's polling loop.
 
+    Optimised for constrained hosts (e.g. Oracle free tier, ~1GB RAM):
+      - bare Node http (no Express) to keep the resident footprint minimal
+      - map images are streamed, never buffered whole into memory
+      - the bot only builds/sends snapshots while a browser is actually connected
     This is additive and read-only; it does not affect existing bot behaviour.
 */
 
-const Express = require('express');
 const Http = require('http');
+const Fs = require('fs');
 const Path = require('path');
 const { WebSocketServer } = require('ws');
+
+const PUBLIC_DIR = Path.join(__dirname, '..', 'web', 'public');
+const MAPS_DIR = Path.join(__dirname, '..', '..', 'maps');
 
 let httpServer = null;
 let wss = null;
@@ -22,31 +29,10 @@ const latestByGuild = new Object();
 function start(client, port) {
     if (httpServer) return; /* already started */
 
-    const app = Express();
-
-    /* Static frontend. */
-    app.use('/', Express.static(Path.join(__dirname, '..', 'web', 'public')));
-
-    /* Clean (marker-less) map image per guild - used as the canvas background. */
-    app.get('/map/:guildId', (req, res) => {
-        const guildId = String(req.params.guildId).replace(/[^0-9]/g, '');
-        const file = Path.join(__dirname, '..', '..', 'maps', `${guildId}_map_clean.png`);
-        res.sendFile(file, (err) => { if (err) res.status(404).end(); });
-    });
-
-    /* List the guilds/servers that currently have live data. */
-    app.get('/api/guilds', (req, res) => {
-        res.json(Object.values(latestByGuild).map((d) => ({
-            guildId: d.guildId,
-            serverName: d.serverName
-        })));
-    });
-
-    httpServer = Http.createServer(app);
+    httpServer = Http.createServer(handleRequest);
     wss = new WebSocketServer({ server: httpServer });
 
     wss.on('connection', (ws) => {
-        /* Send the current snapshot for every active guild right away. */
         try {
             ws.send(JSON.stringify({ type: 'init', guilds: Object.values(latestByGuild) }));
         }
@@ -60,6 +46,50 @@ function start(client, port) {
     httpServer.listen(port, () => {
         client.log('WEB', `Live map Web UI running at http://localhost:${port}`);
     });
+}
+
+function handleRequest(req, res) {
+    const url = req.url.split('?')[0];
+
+    if (url === '/' || url === '/index.html') {
+        return streamFile(res, Path.join(PUBLIC_DIR, 'index.html'), 'text/html; charset=utf-8');
+    }
+
+    /* Clean (marker-less) map image per guild - used as the canvas background. */
+    const mapMatch = url.match(/^\/map\/(\d+)$/);
+    if (mapMatch) {
+        return streamFile(res, Path.join(MAPS_DIR, `${mapMatch[1]}_map_clean.png`), 'image/png');
+    }
+
+    if (url === '/api/guilds') {
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        return res.end(JSON.stringify(Object.values(latestByGuild).map((d) => ({
+            guildId: d.guildId,
+            serverName: d.serverName
+        }))));
+    }
+
+    res.writeHead(404);
+    res.end();
+}
+
+/* Stream a file to the response (never buffers the whole file in memory). */
+function streamFile(res, filePath, contentType) {
+    const stream = Fs.createReadStream(filePath);
+    stream.on('error', () => { res.writeHead(404); res.end(); });
+    stream.once('open', () => {
+        res.writeHead(200, { 'Content-Type': contentType, 'Cache-Control': 'no-cache' });
+    });
+    stream.pipe(res);
+}
+
+/* True only while at least one browser is connected - lets the bot skip snapshot work. */
+function hasClients() {
+    if (!wss) return false;
+    for (const ws of wss.clients) {
+        if (ws.readyState === 1 /* OPEN */) return true;
+    }
+    return false;
 }
 
 /* Push a fresh snapshot for a guild to all connected browsers. */
@@ -83,7 +113,6 @@ function buildSnapshot(rustplus, teamInfo, mapMarkers) {
 
     const members = (teamInfo && teamInfo.members) ? teamInfo.members : [];
     const markers = (mapMarkers && mapMarkers.markers) ? mapMarkers.markers : [];
-
     const serverName = rustplus.serverName ||
         (rustplus.logger && rustplus.logger.serverName) || null;
 
@@ -118,4 +147,4 @@ function buildSnapshot(rustplus, teamInfo, mapMarkers) {
     };
 }
 
-module.exports = { start, broadcast, buildSnapshot };
+module.exports = { start, broadcast, buildSnapshot, hasClients };

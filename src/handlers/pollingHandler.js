@@ -71,10 +71,13 @@ module.exports = {
         await StorageMonitorHandler.handler(rustplus, client);
         await SmartAlarmHandler.handler(rustplus, client);
 
-        /* Push a live snapshot to the Web UI (never let it break polling). */
+        /* Push a live snapshot to the Web UI - only while a browser is watching, so this
+           costs nothing on a constrained host when the UI is idle. Never break polling. */
         try {
-            const snapshot = WebServer.buildSnapshot(rustplus, teamInfo.teamInfo, mapMarkers.mapMarkers);
-            if (snapshot) WebServer.broadcast(rustplus.guildId, snapshot);
+            if (WebServer.hasClients()) {
+                const snapshot = WebServer.buildSnapshot(rustplus, teamInfo.teamInfo, mapMarkers.mapMarkers);
+                if (snapshot) WebServer.broadcast(rustplus.guildId, snapshot);
+            }
         }
         catch (e) { /* ignore web UI errors */ }
     },

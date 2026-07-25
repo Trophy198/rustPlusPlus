@@ -1,4 +1,7 @@
 {
+  "ts-node": {
+    "transpileOnly": true                                /* Skip full type-checking at runtime (huge memory/startup win; src is plain JS). */
+  },
   "compilerOptions": {
     "target": "ESNext",                                  /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */
     "module": "commonjs",                                /* Specify what module code is generated. */

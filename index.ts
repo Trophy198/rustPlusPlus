@@ -18,6 +18,10 @@
 
 */
 
+/* Load environment variables from .env (Node 22+ native, no dependency). Must run before
+   any module that reads process.env (e.g. ./config). .env is optional. */
+try { process.loadEnvFile(); } catch (e) { /* no .env file - fall back to real env vars */ }
+
 const Discord = require('discord.js');
 const Fs = require('fs');
 const Path = require('path');

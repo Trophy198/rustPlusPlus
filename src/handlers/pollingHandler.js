@@ -29,6 +29,7 @@ const TeamHandler = require('../handlers/teamHandler.js');
 const Time = require('../structures/Time');
 const TimeHandler = require('../handlers/timeHandler.js');
 const VendingMachines = require('../handlers/vendingMachineHandler.js');
+const WebServer = require('../util/webServer.js');
 
 module.exports = {
     pollingHandler: async function (rustplus, client) {
@@ -69,5 +70,12 @@ module.exports = {
         await InformationHandler.handler(rustplus);
         await StorageMonitorHandler.handler(rustplus, client);
         await SmartAlarmHandler.handler(rustplus, client);
+
+        /* Push a live snapshot to the Web UI (never let it break polling). */
+        try {
+            const snapshot = WebServer.buildSnapshot(rustplus, teamInfo.teamInfo, mapMarkers.mapMarkers);
+            if (snapshot) WebServer.broadcast(rustplus.guildId, snapshot);
+        }
+        catch (e) { /* ignore web UI errors */ }
     },
 };

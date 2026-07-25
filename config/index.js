@@ -25,6 +25,10 @@ module.exports = {
         showCallStackError: process.env.RPP_LOG_CALL_STACK || false,
         reconnectIntervalMs: process.env.RPP_RECONNECT_INTERVAL || 15000,
     },
+    web: {
+        enabled: process.env.RPP_WEB_ENABLED !== 'false', /* Live map Web UI (default on) */
+        port: parseInt(process.env.RPP_WEB_PORT) || 3000,
+    },
     discord: {
         username: process.env.RPP_DISCORD_USERNAME || 'localrustplusjs_version',
         clientId: process.env.RPP_DISCORD_CLIENT_ID || '',

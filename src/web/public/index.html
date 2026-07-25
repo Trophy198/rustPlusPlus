@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>rustplusplus · Live Map</title>
+<style>
+    :root { color-scheme: dark; }
+    * { box-sizing: border-box; }
+    body {
+        margin: 0; background: #12100e; color: #e6e1d8;
+        font: 14px/1.4 -apple-system, Segoe UI, Roboto, sans-serif;
+        display: flex; flex-direction: column; height: 100vh; overflow: hidden;
+    }
+    header {
+        display: flex; align-items: center; gap: 14px; padding: 8px 14px;
+        background: #1b1815; border-bottom: 1px solid #2c2823; flex: 0 0 auto;
+    }
+    header b { color: #cd412b; }
+    header .sep { color: #4a453d; }
+    #status { margin-left: auto; font-size: 12px; color: #8a8377; }
+    #status.live::before { content: "●"; color: #4caf50; margin-right: 5px; }
+    #status.down::before { content: "●"; color: #cd412b; margin-right: 5px; }
+    select { background: #26221d; color: #e6e1d8; border: 1px solid #3a352e; border-radius: 5px; padding: 4px 8px; }
+    #wrap { flex: 1 1 auto; position: relative; overflow: hidden; }
+    #map { position: absolute; inset: 0; margin: auto; display: block; }
+    #legend {
+        position: absolute; left: 12px; bottom: 12px; background: rgba(20,18,15,.85);
+        border: 1px solid #2c2823; border-radius: 8px; padding: 10px 12px; font-size: 12px;
+    }
+    #legend .row { display: flex; align-items: center; gap: 7px; margin: 3px 0; }
+    #legend .dot { width: 11px; height: 11px; border-radius: 50%; display: inline-block; }
+    #count { position: absolute; right: 12px; top: 12px; background: rgba(20,18,15,.85);
+        border: 1px solid #2c2823; border-radius: 8px; padding: 8px 11px; font-size: 12px; }
+</style>
+</head>
+<body>
+<header>
+    <b>rustplusplus</b><span class="sep">·</span> Live Map
+    <select id="guildSel" title="Server"></select>
+    <span id="status" class="down">connecting…</span>
+</header>
+<div id="wrap">
+    <canvas id="map"></canvas>
+    <div id="legend">
+        <div class="row"><span class="dot" style="background:#4caf50"></span> Teammate (online)</div>
+        <div class="row"><span class="dot" style="background:#8a8377"></span> Teammate (offline)</div>
+        <div class="row"><span class="dot" style="background:#e53935"></span> Dead</div>
+        <div class="row"><span class="dot" style="background:#e6b800"></span> Cargo Ship</div>
+        <div class="row"><span class="dot" style="background:#d84315"></span> Patrol Heli</div>
+        <div class="row"><span class="dot" style="background:#7e57c2"></span> Chinook 47</div>
+        <div class="row"><span class="dot" style="background:#26a69a"></span> Locked Crate</div>
+        <div class="row"><span class="dot" style="background:#5c6bc0"></span> Vending / Vendor</div>
+    </div>
+    <div id="count"></div>
+</div>
+
+<script>
+const MARKER = {
+    1: { label: 'Player',      color: '#4caf50', r: 5 },
+    2: { label: 'Explosion',   color: '#ff7043', r: 6 },
+    3: { label: 'Vending',     color: '#5c6bc0', r: 4 },
+    4: { label: 'Chinook 47',  color: '#7e57c2', r: 7 },
+    5: { label: 'Cargo Ship',  color: '#e6b800', r: 7 },
+    6: { label: 'Crate',       color: '#26a69a', r: 6 },
+    7: { label: 'Radius',      color: '#90a4ae', r: 5 },
+    8: { label: 'Patrol Heli', color: '#d84315', r: 7 },
+    9: { label: 'Vendor',      color: '#5c6bc0', r: 6 }
+};
+
+const img = new Image();
+let meta = null, players = [], markers = [], curGuild = null, imgLoaded = false;
+const canvas = document.getElementById('map');
+const ctx = canvas.getContext('2d');
+const statusEl = document.getElementById('status');
+const guildSel = document.getElementById('guildSel');
+const countEl = document.getElementById('count');
+
+function worldToImg(x, y) {
+    const px = x * ((meta.width - 2 * meta.oceanMargin) / meta.mapSize) + meta.oceanMargin;
+    const py = meta.height - (y * ((meta.height - 2 * meta.oceanMargin) / meta.mapSize) + meta.oceanMargin);
+    return [px, py];
+}
+
+function fitCanvas() {
+    if (!meta) return;
+    const wrap = document.getElementById('wrap');
+    const size = Math.min(wrap.clientWidth, wrap.clientHeight) - 8;
+    canvas.width = size; canvas.height = size;
+    canvas.style.width = size + 'px'; canvas.style.height = size + 'px';
+    draw();
+}
+
+function draw() {
+    if (!meta || !imgLoaded) return;
+    const s = canvas.width / meta.width; /* image px -> canvas px (map is square) */
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+    /* Event markers (draw under players) */
+    for (const mk of markers) {
+        if (mk.type === 1) continue; /* Player markers duplicate team; skip */
+        const spec = MARKER[mk.type] || { label: 'type ' + mk.type, color: '#bbb', r: 5 };
+        const [ix, iy] = worldToImg(mk.x, mk.y);
+        dot(ix * s, iy * s, spec.r, spec.color);
+    }
+
+    /* Teammates */
+    for (const p of players) {
+        if (!p.isOnline && !p.isAlive) continue;
+        const [ix, iy] = worldToImg(p.x, p.y);
+        const cx = ix * s, cy = iy * s;
+        const color = !p.isAlive ? '#e53935' : (p.isOnline ? '#4caf50' : '#8a8377');
+        dot(cx, cy, 5, color);
+        ctx.fillStyle = 'rgba(0,0,0,.6)';
+        ctx.font = '11px sans-serif';
+        const w = ctx.measureText(p.name).width;
+        ctx.fillRect(cx + 7, cy - 8, w + 6, 14);
+        ctx.fillStyle = '#fff';
+        ctx.fillText(p.name, cx + 10, cy + 2);
+    }
+
+    const online = players.filter(p => p.isOnline).length;
+    countEl.textContent = `${online}/${players.length} online · ${markers.length} markers`;
+}
+
+function dot(x, y, r, color) {
+    ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2);
+    ctx.fillStyle = color; ctx.fill();
+    ctx.lineWidth = 1.5; ctx.strokeStyle = 'rgba(0,0,0,.7)'; ctx.stroke();
+}
+
+function loadGuild(guildId) {
+    curGuild = guildId;
+    imgLoaded = false;
+    img.onload = () => { imgLoaded = true; fitCanvas(); };
+    img.src = '/map/' + guildId + '?t=' + Date.now();
+}
+
+function applySnapshot(d) {
+    if (!curGuild) { populateGuild(d.guildId, d.serverName); loadGuild(d.guildId); }
+    if (d.guildId !== curGuild) return;
+    meta = d.meta; players = d.players || []; markers = d.markers || [];
+    draw();
+}
+
+function populateGuild(guildId, name) {
+    if ([...guildSel.options].some(o => o.value === guildId)) return;
+    const o = document.createElement('option');
+    o.value = guildId; o.textContent = name || guildId;
+    guildSel.appendChild(o); guildSel.value = guildId;
+}
+
+guildSel.addEventListener('change', () => loadGuild(guildSel.value));
+window.addEventListener('resize', fitCanvas);
+
+function connect() {
+    const ws = new WebSocket((location.protocol === 'https:' ? 'wss://' : 'ws://') + location.host);
+    ws.onopen = () => { statusEl.className = 'live'; statusEl.textContent = 'live'; };
+    ws.onclose = () => { statusEl.className = 'down'; statusEl.textContent = 'reconnecting…'; setTimeout(connect, 2000); };
+    ws.onmessage = (ev) => {
+        const msg = JSON.parse(ev.data);
+        if (msg.type === 'init') { (msg.guilds || []).forEach(g => { populateGuild(g.guildId, g.serverName); applySnapshot(g); }); }
+        else if (msg.type === 'update') { populateGuild(msg.guildId, msg.serverName); applySnapshot(msg); }
+    };
+}
+connect();
+</script>
+</body>
+</html>

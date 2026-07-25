@@ -27,6 +27,8 @@ const Fs = require('fs');
 const Path = require('path');
 
 const DiscordBot = require('./src/structures/DiscordBot');
+const Config = require('./config');
+const WebServer = require('./src/util/webServer.js');
 
 createMissingDirectories();
 
@@ -43,6 +45,10 @@ const client = new DiscordBot({
 });
 
 client.build();
+
+if (Config.web.enabled) {
+    WebServer.start(client, Config.web.port);
+}
 
 function createMissingDirectories() {
     if (!Fs.existsSync(Path.join(__dirname, 'logs'))) {

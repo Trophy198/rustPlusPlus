@@ -27,13 +27,21 @@ module.exports = {
         const guildId = rustplus.guildId;
         const instance = client.getInstance(guildId);
 
-        let command = message.broadcast.teamMessage.message.message;
+        /* Commands can arrive from either team chat or clan chat. Normalize the source so the
+           rest of the handler is chat-agnostic and responses are routed back to the same chat. */
+        const chatType = message.broadcast.hasOwnProperty('clanMessage') ? 'clan' : 'team';
+        const chatMessage = chatType === 'clan'
+            ? message.broadcast.clanMessage.message
+            : message.broadcast.teamMessage.message;
+        const respond = (msg) => rustplus.sendInGameMessage(msg, chatType);
+
+        let command = chatMessage.message;
         for (const alias of instance.aliases) {
             command = command.replace(alias.alias, alias.value);
         }
 
-        const callerSteamId = message.broadcast.teamMessage.message.steamId.toString();
-        const callerName = message.broadcast.teamMessage.message.name;
+        const callerSteamId = chatMessage.steamId.toString();
+        const callerName = chatMessage.name;
         const commandLowerCase = command.toLowerCase();
         const prefix = rustplus.generalSettings.prefix;
 
@@ -45,174 +53,174 @@ module.exports = {
         }
         else if (commandLowerCase === `${prefix}${client.intlGet('en', 'commandSyntaxAfk')}` ||
             commandLowerCase === `${prefix}${client.intlGet(guildId, 'commandSyntaxAfk')}`) {
-            rustplus.sendInGameMessage(rustplus.getCommandAfk());
+            respond(rustplus.getCommandAfk());
         }
         else if (commandLowerCase.startsWith(`${prefix}${client.intlGet('en', 'commandSyntaxAlive')}`) ||
             commandLowerCase.startsWith(`${prefix}${client.intlGet(guildId, 'commandSyntaxAlive')}`)) {
-            rustplus.sendInGameMessage(rustplus.getCommandAlive(command));
+            respond(rustplus.getCommandAlive(command));
         }
         else if (commandLowerCase === `${prefix}${client.intlGet('en', 'commandSyntaxCargo')}` ||
             commandLowerCase === `${prefix}${client.intlGet(guildId, 'commandSyntaxCargo')}`) {
-            rustplus.sendInGameMessage(rustplus.getCommandCargo());
+            respond(rustplus.getCommandCargo());
         }
         else if (commandLowerCase === `${prefix}${client.intlGet('en', 'commandSyntaxChinook')}` ||
             commandLowerCase === `${prefix}${client.intlGet(guildId, 'commandSyntaxChinook')}`) {
-            rustplus.sendInGameMessage(rustplus.getCommandChinook());
+            respond(rustplus.getCommandChinook());
         }
         else if ((commandLowerCase.startsWith(`${prefix}${client.intlGet('en', 'commandSyntaxConnection')} `) ||
             commandLowerCase.startsWith(`${prefix}${client.intlGet('en', 'commandSyntaxConnections')}`)) ||
             (commandLowerCase.startsWith(`${prefix}${client.intlGet(guildId, 'commandSyntaxConnection')} `) ||
                 commandLowerCase.startsWith(`${prefix}${client.intlGet(guildId, 'commandSyntaxConnections')}`))) {
-            rustplus.sendInGameMessage(rustplus.getCommandConnection(command));
+            respond(rustplus.getCommandConnection(command));
         }
         else if (commandLowerCase.startsWith(`${prefix}${client.intlGet('en', 'commandSyntaxCraft')}`) ||
             commandLowerCase.startsWith(`${prefix}${client.intlGet(guildId, 'commandSyntaxCraft')}`)) {
-            rustplus.sendInGameMessage(rustplus.getCommandCraft(command));
+            respond(rustplus.getCommandCraft(command));
         }
         else if ((commandLowerCase.startsWith(`${prefix}${client.intlGet('en', 'commandSyntaxDeath')} `) ||
             commandLowerCase.startsWith(`${prefix}${client.intlGet('en', 'commandSyntaxDeaths')}`)) ||
             (commandLowerCase.startsWith(`${prefix}${client.intlGet(guildId, 'commandSyntaxDeath')} `) ||
                 commandLowerCase.startsWith(`${prefix}${client.intlGet(guildId, 'commandSyntaxDeaths')}`))) {
-            rustplus.sendInGameMessage(await rustplus.getCommandDeath(command, callerSteamId));
+            respond(await rustplus.getCommandDeath(command, callerSteamId));
         }
         else if (commandLowerCase.startsWith(`${prefix}${client.intlGet('en', 'commandSyntaxDecay')}`) ||
             commandLowerCase.startsWith(`${prefix}${client.intlGet(guildId, 'commandSyntaxDecay')}`)) {
-            rustplus.sendInGameMessage(rustplus.getCommandDecay(command));
+            respond(rustplus.getCommandDecay(command));
         }
         else if (commandLowerCase.startsWith(`${prefix}${client.intlGet('en', 'commandSyntaxDespawn')}`) ||
             commandLowerCase.startsWith(`${prefix}${client.intlGet(guildId, 'commandSyntaxDespawn')}`)) {
-            rustplus.sendInGameMessage(rustplus.getCommandDespawn(command));
+            respond(rustplus.getCommandDespawn(command));
         }
         else if (commandLowerCase.startsWith(`${prefix}${client.intlGet('en', 'commandSyntaxEvents')}`) ||
             commandLowerCase.startsWith(`${prefix}${client.intlGet(guildId, 'commandSyntaxEvents')}`)) {
-            rustplus.sendInGameMessage(rustplus.getCommandEvents(command));
+            respond(rustplus.getCommandEvents(command));
         }
         else if (commandLowerCase === `${prefix}${client.intlGet('en', 'commandSyntaxHeli')}` ||
             commandLowerCase === `${prefix}${client.intlGet(guildId, 'commandSyntaxHeli')}`) {
-            rustplus.sendInGameMessage(rustplus.getCommandHeli());
+            respond(rustplus.getCommandHeli());
         }
         else if (commandLowerCase === `${prefix}${client.intlGet('en', 'commandSyntaxLarge')}` ||
             commandLowerCase === `${prefix}${client.intlGet(guildId, 'commandSyntaxLarge')}`) {
-            rustplus.sendInGameMessage(rustplus.getCommandLarge());
+            respond(rustplus.getCommandLarge());
         }
         else if (commandLowerCase.startsWith(`${prefix}${client.intlGet('en', 'commandSyntaxLeader')}`) ||
             commandLowerCase.startsWith(`${prefix}${client.intlGet(guildId, 'commandSyntaxLeader')}`)) {
-            rustplus.sendInGameMessage(await rustplus.getCommandLeader(command, callerSteamId));
+            respond(await rustplus.getCommandLeader(command, callerSteamId));
         }
         else if ((commandLowerCase.startsWith(`${prefix}${client.intlGet('en', 'commandSyntaxMarker')} `) ||
             commandLowerCase === `${prefix}${client.intlGet('en', 'commandSyntaxMarkers')}`) ||
             (commandLowerCase.startsWith(`${prefix}${client.intlGet(guildId, 'commandSyntaxMarker')} `) ||
                 commandLowerCase === `${prefix}${client.intlGet(guildId, 'commandSyntaxMarkers')}`)) {
-            rustplus.sendInGameMessage(await rustplus.getCommandMarker(command, callerSteamId));
+            respond(await rustplus.getCommandMarker(command, callerSteamId));
         }
         else if (commandLowerCase.startsWith(`${prefix}${client.intlGet('en', 'commandSyntaxMarket')} `) ||
             commandLowerCase.startsWith(`${prefix}${client.intlGet(guildId, 'commandSyntaxMarket')} `)) {
                 let response = rustplus.getCommandMarket(command);
                 if (typeof response === 'string' && response.length > 0) {
-                    rustplus.sendInGameMessage(response);
+                    respond(response);
                 }
         }
         else if (commandLowerCase === `${prefix}${client.intlGet('en', 'commandSyntaxMute')}` ||
             commandLowerCase === `${prefix}${client.intlGet(guildId, 'commandSyntaxMute')}`) {
-            rustplus.sendInGameMessage(rustplus.getCommandMute());
+            respond(rustplus.getCommandMute());
         }
         else if ((commandLowerCase.startsWith(`${prefix}${client.intlGet('en', 'commandSyntaxNote')} `) ||
             commandLowerCase === `${prefix}${client.intlGet('en', 'commandSyntaxNotes')}`) ||
             (commandLowerCase.startsWith(`${prefix}${client.intlGet(guildId, 'commandSyntaxNote')} `) ||
                 commandLowerCase === `${prefix}${client.intlGet(guildId, 'commandSyntaxNotes')}`)) {
-            rustplus.sendInGameMessage(rustplus.getCommandNote(command));
+            respond(rustplus.getCommandNote(command));
         }
         else if (commandLowerCase === `${prefix}${client.intlGet('en', 'commandSyntaxOffline')}` ||
             commandLowerCase === `${prefix}${client.intlGet(guildId, 'commandSyntaxOffline')}`) {
-            rustplus.sendInGameMessage(rustplus.getCommandOffline());
+            respond(rustplus.getCommandOffline());
         }
         else if (commandLowerCase === `${prefix}${client.intlGet('en', 'commandSyntaxOnline')}` ||
             commandLowerCase === `${prefix}${client.intlGet(guildId, 'commandSyntaxOnline')}`) {
-            rustplus.sendInGameMessage(rustplus.getCommandOnline());
+            respond(rustplus.getCommandOnline());
         }
         else if ((commandLowerCase.startsWith(`${prefix}${client.intlGet('en', 'commandSyntaxPlayer')} `) ||
             commandLowerCase.startsWith(`${prefix}${client.intlGet('en', 'commandSyntaxPlayers')}`)) ||
             (commandLowerCase.startsWith(`${prefix}${client.intlGet(guildId, 'commandSyntaxPlayer')} `) ||
                 commandLowerCase.startsWith(`${prefix}${client.intlGet(guildId, 'commandSyntaxPlayers')}`))) {
-            rustplus.sendInGameMessage(rustplus.getCommandPlayer(command));
+            respond(rustplus.getCommandPlayer(command));
         }
         else if (commandLowerCase === `${prefix}${client.intlGet('en', 'commandSyntaxPop')}` ||
             commandLowerCase === `${prefix}${client.intlGet(guildId, 'commandSyntaxPop')}`) {
-            rustplus.sendInGameMessage(rustplus.getCommandPop());
+            respond(rustplus.getCommandPop());
         }
         else if (commandLowerCase.startsWith(`${prefix}${client.intlGet('en', 'commandSyntaxProx')}`) ||
             commandLowerCase.startsWith(`${prefix}${client.intlGet(guildId, 'commandSyntaxProx')}`)) {
-            rustplus.sendInGameMessage(await rustplus.getCommandProx(command, callerSteamId));
+            respond(await rustplus.getCommandProx(command, callerSteamId));
         }
         else if (commandLowerCase.startsWith(`${prefix}${client.intlGet('en', 'commandSyntaxRecycle')}`) ||
             commandLowerCase.startsWith(`${prefix}${client.intlGet(guildId, 'commandSyntaxRecycle')}`)) {
-            rustplus.sendInGameMessage(rustplus.getCommandRecycle(command));
+            respond(rustplus.getCommandRecycle(command));
         }
         else if (commandLowerCase.startsWith(`${prefix}${client.intlGet('en', 'commandSyntaxResearch')}`) ||
             commandLowerCase.startsWith(`${prefix}${client.intlGet(guildId, 'commandSyntaxResearch')}`)) {
-            rustplus.sendInGameMessage(rustplus.getCommandResearch(command));
+            respond(rustplus.getCommandResearch(command));
         }
         else if (commandLowerCase.startsWith(`${prefix}${client.intlGet('en', 'commandSyntaxSend')} `) ||
             commandLowerCase.startsWith(`${prefix}${client.intlGet(guildId, 'commandSyntaxSend')} `)) {
-            rustplus.sendInGameMessage(await rustplus.getCommandSend(command, callerName));
+            respond(await rustplus.getCommandSend(command, callerName));
         }
         else if (commandLowerCase === `${prefix}${client.intlGet('en', 'commandSyntaxSmall')}` ||
             commandLowerCase === `${prefix}${client.intlGet(guildId, 'commandSyntaxSmall')}`) {
-            rustplus.sendInGameMessage(rustplus.getCommandSmall());
+            respond(rustplus.getCommandSmall());
         }
         else if (commandLowerCase.startsWith(`${prefix}${client.intlGet('en', 'commandSyntaxStack')}`) ||
             commandLowerCase.startsWith(`${prefix}${client.intlGet(guildId, 'commandSyntaxStack')}`)) {
-            rustplus.sendInGameMessage(await rustplus.getCommandStack(command));
+            respond(await rustplus.getCommandStack(command));
         }
         else if (commandLowerCase.startsWith(`${prefix}${client.intlGet('en', 'commandSyntaxSteamid')}`) ||
             commandLowerCase.startsWith(`${prefix}${client.intlGet(guildId, 'commandSyntaxSteamid')}`)) {
-            rustplus.sendInGameMessage(await rustplus.getCommandSteamId(command, callerSteamId, callerName));
+            respond(await rustplus.getCommandSteamId(command, callerSteamId, callerName));
         }
         else if (commandLowerCase === `${prefix}${client.intlGet('en', 'commandSyntaxTeam')}` ||
             commandLowerCase === `${prefix}${client.intlGet(guildId, 'commandSyntaxTeam')}`) {
-            rustplus.sendInGameMessage(rustplus.getCommandTeam());
+            respond(rustplus.getCommandTeam());
         }
         else if (commandLowerCase === `${prefix}${client.intlGet('en', 'commandSyntaxTime')}` ||
             commandLowerCase === `${prefix}${client.intlGet(guildId, 'commandSyntaxTime')}`) {
-            rustplus.sendInGameMessage(rustplus.getCommandTime());
+            respond(rustplus.getCommandTime());
         }
         else if ((commandLowerCase.startsWith(`${prefix}${client.intlGet('en', 'commandSyntaxTimer')} `) ||
             commandLowerCase === `${prefix}${client.intlGet('en', 'commandSyntaxTimers')}`) ||
             (commandLowerCase.startsWith(`${prefix}${client.intlGet(guildId, 'commandSyntaxTimer')} `) ||
                 commandLowerCase === `${prefix}${client.intlGet(guildId, 'commandSyntaxTimers')}`)) {
-            rustplus.sendInGameMessage(rustplus.getCommandTimer(command));
+            respond(rustplus.getCommandTimer(command));
         }
         else if (commandLowerCase.startsWith(`${prefix}${client.intlGet('en', 'commandSyntaxTranslateTo')} `) ||
             commandLowerCase.startsWith(`${prefix}${client.intlGet(guildId, 'commandSyntaxTranslateTo')} `)) {
-            rustplus.sendInGameMessage(await rustplus.getCommandTranslateTo(command));
+            respond(await rustplus.getCommandTranslateTo(command));
         }
         else if (commandLowerCase.startsWith(`${prefix}${client.intlGet('en', 'commandSyntaxTranslateFromTo')} `) ||
             commandLowerCase.startsWith(`${prefix}${client.intlGet(guildId, 'commandSyntaxTranslateFromTo')} `)) {
-            rustplus.sendInGameMessage(await rustplus.getCommandTranslateFromTo(command));
+            respond(await rustplus.getCommandTranslateFromTo(command));
         }
         else if (commandLowerCase.startsWith(`${prefix}${client.intlGet('en', 'commandSyntaxTTS')} `) ||
             commandLowerCase.startsWith(`${prefix}${client.intlGet(guildId, 'commandSyntaxTTS')} `)) {
-            rustplus.sendInGameMessage(await rustplus.getCommandTTS(command, callerName));
+            respond(await rustplus.getCommandTTS(command, callerName));
         }
         else if (commandLowerCase === `${prefix}${client.intlGet('en', 'commandSyntaxUnmute')}` ||
             commandLowerCase === `${prefix}${client.intlGet(guildId, 'commandSyntaxUnmute')}`) {
-            rustplus.sendInGameMessage(rustplus.getCommandUnmute());
+            respond(rustplus.getCommandUnmute());
         }
         else if (commandLowerCase === `${prefix}${client.intlGet('en', 'commandSyntaxUpkeep')}` ||
             commandLowerCase === `${prefix}${client.intlGet(guildId, 'commandSyntaxUpkeep')}`) {
-            rustplus.sendInGameMessage(rustplus.getCommandUpkeep());
+            respond(rustplus.getCommandUpkeep());
         }
         else if (commandLowerCase === `${prefix}${client.intlGet('en', 'commandSyntaxUptime')}` ||
             commandLowerCase === `${prefix}${client.intlGet(guildId, 'commandSyntaxUptime')}`) {
-            rustplus.sendInGameMessage(rustplus.getCommandUptime());
+            respond(rustplus.getCommandUptime());
         }
         else if (commandLowerCase === `${prefix}${client.intlGet('en', 'commandSyntaxWipe')}` ||
             commandLowerCase === `${prefix}${client.intlGet(guildId, 'commandSyntaxWipe')}`) {
-            rustplus.sendInGameMessage(rustplus.getCommandWipe());
+            respond(rustplus.getCommandWipe());
         }
         else if (commandLowerCase === `${prefix}${client.intlGet('en', 'commandSyntaxTravelingVendor')}` ||
             commandLowerCase === `${prefix}${client.intlGet(guildId, 'commandSyntaxTravelingVendor')}`) {
-            rustplus.sendInGameMessage(rustplus.getCommandTravelingVendor());
+            respond(rustplus.getCommandTravelingVendor());
         }
         else if (commandLowerCase === `${prefix}${client.intlGet('en', 'commandSyntaxDeepSea')}` ||
             commandLowerCase === `${prefix}${client.intlGet(guildId, 'commandSyntaxDeepSea')}`) {

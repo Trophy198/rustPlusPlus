@@ -54,6 +54,12 @@ async function messageBroadcast(rustplus, client, message) {
     else if (message.broadcast.hasOwnProperty('teamMessage')) {
         messageBroadcastTeamMessage(rustplus, client, message);
     }
+    else if (message.broadcast.hasOwnProperty('clanChanged')) {
+        messageBroadcastClanChanged(rustplus, client, message);
+    }
+    else if (message.broadcast.hasOwnProperty('clanMessage')) {
+        messageBroadcastClanMessage(rustplus, client, message);
+    }
     else if (message.broadcast.hasOwnProperty('entityChanged')) {
         messageBroadcastEntityChanged(rustplus, client, message);
     }
@@ -125,6 +131,106 @@ async function messageBroadcastTeamMessage(rustplus, client, message) {
     }));
 
     TeamChatHandler(rustplus, client, message.broadcast.teamMessage.message);
+}
+
+async function messageBroadcastClanChanged(rustplus, client, message) {
+    /* The Rust+ Clan system (Common Ground) broadcasts the full ClanInfo whenever the clan changes.
+       Note: this fires on member online/offline updates too, so we only report actual membership
+       and role changes by diffing against the previously stored ClanInfo. */
+    const newClan = message.broadcast.clanChanged.clanInfo;
+    if (!newClan || !Array.isArray(newClan.members)) return;
+
+    const prev = rustplus.clanInfo;
+    rustplus.clanInfo = newClan;
+
+    /* First snapshot for this session - nothing to compare against yet. */
+    if (!prev || !Array.isArray(prev.members)) return;
+
+    const infoCap = client.intlGet(null, 'infoCap');
+    const clanName = newClan.name || `${newClan.clanId}`;
+
+    const prevById = new Map(prev.members.map(m => [m.steamId.toString(), m]));
+    const newById = new Map(newClan.members.map(m => [m.steamId.toString(), m]));
+
+    /* Joined */
+    for (const [steamId] of newById) {
+        if (!prevById.has(steamId)) {
+            rustplus.log(infoCap, `Clan '${clanName}': member joined (${steamId}).`);
+        }
+    }
+
+    /* Left */
+    for (const [steamId] of prevById) {
+        if (!newById.has(steamId)) {
+            rustplus.log(infoCap, `Clan '${clanName}': member left (${steamId}).`);
+        }
+    }
+
+    /* Role changed */
+    for (const [steamId, member] of newById) {
+        const before = prevById.get(steamId);
+        if (before && before.roleId !== member.roleId) {
+            rustplus.log(infoCap, `Clan '${clanName}': member ${steamId} role ${before.roleId} -> ${member.roleId}.`);
+        }
+    }
+}
+
+async function messageBroadcastClanMessage(rustplus, client, message) {
+    const instance = client.getInstance(rustplus.guildId);
+    const steamId = message.broadcast.clanMessage.message.steamId.toString();
+
+    if (steamId === rustplus.playerId) {
+        /* Delay inGameClanChatHandler */
+        clearTimeout(rustplus.inGameClanChatTimeout);
+        const commandDelayMs = parseInt(rustplus.generalSettings.commandDelay) * 1000;
+        rustplus.inGameClanChatTimeout = setTimeout(
+            InGameChatHandler.inGameClanChatHandler, commandDelayMs, rustplus, client);
+    }
+
+    let tempName = message.broadcast.clanMessage.message.name;
+    let tempMessage = message.broadcast.clanMessage.message.message;
+
+    tempName = tempName.replace(/^<size=.*?><color=.*?>/, '');  /* Rustafied */
+    tempName = tempName.replace(/<\/color><\/size>$/, '');      /* Rustafied */
+    message.broadcast.clanMessage.message.name = tempName;
+
+    tempMessage = tempMessage.replace(/^<size=.*?><color=.*?>/, '');  /* Rustafied */
+    tempMessage = tempMessage.replace(/<\/color><\/size>$/, '');      /* Rustafied */
+    tempMessage = tempMessage.replace(/^<color.+?<\/color>/g, '');      /* Unknown */
+    message.broadcast.clanMessage.message.message = tempMessage;
+
+    const inGameCommandAccessMode = getInGameCommandAccessMode(rustplus);
+    if (steamId !== rustplus.playerId &&
+        shouldIgnoreInGameCommand(instance, steamId, inGameCommandAccessMode)) {
+        const strId = inGameCommandAccessMode === 'whitelist' ?
+            'userNotPartOfWhitelistInGame' : 'userPartOfBlacklistInGame';
+        rustplus.log(client.intlGet(null, 'infoCap'), client.intlGet(null, strId, {
+            user: `${message.broadcast.clanMessage.message.name} (${steamId})`,
+            message: message.broadcast.clanMessage.message.message
+        }));
+        TeamChatHandler(rustplus, client, message.broadcast.clanMessage.message);
+        return;
+    }
+
+    if (rustplus.clanMessagesSentByBot.includes(message.broadcast.clanMessage.message.message)) {
+        /* Remove message from clanMessagesSentByBot */
+        for (let i = rustplus.clanMessagesSentByBot.length - 1; i >= 0; i--) {
+            if (rustplus.clanMessagesSentByBot[i] === message.broadcast.clanMessage.message.message) {
+                rustplus.clanMessagesSentByBot.splice(i, 1);
+            }
+        }
+        return;
+    }
+
+    const isCommand = await CommandHandler.inGameCommandHandler(rustplus, client, message);
+    if (isCommand) return;
+
+    rustplus.log(client.intlGet(null, 'infoCap'), client.intlGet(null, `logInGameMessage`, {
+        message: message.broadcast.clanMessage.message.message,
+        user: `${message.broadcast.clanMessage.message.name} (${steamId})`
+    }));
+
+    TeamChatHandler(rustplus, client, message.broadcast.clanMessage.message);
 }
 
 async function messageBroadcastEntityChanged(rustplus, client, message) {

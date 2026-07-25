@@ -45,7 +45,7 @@ const TOKENS_REPLENISH = 3;     /* Per second */
 
 class RustPlus extends RustPlusLib {
     constructor(guildId, serverIp, appPort, steamId, playerToken) {
-        super(serverIp, appPort, steamId, playerToken);
+        super(serverIp, appPort, steamId, playerToken); /* direct connection */
 
         this.serverId = `${this.server}-${this.port}`;
         this.guildId = guildId;
@@ -79,10 +79,14 @@ class RustPlus extends RustPlusLib {
         this.smartAlarmIntervalCounter = 20;        /* Counter to decide when smart alarms should be updated */
         this.interactionSwitches = [];              /* Stores the ids of smart switches that are interacted in-game. */
         this.messagesSentByBot = [];                /* Stores the last messages sent by the bot to the team chat */
+        this.clanMessagesSentByBot = [];            /* Stores the last messages sent by the bot to the clan chat */
+        this.clanInfo = null;                       /* Latest ClanInfo (getClanInfo / clanChanged broadcast) */
 
         /* Chat handler variables */
         this.inGameChatQueue = [];
         this.inGameChatTimeout = null;
+        this.inGameClanChatQueue = [];
+        this.inGameClanChatTimeout = null;
 
         /* Stores found vending machine items that are subscribed to */
         this.foundSubscriptionItems = { all: [], buy: [], sell: [] };
@@ -560,10 +564,17 @@ class RustPlus extends RustPlusLib {
     }
 
     updateBotMessages(message) {
-        if (this.messagesSentByBot === Constants.BOT_MESSAGE_HISTORY_LIMIT) {
+        if (this.messagesSentByBot.length === Constants.BOT_MESSAGE_HISTORY_LIMIT) {
             this.messagesSentByBot.pop();
         }
         this.messagesSentByBot.unshift(message);
+    }
+
+    updateClanBotMessages(message) {
+        if (this.clanMessagesSentByBot.length === Constants.BOT_MESSAGE_HISTORY_LIMIT) {
+            this.clanMessagesSentByBot.pop();
+        }
+        this.clanMessagesSentByBot.unshift(message);
     }
 
     deleteThisRustplusInstance() {
@@ -584,17 +595,26 @@ class RustPlus extends RustPlusLib {
     }
 
     logInGameCommand(type = 'Default', message) {
+        const chatMessage = message.broadcast.hasOwnProperty('clanMessage')
+            ? message.broadcast.clanMessage.message
+            : message.broadcast.teamMessage.message;
+
         const args = new Object();
         args['type'] = type;
-        args['command'] = message.broadcast.teamMessage.message.message;
-        args['user'] = `${message.broadcast.teamMessage.message.name}`;
-        args['user'] += ` (${message.broadcast.teamMessage.message.steamId.toString()})`;
+        args['command'] = chatMessage.message;
+        args['user'] = `${chatMessage.name}`;
+        args['user'] += ` (${chatMessage.steamId.toString()})`;
 
         this.log(Client.client.intlGet(null, 'infoCap'), Client.client.intlGet(null, `logInGameCommand`, args));
     }
 
-    sendInGameMessage(message) {
-        InGameChatHandler.inGameChatHandler(this, Client.client, message);
+    sendInGameMessage(message, chatType = 'team') {
+        if (chatType === 'clan') {
+            InGameChatHandler.inGameClanChatHandler(this, Client.client, message);
+        }
+        else {
+            InGameChatHandler.inGameChatHandler(this, Client.client, message);
+        }
     }
 
     async sendEvent(setting, text, event, embed_color, firstPoll = false, image = null) {
@@ -686,6 +706,25 @@ class RustPlus extends RustPlusLib {
 
             return await this.sendRequestAsync({
                 sendTeamMessage: {
+                    message: message
+                }
+            }, timeout).catch((e) => {
+                return e;
+            });
+        }
+        catch (e) {
+            return e;
+        }
+    }
+
+    async sendClanMessageAsync(message, timeout = 10000) {
+        try {
+            if (!(await this.waitForAvailableTokens(2))) {
+                return { error: Client.client.intlGet(null, 'tokensDidNotReplenish') };
+            }
+
+            return await this.sendRequestAsync({
+                sendClanMessage: {
                     message: message
                 }
             }, timeout).catch((e) => {

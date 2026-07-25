@@ -88,7 +88,17 @@ const MARKER = {
 };
 
 const img = new Image();
-let meta = null, players = [], markers = [], curGuild = null, imgLoaded = false;
+let meta = null, curGuild = null, imgLoaded = false;
+let playerCount = 0, onlineCount = 0, markerCount = 0;
+
+/* view = pan/zoom on top of the base (map-fit-to-canvas) transform */
+const view = { scale: 1, x: 0, y: 0 };
+let baseScale = 1; /* image px -> canvas px at zoom 1 */
+
+/* interpolated entities: key -> { data, cx, cy (current world), tx, ty (target world) } */
+const ents = new Map();
+const EASE = 0.12; /* per-frame easing toward target (smooth glide between polls) */
+
 const canvas = document.getElementById('map');
 const ctx = canvas.getContext('2d');
 const statusEl = document.getElementById('status');
@@ -118,46 +128,52 @@ function worldToImg(x, y) {
     return [px, py];
 }
 
+/* world coords -> screen px (base fit + pan/zoom) */
+function worldToScreen(x, y) {
+    const [ix, iy] = worldToImg(x, y);
+    return [ix * baseScale * view.scale + view.x, iy * baseScale * view.scale + view.y];
+}
+
 function fitCanvas() {
     if (!meta) return;
     const wrap = document.getElementById('wrap');
     const size = Math.min(wrap.clientWidth, wrap.clientHeight) - 8;
     canvas.width = size; canvas.height = size;
     canvas.style.width = size + 'px'; canvas.style.height = size + 'px';
-    draw();
+    canvas.style.cursor = 'grab';
+    baseScale = canvas.width / meta.width;
+    clampView();
 }
 
 function draw() {
     if (!meta || !imgLoaded) return;
-    const s = canvas.width / meta.width; /* image px -> canvas px (map is square) */
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
-    /* Event markers (draw under players) */
-    for (const mk of markers) {
-        if (mk.type === 1) continue; /* Player markers duplicate team; skip */
-        const spec = MARKER[mk.type] || { label: 'type ' + mk.type, color: '#bbb', r: 5 };
-        const [ix, iy] = worldToImg(mk.x, mk.y);
-        dot(ix * s, iy * s, spec.r, spec.color);
+    /* map image with pan/zoom */
+    ctx.drawImage(img, view.x, view.y, canvas.width * view.scale, canvas.height * view.scale);
+
+    /* entities (markers first), constant screen size */
+    for (const e of ents.values()) {
+        const d = e.data;
+        const [sx, sy] = worldToScreen(e.cx, e.cy);
+        if (sx < -40 || sy < -40 || sx > canvas.width + 40 || sy > canvas.height + 40) continue;
+        if (d.kind === 'marker') {
+            const spec = MARKER[d.type] || { color: '#bbb', r: 5 };
+            dot(sx, sy, spec.r, spec.color);
+        }
+        else {
+            const color = !d.isAlive ? '#e53935' : (d.isOnline ? '#4caf50' : '#8a8377');
+            dot(sx, sy, 5, color);
+            ctx.font = '11px sans-serif';
+            const w = ctx.measureText(d.name).width;
+            ctx.fillStyle = 'rgba(0,0,0,.6)';
+            ctx.fillRect(sx + 7, sy - 8, w + 6, 14);
+            ctx.fillStyle = '#fff';
+            ctx.fillText(d.name, sx + 10, sy + 2);
+        }
     }
 
-    /* Teammates */
-    for (const p of players) {
-        if (!p.isOnline && !p.isAlive) continue;
-        const [ix, iy] = worldToImg(p.x, p.y);
-        const cx = ix * s, cy = iy * s;
-        const color = !p.isAlive ? '#e53935' : (p.isOnline ? '#4caf50' : '#8a8377');
-        dot(cx, cy, 5, color);
-        ctx.fillStyle = 'rgba(0,0,0,.6)';
-        ctx.font = '11px sans-serif';
-        const w = ctx.measureText(p.name).width;
-        ctx.fillRect(cx + 7, cy - 8, w + 6, 14);
-        ctx.fillStyle = '#fff';
-        ctx.fillText(p.name, cx + 10, cy + 2);
-    }
-
-    const online = players.filter(p => p.isOnline).length;
-    countEl.textContent = `${online}/${players.length} online · ${markers.length} markers`;
+    countEl.textContent = `${onlineCount}/${playerCount} online · ${markerCount} markers`;
 }
 
 function dot(x, y, r, color) {
@@ -166,18 +182,65 @@ function dot(x, y, r, color) {
     ctx.lineWidth = 1.5; ctx.strokeStyle = 'rgba(0,0,0,.7)'; ctx.stroke();
 }
 
+/* continuous render loop: ease each entity toward its target -> smooth glide between polls */
+function frame() {
+    for (const e of ents.values()) {
+        e.cx += (e.tx - e.cx) * EASE;
+        e.cy += (e.ty - e.cy) * EASE;
+    }
+    draw();
+    requestAnimationFrame(frame);
+}
+
+function resetView() { view.scale = 1; view.x = 0; view.y = 0; }
+
+function clampView() {
+    if (view.scale < 1) view.scale = 1;
+    const mapSize = canvas.width * view.scale;
+    view.x = Math.min(0, Math.max(canvas.width - mapSize, view.x));
+    view.y = Math.min(0, Math.max(canvas.height - mapSize, view.y));
+}
+
 function loadGuild(guildId) {
     curGuild = guildId;
     imgLoaded = false;
+    ents.clear();
+    resetView();
     img.onload = () => { imgLoaded = true; fitCanvas(); };
     img.src = '/map/' + guildId + '?t=' + Date.now();
+}
+
+function upsert(key, data, tx, ty) {
+    let e = ents.get(key);
+    if (!e) { e = { cx: tx, cy: ty }; ents.set(key, e); } /* new entity starts at target */
+    e.data = data; e.tx = tx; e.ty = ty; e.seen = true;
 }
 
 function applySnapshot(d) {
     if (!curGuild) { populateGuild(d.guildId, d.serverName); loadGuild(d.guildId); }
     if (d.guildId !== curGuild) return;
-    meta = d.meta; players = d.players || []; markers = d.markers || [];
-    draw();
+    meta = d.meta;
+    if (canvas.width) baseScale = canvas.width / meta.width;
+
+    for (const e of ents.values()) e.seen = false;
+
+    const players = d.players || [], markers = d.markers || [];
+    onlineCount = 0;
+    for (const p of players) {
+        if (p.isOnline) onlineCount++;
+        if (!p.isOnline && !p.isAlive) continue;
+        p.kind = 'player';
+        upsert('p' + p.steamId, p, p.x, p.y);
+    }
+    let mc = 0;
+    for (const m of markers) {
+        if (m.type === 1) continue;
+        m.kind = 'marker';
+        upsert('m' + m.id, m, m.x, m.y); mc++;
+    }
+    playerCount = players.length; markerCount = mc;
+
+    for (const [k, e] of ents) if (!e.seen) ents.delete(k);
 }
 
 function populateGuild(guildId, name) {
@@ -189,6 +252,35 @@ function populateGuild(guildId, name) {
 
 guildSel.addEventListener('change', () => loadGuild(guildSel.value));
 window.addEventListener('resize', fitCanvas);
+
+/* pan (drag) */
+let dragging = false, lastX = 0, lastY = 0;
+canvas.addEventListener('mousedown', (e) => { dragging = true; lastX = e.clientX; lastY = e.clientY; canvas.style.cursor = 'grabbing'; });
+window.addEventListener('mouseup', () => { dragging = false; canvas.style.cursor = 'grab'; });
+window.addEventListener('mousemove', (e) => {
+    if (!dragging) return;
+    view.x += e.clientX - lastX; view.y += e.clientY - lastY;
+    lastX = e.clientX; lastY = e.clientY;
+    clampView();
+});
+
+/* zoom (wheel toward cursor) */
+canvas.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    const rect = canvas.getBoundingClientRect();
+    const mx = e.clientX - rect.left, my = e.clientY - rect.top;
+    const ns = Math.min(8, Math.max(1, view.scale * (e.deltaY < 0 ? 1.1 : 1 / 1.1)));
+    const k = ns / view.scale;
+    view.x = mx - (mx - view.x) * k;
+    view.y = my - (my - view.y) * k;
+    view.scale = ns;
+    clampView();
+}, { passive: false });
+
+/* double-click resets the view */
+canvas.addEventListener('dblclick', () => { resetView(); });
+
+requestAnimationFrame(frame);
 
 function connect() {
     const ws = new WebSocket((location.protocol === 'https:' ? 'wss://' : 'ws://') + location.host);

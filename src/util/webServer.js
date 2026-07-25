@@ -22,6 +22,7 @@ const MAPS_DIR = Path.join(__dirname, '..', '..', 'maps');
 
 let httpServer = null;
 let wss = null;
+let theClient = null;
 
 /* Latest snapshot per guildId, so newly-connected browsers immediately get current state. */
 const latestByGuild = new Object();
@@ -29,14 +30,28 @@ const latestByGuild = new Object();
 function start(client, port) {
     if (httpServer) return; /* already started */
 
+    theClient = client;
     httpServer = Http.createServer(handleRequest);
     wss = new WebSocketServer({ server: httpServer });
 
     wss.on('connection', (ws) => {
+        ws._camera = null;
+
         try {
             ws.send(JSON.stringify({ type: 'init', guilds: Object.values(latestByGuild) }));
         }
         catch (e) { /* ignore */ }
+
+        ws.on('message', (raw) => {
+            let msg;
+            try { msg = JSON.parse(raw); } catch (e) { return; }
+            if (msg.type === 'camera:subscribe') startCamera(ws, msg.guildId, msg.identifier);
+            else if (msg.type === 'camera:unsubscribe') stopCamera(ws);
+        });
+
+        /* Always release the camera (stops its resubscribe interval + rendering) when a
+           viewer leaves - critical on a constrained host. */
+        ws.on('close', () => stopCamera(ws));
     });
 
     httpServer.on('error', (e) => {
@@ -81,6 +96,45 @@ function streamFile(res, filePath, contentType) {
         res.writeHead(200, { 'Content-Type': contentType, 'Cache-Control': 'no-cache' });
     });
     stream.pipe(res);
+}
+
+/* Subscribe a viewer to a CCTV camera. The library renders the ray data into PNG frames
+   (via jimp) and emits 'render'; we stream each frame to this viewer. On-demand only, so it
+   costs nothing until someone actually watches a camera. */
+async function startCamera(ws, guildId, identifier) {
+    await stopCamera(ws); /* one camera per viewer */
+
+    const rp = theClient && theClient.rustplusInstances && theClient.rustplusInstances[guildId];
+    if (!rp || typeof rp.getCamera !== 'function' || !rp.isOperational) {
+        try { ws.send(JSON.stringify({ type: 'camera:error', error: 'no active server connection' })); } catch (e) { /**/ }
+        return;
+    }
+
+    try {
+        const cam = rp.getCamera(identifier);
+        const onRender = (png) => {
+            if (ws.readyState !== 1) return;
+            try { ws.send(JSON.stringify({ type: 'camera:frame', identifier, data: png.toString('base64') })); }
+            catch (e) { /* ignore */ }
+        };
+        cam.on('render', onRender);
+        ws._camera = cam;
+        await cam.subscribe();
+        try { ws.send(JSON.stringify({ type: 'camera:subscribed', identifier })); } catch (e) { /**/ }
+    }
+    catch (e) {
+        ws._camera = null;
+        try { ws.send(JSON.stringify({ type: 'camera:error', error: String((e && e.message) || e) })); } catch (_e) { /**/ }
+    }
+}
+
+async function stopCamera(ws) {
+    const cam = ws._camera;
+    ws._camera = null;
+    if (cam) {
+        try { await cam.unsubscribe(); } catch (e) { /* ignore */ }
+        try { cam.removeAllListeners('render'); } catch (e) { /* ignore */ }
+    }
 }
 
 /* True only while at least one browser is connected - lets the bot skip snapshot work. */

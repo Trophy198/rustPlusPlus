@@ -32,6 +32,16 @@
     #legend .dot { width: 11px; height: 11px; border-radius: 50%; display: inline-block; }
     #count { position: absolute; right: 12px; top: 12px; background: rgba(20,18,15,.85);
         border: 1px solid #2c2823; border-radius: 8px; padding: 8px 11px; font-size: 12px; }
+    #campanel { position: absolute; right: 12px; bottom: 12px; width: 260px;
+        background: rgba(20,18,15,.9); border: 1px solid #2c2823; border-radius: 8px; padding: 10px; }
+    #campanel .camrow { display: flex; gap: 6px; }
+    #campanel input { flex: 1; min-width: 0; background: #26221d; color: #e6e1d8;
+        border: 1px solid #3a352e; border-radius: 5px; padding: 4px 7px; font-size: 12px; }
+    #campanel button { background: #3a352e; color: #e6e1d8; border: 0; border-radius: 5px;
+        padding: 4px 10px; font-size: 12px; cursor: pointer; }
+    #campanel button:hover { background: #4a453d; }
+    #camframe { width: 100%; margin-top: 8px; border-radius: 5px; display: none; background: #000; }
+    #cammsg { font-size: 11px; color: #8a8377; margin-top: 5px; min-height: 14px; }
 </style>
 </head>
 <body>
@@ -53,6 +63,15 @@
         <div class="row"><span class="dot" style="background:#5c6bc0"></span> Vending / Vendor</div>
     </div>
     <div id="count"></div>
+    <div id="campanel">
+        <div class="camrow">
+            <input id="camid" placeholder="CCTV identifier" />
+            <button id="camwatch">Watch</button>
+            <button id="camstop" style="display:none">Stop</button>
+        </div>
+        <img id="camframe" alt="camera" />
+        <div id="cammsg"></div>
+    </div>
 </div>
 
 <script>
@@ -75,6 +94,23 @@ const ctx = canvas.getContext('2d');
 const statusEl = document.getElementById('status');
 const guildSel = document.getElementById('guildSel');
 const countEl = document.getElementById('count');
+const camid = document.getElementById('camid');
+const camwatch = document.getElementById('camwatch');
+const camstop = document.getElementById('camstop');
+const camframe = document.getElementById('camframe');
+const cammsg = document.getElementById('cammsg');
+let wsRef = null;
+
+camwatch.addEventListener('click', () => {
+    const id = camid.value.trim();
+    if (!id || !wsRef || wsRef.readyState !== 1 || !curGuild) return;
+    wsRef.send(JSON.stringify({ type: 'camera:subscribe', guildId: curGuild, identifier: id }));
+    cammsg.textContent = 'connecting…';
+});
+camstop.addEventListener('click', () => {
+    if (wsRef && wsRef.readyState === 1) wsRef.send(JSON.stringify({ type: 'camera:unsubscribe' }));
+    camframe.style.display = 'none'; camwatch.style.display = ''; camstop.style.display = 'none'; cammsg.textContent = '';
+});
 
 function worldToImg(x, y) {
     const px = x * ((meta.width - 2 * meta.oceanMargin) / meta.mapSize) + meta.oceanMargin;
@@ -156,12 +192,19 @@ window.addEventListener('resize', fitCanvas);
 
 function connect() {
     const ws = new WebSocket((location.protocol === 'https:' ? 'wss://' : 'ws://') + location.host);
+    wsRef = ws;
     ws.onopen = () => { statusEl.className = 'live'; statusEl.textContent = 'live'; };
     ws.onclose = () => { statusEl.className = 'down'; statusEl.textContent = 'reconnecting…'; setTimeout(connect, 2000); };
     ws.onmessage = (ev) => {
         const msg = JSON.parse(ev.data);
         if (msg.type === 'init') { (msg.guilds || []).forEach(g => { populateGuild(g.guildId, g.serverName); applySnapshot(g); }); }
         else if (msg.type === 'update') { populateGuild(msg.guildId, msg.serverName); applySnapshot(msg); }
+        else if (msg.type === 'camera:frame') {
+            camframe.src = 'data:image/png;base64,' + msg.data;
+            camframe.style.display = 'block'; camwatch.style.display = 'none'; camstop.style.display = ''; cammsg.textContent = '';
+        }
+        else if (msg.type === 'camera:subscribed') { cammsg.textContent = 'subscribed: ' + msg.identifier; camwatch.style.display = 'none'; camstop.style.display = ''; }
+        else if (msg.type === 'camera:error') { cammsg.textContent = 'error: ' + msg.error; camwatch.style.display = ''; camstop.style.display = 'none'; }
     };
 }
 connect();

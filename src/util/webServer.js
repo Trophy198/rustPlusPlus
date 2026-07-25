@@ -124,8 +124,17 @@ async function startCamera(ws, guildId, identifier) {
     }
     catch (e) {
         ws._camera = null;
-        try { ws.send(JSON.stringify({ type: 'camera:error', error: String((e && e.message) || e) })); } catch (_e) { /**/ }
+        const errMsg = errToString(e);
+        if (theClient) theClient.log('WEB', `camera subscribe failed [${identifier}]: ${errMsg}`, 'error');
+        try { ws.send(JSON.stringify({ type: 'camera:error', error: errMsg })); } catch (_e) { /**/ }
     }
+}
+
+function errToString(e) {
+    if (!e) return 'unknown error';
+    if (e.message) return e.message;
+    if (typeof e === 'string') return e;
+    try { return JSON.stringify(e); } catch (_) { return String(e); }
 }
 
 async function stopCamera(ws) {

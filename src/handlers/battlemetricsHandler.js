@@ -38,8 +38,8 @@ module.exports = {
             if (!firstTime) await module.exports.handleBattlemetricsChanges(client, guildId);
 
             /* Update information channel battlemetrics players */
-            const bmId = instance.activeServer !== null ?
-                instance.serverList[instance.activeServer].battlemetricsId : null;
+            const activeServerObj = instance.activeServer !== null ? instance.serverList[instance.activeServer] : null;
+            const bmId = activeServerObj ? activeServerObj.battlemetricsId : null;
             let condition = instance.generalSettings.displayInformationBattlemetricsAllOnlinePlayers;
             condition &= instance.activeServer !== null;
             condition &= bmId !== null;

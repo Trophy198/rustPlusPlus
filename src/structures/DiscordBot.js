@@ -332,6 +332,12 @@ class DiscordBot extends Discord.Client {
             const instance = this.getInstance(guildId);
             if (!instance) return;
 
+            /* activeServer can point to a server deleted while it was reconnecting. */
+            if (instance.activeServer !== null && !instance.serverList.hasOwnProperty(instance.activeServer)) {
+                instance.activeServer = null;
+                this.setInstance(guildId, instance);
+            }
+
             if (instance.activeServer !== null && instance.serverList.hasOwnProperty(instance.activeServer)) {
                 this.createRustplusInstance(
                     guildId,

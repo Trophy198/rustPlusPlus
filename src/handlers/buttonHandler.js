@@ -636,6 +636,12 @@ module.exports = async (client, interaction) => {
             rustplus.disconnect();
             delete client.rustplusInstances[guildId];
         }
+        else if (instance.activeServer === ids.serverId) {
+            /* Active server deleted while reconnecting (no rustplus instance): stop the pending reconnect. */
+            instance.activeServer = null;
+            client.setInstance(guildId, instance);
+            client.resetRustplusVariables(guildId);
+        }
 
         for (const [entityId, content] of Object.entries(server.alarms)) {
             await DiscordTools.deleteMessageById(guildId, instance.channelId.alarms, content.messageId);

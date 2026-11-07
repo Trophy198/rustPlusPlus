@@ -455,7 +455,7 @@ module.exports = async (client, interaction) => {
 
         await DiscordMessages.sendServerMessage(guildId, ids.serverId, null, interaction);
 
-        newRustplus.isNewConnection = true;
+        if (newRustplus) newRustplus.isNewConnection = true;
     }
     else if (interaction.customId.startsWith('ServerEdit')) {
         const ids = JSON.parse(interaction.customId.replace('ServerEdit', ''));

@@ -300,6 +300,17 @@ class DiscordBot extends Discord.Client {
     }
 
     createRustplusInstance(guildId, serverIp, appPort, steamId, playerToken) {
+        /* A pending reconnect timer can fire after the server was deleted or another one was selected. */
+        const serverId = `${serverIp}-${appPort}`;
+        const instance = this.getInstance(guildId);
+        if (!instance || !instance.serverList || !instance.serverList.hasOwnProperty(serverId) ||
+            instance.activeServer !== serverId) {
+            this.log(this.intlGet(null, 'warningCap'),
+                `Skipping connection to ${serverId} for guild ${guildId}: server was removed or is no longer active.`);
+            if (!this.rustplusInstances[guildId]) this.resetRustplusVariables(guildId);
+            return null;
+        }
+
         let rustplus = new RustPlus(guildId, serverIp, appPort, steamId, playerToken);
 
         /* Add rustplus instance to Object */
